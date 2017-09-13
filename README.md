@@ -1,4 +1,4 @@
-# Crowdsale Website
+# Certifier Website
 
 ## How to run?
 
@@ -13,7 +13,7 @@
     $ npm start
     ```
 
-- (Optional) Start the queue consumer service:
+- Start the certifier service:
     ```
     $ cd backend
     $ npm run start:consumer
@@ -26,42 +26,4 @@
     $ npm start
     ```
 
-- Open [http://localhost:8080](http://localhost:8080) in the browser.
-
-## Overview
-
-*Disclaimer:* some relationships were skipped for simplicity.
-
-```
-           .----------------------.
-           |                      |
-           |    Queue Consumer    |
-           |                      |
-           '----------------------'
-             ^             ^   |
-             |             |   |
-             |     Balance |   | Send queued TXs
-  Read Queue |     updates |   | if balance is topped
-             |  each block |   |
-             |             |   v
-  .------------.        .-------------------.             .~~~~~~~~~~.
-  |            |        |                   |   MAGIC    (            )
-  |   Redis    |        |    Parity Node    | <=======> (   Ethereum   )
-  |            |        |                   |            (            )
-  '------------'        '-------------------'             '~~~~~~~~~~'
-             ^             |   ^
-             |      Status |   |
- Queue TX w/ |     updates |   | Send TX w/
-insufficient |  each block |   | sufficient
-     balance |             |   | balance
-             |             v   |
-          .----------------------.
-          |                      |
-          |       Backend        |
-          |                      |
-          '----------------------'
-
-```
-
-**Queue Consumer** and **Backend** share code, but should be run as separate
-processes, ideally different machines in production.
+- Open [http://localhost:8081](http://localhost:8081) in the browser.
