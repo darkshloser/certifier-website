@@ -6,8 +6,6 @@ import blockStore from './block.store';
 import feeStore from './fee.store';
 import backend from '../backend';
 
-const CHECK_STATUS_INTERVAL = 2000;
-
 const ONFIDO_STATUS = {
   UNKOWN: 'unkown',
   CREATED: 'created',
@@ -63,7 +61,7 @@ class CertifierStore {
 
       this.setOnfido(true);
     } catch (error) {
-      this.setError(error);
+      appStore.addError(error);
     }
 
     this.setLoading(false);
@@ -76,7 +74,7 @@ class CertifierStore {
       this.setPending(true);
       await backend.createCheck(payer);
     } catch (error) {
-      this.setError(error);
+      appStore.addError(error);
     }
   }
 
@@ -118,23 +116,27 @@ class CertifierStore {
   }
 
   async checkCertification () {
-    const { payer } = feeStore;
-    const { certified, status, result } = await backend.checkStatus(payer);
+    try {
+      const { payer } = feeStore;
+      const { certified, status, result, reason } = await backend.checkStatus(payer);
 
-    if (certified) {
-      return appStore.setCertified(payer);
-    }
-
-    if (status === ONFIDO_STATUS.PENDING) {
-      return this.setPending(true);
-    }
-
-    if (status === ONFIDO_STATUS.COMPLETED) {
-      if (result === 'success') {
+      if (certified) {
         return appStore.setCertified(payer);
       }
 
-      this.setError(new Error('Something went wrong with your verification. Please try again.'));
+      if (status === ONFIDO_STATUS.PENDING) {
+        return this.setPending(true);
+      }
+
+      if (status === ONFIDO_STATUS.COMPLETED) {
+        if (result === 'success') {
+          return appStore.setCertified(payer);
+        }
+
+        this.setError(new Error('Something went wrong with your verification. Please try again.'));
+      }
+    } catch (error) {
+      appStore.addError(error);
     }
   }
 

@@ -90,20 +90,24 @@ class FeeStore {
 
       await this.checkWallet();
     } catch (error) {
-      console.error(error);
+      appStore.addError(error);
     }
   };
 
   async checkPayer () {
-    const { payer } = this;
-    const { paid } = await backend.getAccountFeeInfo(payer);
+    try {
+      const { payer } = this;
+      const { paid } = await backend.getAccountFeeInfo(payer);
 
-    if (paid) {
-      store.set(PAYER_LS_KEY, payer);
-      appStore.goto('certify');
-      this.emptyWallet(payer);
+      if (paid) {
+        store.set(PAYER_LS_KEY, payer);
+        appStore.goto('certify');
+        this.emptyWallet(payer);
 
-      return true;
+        return true;
+      }
+    } catch (error) {
+      appStore.addError(error);
     }
 
     return false;
@@ -172,7 +176,7 @@ class FeeStore {
       console.warn('sent emptying account tx', hash);
       store.remove(FEE_HOLDER_LS_KEY);
     } catch (error) {
-      console.error(error);
+      appStore.addError(error);
     }
   }
 
@@ -230,7 +234,7 @@ class FeeStore {
       console.warn('sent FeeRegistrar tx', { transaction: hash, payer });
       this.setTransaction(hash);
     } catch (error) {
-      console.error(error);
+      appStore.addError(error);
     }
   }
 

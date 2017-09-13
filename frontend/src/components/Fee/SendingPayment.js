@@ -3,8 +3,6 @@ import { Button, Header, Loader } from 'semantic-ui-react';
 
 import feeStore from '../../stores/fee.store';
 
-import Step from '../Step';
-
 export default class SendingPayment extends Component {
   componentWillMount () {
     feeStore.watchPayer();
@@ -30,9 +28,15 @@ export default class SendingPayment extends Component {
           Please wait until you payment has been recorded on the blockchain.
         </p>
 
-        <Button as='a' href={etherscanUrl} target='_blank' basic>
-          View transaction on Etherscan
-        </Button>
+        {
+          transaction
+            ? (
+              <Button as='a' href={etherscanUrl} target='_blank' basic>
+                View transaction on Etherscan
+              </Button>
+            )
+            : null
+        }
       </div>
     );
   }

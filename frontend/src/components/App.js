@@ -9,6 +9,7 @@ import Certifier from './Certifier';
 import CountrySelector from './CountrySelector';
 import Details from './Details';
 import Fee from './Fee';
+import Messages from './Messages';
 import Terms from './Terms';
 // import Stepper from './Stepper';
 
@@ -23,6 +24,7 @@ export default class App extends Component {
         <div>
           <Route exact path='/' component={MainApp} />
           <Route path='/details' component={Details} />
+          <Messages />
         </div>
       </Router>
     );
@@ -142,6 +144,7 @@ class MainApp extends Component {
   };
 
   handleStart = () => {
+    appStore.storeStarted();
     appStore.goto('terms');
   };
 }
