@@ -17,7 +17,7 @@ function get ({ connector, certifier, feeRegistrar }) {
 
   router.get('/block/hash', (ctx) => {
     if (!connector.block) {
-      return error(ctx, '500', 'Could not fetch latest block');
+      return error(ctx, 500, 'Could not fetch latest block');
     }
 
     ctx.body = { hash: connector.block.hash };
