@@ -19,7 +19,7 @@ export const STEPS = {
   'certified': Symbol('certified')
 };
 
-const padding = window.location.hash !== '#no-padding';
+const padding = window.location.search !== '?no-padding';
 let nextErrorId = 1;
 
 if (padding) {

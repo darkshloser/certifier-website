@@ -26,10 +26,7 @@ export default class Terms extends Component {
           <TermsMD />
         </Segment>
         <Checkbox
-          label={`
-            Please tick to confirm you have read and agree to
-            the Terms and Conditions of this Auction
-          `}
+          label={`I confirm that I have read and agreed to the Terms and Conditions`}
           checked={termsAccepted}
           onChange={this.handleTermsChecked}
         />
