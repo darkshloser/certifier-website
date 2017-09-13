@@ -21,7 +21,7 @@ export const STEPS = {
 const padding = window.location.hash !== '#no-padding';
 
 if (padding) {
-  document.body.style.backgroundColor = '#f1f1f1';
+  document.querySelector('html').style.backgroundColor = '#f1f1f1';
 }
 
 class AppStore extends EventEmitter {
