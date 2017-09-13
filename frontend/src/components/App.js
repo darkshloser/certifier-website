@@ -56,8 +56,8 @@ export default class App extends Component {
         <div style={{ textAlign: 'center' }}>
           <Loader active inline='centered' size='huge' />
 
-          <Header as='h2' style={{ textTransform: 'uppercase' }}>
-            Loading data
+          <Header as='h2'>
+            Loading data...
           </Header>
         </div>
       );

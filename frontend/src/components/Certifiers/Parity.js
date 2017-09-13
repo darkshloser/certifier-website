@@ -21,10 +21,6 @@ export default class ParityCertifier extends Component {
       <Step
         description={(
           <div>
-            <p>
-              You are now certifying this identity:
-            </p>
-
             <AccountInfo
               address={payer}
               showBalance={false}
