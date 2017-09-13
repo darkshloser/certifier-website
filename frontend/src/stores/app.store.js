@@ -18,7 +18,7 @@ export const STEPS = {
   'certified': Symbol('certified')
 };
 
-const padding = window.location.hash !== '#no-padding';
+const padding = window.location.search !== '?no-padding';
 
 if (padding) {
   document.querySelector('html').style.backgroundColor = '#f1f1f1';

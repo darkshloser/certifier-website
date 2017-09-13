@@ -15,14 +15,6 @@ class Backend {
     return get(this.url('/block/hash'));
   }
 
-  status () {
-    return get(this.url('/auction'));
-  }
-
-  sale () {
-    return get(this.url('/auction/constants'));
-  }
-
   async getAccountFeeInfo (address) {
     const { incomingTxAddr, balance, paid } = await get(this.url(`/accounts/${address}/fee`));
 
@@ -31,10 +23,6 @@ class Backend {
       incomingTxAddr,
       paid
     };
-  }
-
-  async chartData () {
-    return get(this.url('/auction/chart'));
   }
 
   async checkStatus (address) {
