@@ -81,7 +81,7 @@ class Request {
       cleanUp();
 
       reject(new Error(`request timed out: ${message.method}`));
-    }, 10000);
+    }, 25000);
   }
 
   /**

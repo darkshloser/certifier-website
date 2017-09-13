@@ -80,8 +80,11 @@ function get ({ connector, certifier, feeRegistrar }) {
 
     const from = buf2hex(txObj.from);
     const to = buf2hex(txObj.to);
+    const toHasPaid = await feeRegistrar.hasPaid(to);
 
-    if (to.toLowerCase() !== feeRegistrar.address) {
+    // A transaction is valid if the recipient is a fee-payer,
+    // or if it's a transaction to the Fee Registrar
+    if (to.toLowerCase() !== feeRegistrar.address && !toHasPaid) {
       return error(ctx, 400, 'Invalid `to` field');
     }
 
