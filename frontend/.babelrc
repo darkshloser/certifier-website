@@ -1,0 +1,19 @@
+{
+  "presets": [
+    "react",
+    "stage-0"
+  ],
+  "plugins": [
+    "transform-object-assign",
+    "transform-proto-to-assign",
+    "transform-decorators-legacy",
+    "transform-object-rest-spread",
+    "transform-class-properties",
+    ["lodash", { "id": ["lodash", "semantic-ui-react", "d3"] }]
+  ],
+  "env": {
+    "production": {
+      "plugins": ["transform-react-remove-prop-types"]
+    }
+  }
+}

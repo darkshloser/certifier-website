@@ -1,0 +1,22 @@
+{
+    "address": "00a329c0648769a73afac7f9381e08fb43dbea72",
+    "crypto": {
+        "cipher": "aes-128-ctr",
+        "ciphertext": "e5af0236688505e3fda3fa187c1dbba913185be071e556612cf88b30439ff1a1",
+        "cipherparams": {
+            "iv": "a4206056abb220b0f2a8506273b0bc4b"
+        },
+        "mac": "481012755d6237735cbcc870719da20e5a8727b0b408aab90a673064f8c1348c",
+        "kdf": "pbkdf2",
+        "kdfparams": {
+            "c": 65536,
+            "dklen": 32,
+            "prf": "hmac-sha256",
+            "salt": "e584c2f3a445d6b0144cbf123386c680cf099b7a254cb104fc45055d0bcc5647"
+        }
+    },
+    "id": "2d1b6fe7-32b4-4fd5-8f7d-5e4630b3070d",
+    "version": 3,
+    "meta": "{\"description\":\"\",\"passwordHint\":\"\",\"timestamp\":1496925616233}",
+    "name": "Empty Phrase"
+}
