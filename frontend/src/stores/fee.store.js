@@ -65,16 +65,14 @@ class FeeStore {
     try {
       // A Payer has been stored in localStorage
       if (storedPayer) {
-        const { paid } = await backend.getAccountFeeInfo(storedPayer);
+        this.setPayer(storedPayer);
 
-        // Go to the certification if (s)he paid
-        if (paid) {
-          this.setPayer(storedPayer);
-          appStore.setLoading(false);
-          return appStore.goto('certify');
+        if (await this.checkPayer()) {
+          return;
         }
 
         // Otherwise, remove it from LS and continue
+        this.setPayer('');
         store.remove(PAYER_LS_KEY);
       }
 
@@ -103,6 +101,7 @@ class FeeStore {
     if (paid) {
       store.set(PAYER_LS_KEY, payer);
       appStore.goto('certify');
+      this.emptyWallet(payer);
 
       return true;
     }
@@ -121,8 +120,64 @@ class FeeStore {
     this.setBalance(balance, incomingTxAddr);
   }
 
+  async emptyWallet (payer) {
+    try {
+      const hasWallet = !!(this.wallet || this.storedPhrase);
+
+      if (!hasWallet) {
+        return;
+      }
+
+      const wallet = this.wallet || await this.getWallet();
+
+      if (wallet.address === payer) {
+        console.warn('will not empty the account: the payer is the wallet holder');
+        store.remove(FEE_HOLDER_LS_KEY);
+        return;
+      }
+
+      const { balance } = await backend.getAccountFeeInfo(wallet.address);
+
+      if (balance.eq(0)) {
+        store.remove(FEE_HOLDER_LS_KEY);
+        return;
+      }
+
+      // Gas Limit of 21000k for a standard TX
+      const gasLimit = new BigNumber(21000);
+      // Gas Price of 1Gwei
+      const gasPrice = new BigNumber(1000000000);
+      const value = balance.sub(gasLimit.mul(gasPrice));
+
+      if (value.lte(0)) {
+        console.warn('could not empty account', wallet.address);
+        return;
+      }
+
+      const nonce = await backend.nonce(wallet.address);
+      const privateKey = Buffer.from(wallet.secret.slice(2), 'hex');
+      const tx = new EthereumTx({
+        to: payer,
+        gasLimit: '0x' + gasLimit.toString(16),
+        gasPrice: '0x' + gasPrice.toString(16),
+        value: '0x' + value.toString(16),
+        nonce
+      });
+
+      tx.sign(privateKey);
+
+      const serializedTx = `0x${tx.serialize().toString('hex')}`;
+      const { hash } = await backend.sendFeeTx(serializedTx);
+
+      console.warn('sent emptying account tx', hash);
+      store.remove(FEE_HOLDER_LS_KEY);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async getWallet () {
-    const storedPhrase = store.get(FEE_HOLDER_LS_KEY);
+    const { storedPhrase } = this;
     const phrase = storedPhrase || randomPhrase(12);
 
     if (!storedPhrase) {
@@ -193,6 +248,10 @@ class FeeStore {
     }
 
     return value.sub(wallet.balance);
+  }
+
+  get storedPhrase () {
+    return store.get(FEE_HOLDER_LS_KEY);
   }
 
   @action setBalance (balance, incomingChoices) {

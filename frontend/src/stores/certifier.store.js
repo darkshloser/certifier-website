@@ -73,8 +73,8 @@ class CertifierStore {
     const { payer } = feeStore;
 
     try {
+      this.setPending(true);
       await backend.createCheck(payer);
-      this.pollCheckStatus();
     } catch (error) {
       this.setError(error);
     }

@@ -25,10 +25,6 @@ export default class PendingCertification extends Component {
       <Step
         description={(
           <div>
-            <p>
-              We are certifying this identity:
-            </p>
-
             <AccountInfo
               address={payer}
               showBalance={false}
@@ -45,7 +41,7 @@ export default class PendingCertification extends Component {
           <Loader active inline='centered' size='huge' />
 
           <Header as='h2' style={{ textTransform: 'uppercase' }}>
-            Certifying your identity
+            Processing identity certification
           </Header>
 
           <p>

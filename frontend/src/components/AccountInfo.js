@@ -56,7 +56,7 @@ export default class AccountInfo extends Component {
   }
 
   render () {
-    const { address, onClick } = this.props;
+    const { address, onClick, showBalance, showCertified } = this.props;
     const { certified } = this.state;
 
     const style = { padding: '0.75em 1em 0.75em 0.5em' };
@@ -102,14 +102,20 @@ export default class AccountInfo extends Component {
             }}>
               {address}
             </span>
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between'
-            }}>
-              {this.renderBalance()}
-              {this.renderCertified()}
-            </div>
+            {
+              showCertified || showBalance
+                ? (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between'
+                  }}>
+                    {this.renderBalance()}
+                    {this.renderCertified()}
+                  </div>
+                )
+                : null
+            }
           </div>
         </div>
       </Segment>

@@ -1,10 +1,13 @@
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Button, Container, Header, Loader, Segment } from 'semantic-ui-react';
+import { HashRouter as Router, Route } from 'react-router-dom';
+import { Button, Header, Loader } from 'semantic-ui-react';
 
 import AccountInfo from './AccountInfo';
+import AppContainer from './AppContainer';
 import Certifier from './Certifier';
 import CountrySelector from './CountrySelector';
+import Details from './Details';
 import Fee from './Fee';
 import Terms from './Terms';
 // import Stepper from './Stepper';
@@ -12,38 +15,33 @@ import Terms from './Terms';
 import appStore, { STEPS } from '../stores/app.store';
 import feeStore from '../stores/fee.store';
 
-const contentStyle = {
-  backgroundColor: 'white',
-  padding: '4em 2.5em'
-};
-
 @observer
 export default class App extends Component {
   render () {
-    const style = {
-      textAlign: 'left'
-    };
-
-    const { padding } = appStore;
-
-    if (padding) {
-      style.paddingBottom = '2em';
-      style.paddingTop = '5em';
-    }
-
-    const header = padding
-      ? <Header as='h4'>PARITY IDENTITY CERTIFICATION</Header>
-      : null;
-
     return (
-      <div>
-        <Container style={style}>
-          {header}
-          <Segment basic style={contentStyle}>
-            {this.renderContent()}
-          </Segment>
-        </Container>
-      </div>
+      <Router>
+        <div>
+          <Route exact path='/' component={MainApp} />
+          <Route path='/details' component={Details} />
+        </div>
+      </Router>
+    );
+  }
+}
+
+@observer
+class MainApp extends Component {
+  render () {
+    return (
+      <AppContainer
+        footer={{
+          link: '/details',
+          text: 'Learn more'
+        }}
+        title='PARITY IDENTITY CERTIFICATION'
+      >
+        {this.renderContent()}
+      </AppContainer>
     );
   }
 
@@ -56,8 +54,8 @@ export default class App extends Component {
         <div style={{ textAlign: 'center' }}>
           <Loader active inline='centered' size='huge' />
 
-          <Header as='h2' style={{ textTransform: 'uppercase' }}>
-            Loading data
+          <Header as='h2'>
+            Loading data...
           </Header>
         </div>
       );
