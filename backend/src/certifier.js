@@ -52,7 +52,7 @@ class AccountCertifier {
   async verifyOnfido (href) {
     try {
       console.warn('verifying', href);
-      const { valid, address } = await Onfido.verify(href);
+      const { valid, address, reason } = await Onfido.verify(href);
 
       if (valid) {
         console.warn('certifying', address);
@@ -63,10 +63,16 @@ class AccountCertifier {
 
       await store.Onfido.set(address, {
         status: ONFIDO_STATUS.COMPLETED,
-        result: valid ? 'success' : 'fail'
+        result: valid ? 'success' : 'fail',
+        reason
       });
     } catch (error) {
       console.error(error);
+      await store.Onfido.set(address, {
+        status: ONFIDO_STATUS.COMPLETED,
+        result: 'fail',
+        reason: `Error: ${error.message}`
+      });
     } finally {
       await store.Onfido.remove(href);
     }

@@ -6,7 +6,6 @@
 const config = require('config');
 const qs = require('qs');
 const fetch = require('node-fetch');
-const { countries } = require('country-data');
 
 const { token } = config.get('onfido');
 
@@ -197,6 +196,9 @@ async function verify (href) {
   const check = await getCheck(applicantId, checkId);
   const status = checkStatus(check);
 
+  let reason = check.result;
+  let { valid } = status;
+
   if (status.pending) {
     throw new Error(`onfido check is still pending (${href})`);
   }
@@ -205,24 +207,24 @@ async function verify (href) {
   const report = reports.find((report) => report.result === 'clear');
   const addressTag = check.tags.find((tag) => ONFIDO_TAG_REGEX.test(tag));
 
-  if (!report) {
-    throw new Error(`No report with clear result for this applicant check (${applicantId}/${checkId})`);
-  }
-
   if (!addressTag) {
     throw new Error(`Could not find an address for this applicant check (${applicantId}/${checkId})`);
   }
 
-  const countryCode = report.properties['nationality'] || report.properties['issuing_country'];
-  const country = countries[countryCode.toUpperCase()];
+  if (report) {
+    const countryCode = report.properties['nationality'] || report.properties['issuing_country'];
 
-  if (!country) {
-    throw new Error(`Could not determine country for this applicant check (${applicantId}/${checkId})`);
+    if (countryCode.toUpperCase() === 'USA') {
+      reason = 'blocked-country';
+      valid = false;
+    }
+  } else {
+    valid = false;
   }
 
   const [, address] = ONFIDO_TAG_REGEX.exec(addressTag);
 
-  return { address, valid: status.valid, country: country.alpha2.toLowerCase() };
+  return { address, valid, reason };
 }
 
 module.exports = {
