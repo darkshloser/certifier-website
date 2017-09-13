@@ -71,7 +71,8 @@ class AccountCertifier {
       await store.Onfido.set(address, {
         status: ONFIDO_STATUS.COMPLETED,
         result: 'fail',
-        reason: `Error: ${error.message}`
+        reason: 'error',
+        error: error.message
       });
     } finally {
       await store.Onfido.remove(href);

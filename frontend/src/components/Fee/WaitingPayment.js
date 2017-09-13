@@ -8,7 +8,6 @@ import { fromWei } from '../../utils';
 import feeStore from '../../stores/fee.store';
 
 import AccountInfo from '../AccountInfo';
-import Step from '../Step';
 
 @observer
 export default class WaitingPayment extends Component {

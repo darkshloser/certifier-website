@@ -50,9 +50,9 @@ function get ({ certifier, feeRegistrar }) {
     const stored = await store.Onfido.get(address) || {};
     const certified = await certifier.isCertified(address);
 
-    const { result, status = ONFIDO_STATUS.UNKOWN, reason = 'unknown' } = stored;
+    const { result, status = ONFIDO_STATUS.UNKOWN, reason = 'unknown', error = '' } = stored;
 
-    ctx.body = { certified, status, result, reason };
+    ctx.body = { certified, status, result, reason, error };
   });
 
   router.post('/:address/applicant', async (ctx, next) => {
