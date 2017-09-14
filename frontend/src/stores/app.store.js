@@ -202,5 +202,5 @@ class AppStore extends EventEmitter {
 
 const appStore = new AppStore();
 
-window.appStore = appStore;
+// window.appStore = appStore;
 export default appStore;

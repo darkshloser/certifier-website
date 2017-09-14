@@ -59,7 +59,11 @@ export default class AccountInfo extends Component {
     const { address, onClick, showBalance, showCertified } = this.props;
     const { certified } = this.state;
 
-    const style = { padding: '0.75em 1em 0.75em 0.5em' };
+    const style = {
+      padding: '0.75em 1em 0.75em 0.5em',
+      display: 'inline-block',
+      maxWidth: '100%'
+    };
 
     if (onClick) {
       style.cursor = 'pointer';
@@ -73,7 +77,7 @@ export default class AccountInfo extends Component {
 
     return (
       <Segment compact style={style} onClick={onClick}>
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', maxWidth: '100%' }}>
           <div style={{
             display: 'flex',
             flexDirection: 'column',
