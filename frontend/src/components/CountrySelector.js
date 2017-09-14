@@ -76,7 +76,7 @@ export default class CountrySelector extends Component {
             </Card>
 
             <div style={{ textAlign: 'center' }}>
-              <p>Rest of world.</p>
+              <p>Rest of the world.</p>
             </div>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default class CountrySelector extends Component {
 
     if (list.length <= 2) {
       return (
-        <p><span>{list.join(' and ')}</span></p>
+        <p><span>{list.join(' and ')}.</span></p>
       );
     }
 
