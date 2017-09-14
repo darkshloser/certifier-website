@@ -60,10 +60,7 @@ export default class CountrySelector extends Component {
             </Card>
 
             <div style={{ textAlign: 'center' }}>
-              <p>
-                <span>{this.blacklistedCountriesNames.slice(0, -1).join(', ')} </span>
-                <span>and {this.blacklistedCountriesNames.slice(-1)[0]}.</span>
-              </p>
+              {this.renderCountryList()}
               <p style={{
                 color: 'red',
                 fontWeight: 'bold'
@@ -84,6 +81,23 @@ export default class CountrySelector extends Component {
           </div>
         </div>
       </div>
+    );
+  }
+
+  renderCountryList () {
+    const list = this.blacklistedCountriesNames;
+
+    if (list.length <= 2) {
+      return (
+        <p><span>{list.join(' and ')}</span></p>
+      );
+    }
+
+    return (
+      <p>
+        <span>{list.slice(0, -1).join(', ')} </span>
+        <span>and {list.slice(-1)[0]}.</span>
+      </p>
     );
   }
 
