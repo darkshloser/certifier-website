@@ -79,9 +79,6 @@ class Onfido {
   static async subscribe (cb) {
     const client = redis.client.duplicate();
 
-    // Call the callback to check all set first
-    await cb();
-
     client.on('message', (channel, message) => {
       if (channel !== ONFIDO_CHECKS_CHANNEL) {
         return;
@@ -91,6 +88,9 @@ class Onfido {
     });
 
     client.subscribe(ONFIDO_CHECKS_CHANNEL);
+
+    // Call the callback to check all set in case certifier was down
+    await cb();
   }
 
   /**
