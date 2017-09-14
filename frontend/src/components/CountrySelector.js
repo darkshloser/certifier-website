@@ -114,10 +114,7 @@ export default class CountrySelector extends Component {
         <Header icon='world' content='Unfortunately, you cannot continue...' />
         <Modal.Content>
           <p>
-            Citizens of this country cannot participate in the sale.
-            Citizens of this country cannot participate in the sale.
-            Citizens of this country cannot participate in the sale.
-            Citizens of this country cannot participate in the sale.
+            Due to legal limitations citizens of this country cannot be certified.
           </p>
         </Modal.Content>
         <Modal.Actions>
