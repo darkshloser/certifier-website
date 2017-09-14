@@ -122,15 +122,15 @@ export default class AccountCreator extends Component {
           />
 
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button onClick={this.handleDownload}>
+              Download the Wallet
+            </Button>
+
             <Button
               color='green'
               onClick={this.handleDone}
             >
               Pay the fee
-            </Button>
-
-            <Button onClick={this.handleDownload}>
-              Download the Wallet
             </Button>
           </div>
         </Grid.Column>

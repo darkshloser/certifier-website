@@ -15,6 +15,12 @@ export default class ParityCertifier extends Component {
   }
 
   render () {
+    const { onfido } = certifierStore;
+
+    if (onfido) {
+      return this.renderOnfidoForm();
+    }
+
     const { payer } = feeStore;
 
     return (
@@ -40,11 +46,7 @@ export default class ParityCertifier extends Component {
   }
 
   renderContent () {
-    const { error, firstName, lastName, loading, onfido } = certifierStore;
-
-    if (onfido) {
-      return this.renderOnfidoForm();
-    }
+    const { error, firstName, lastName, loading } = certifierStore;
 
     const valid = firstName && firstName.length >= 2 &&
       lastName && lastName.length >= 2;
