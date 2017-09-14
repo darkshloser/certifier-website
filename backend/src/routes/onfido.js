@@ -112,6 +112,12 @@ function get ({ certifier, feeRegistrar }) {
     }
 
     const { applicantId } = stored;
+    const checks = await Onfido.getChecks(applicantId);
+
+    if (checks.length >= 3) {
+      return error(ctx, 400, 'Only 3 checks are allowed per single fee payment');
+    }
+
     const { checkId } = await Onfido.createCheck(applicantId, address);
 
     // Store the applicant id in Redis

@@ -80,6 +80,19 @@ async function getCheck (applicantId, checkId) {
 }
 
 /**
+ * Get all checks from one applicant from Onfido
+ *
+ * @param {String} applicantId
+ *
+ * @return {Array} list of all applicant's checks
+ */
+async function getChecks (applicantId) {
+  const result = await _call(`/applicants/${applicantId}/checks`, 'GET');
+
+  return result.checks;
+}
+
+/**
  * Fetches reports for a given checkId
  *
  * @param {String} checkId
@@ -233,6 +246,7 @@ module.exports = {
   createCheck,
   createToken,
   getCheck,
+  getChecks,
   updateApplicant,
   verify,
 
