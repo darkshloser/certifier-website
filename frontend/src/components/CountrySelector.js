@@ -65,7 +65,7 @@ export default class CountrySelector extends Component {
                 color: 'red',
                 fontWeight: 'bold'
               }}>
-                ( For legal reasons cannot be verified )
+                ( For legal reasons cannot be certified )
               </p>
             </div>
           </div>
