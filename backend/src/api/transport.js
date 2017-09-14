@@ -71,12 +71,14 @@ class Request {
    * @param {Function} resolve wrapping Promise callback
    * @param {Function} reject  wrapping Promise callback
    * @param {Function} cleanUp closure to call once the request is done
+   * @param {Error}     error   an empty error (useful for the stack)
    */
-  constructor (message, resolve, reject, cleanUp) {
+  constructor (message, resolve, reject, cleanUp, error) {
     this._message = message;
     this._cleanUp = cleanUp;
     this._resolve = resolve;
     this._reject = reject;
+    this._error = error;
     this._timeout = setTimeout(() => {
       cleanUp();
 
@@ -107,7 +109,8 @@ class Request {
     this._cleanUp();
 
     if (!(error instanceof Error) && error && error.message) {
-      this._reject(new Error(error.message));
+      this._error.message = error.message;
+      this._reject(this._error);
     } else {
       this._reject(error);
     }
@@ -250,6 +253,7 @@ class RpcTransport {
    * @return {Any}           result from the API
    */
   async request (method, ...params) {
+    const error = new Error();
     const ws = await this._ws;
     const id = this.nextId();
     const requests = this._requests;
@@ -263,7 +267,7 @@ class RpcTransport {
     ws.send(JSON.stringify(message));
 
     return new Promise((resolve, reject) => {
-      const request = new Request(message, resolve, reject, () => requests.delete(id));
+      const request = new Request(message, resolve, reject, () => requests.delete(id), error);
 
       requests.set(id, request);
     });

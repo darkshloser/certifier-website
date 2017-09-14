@@ -174,7 +174,7 @@ export default class AccountCreator extends Component {
             />
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Form.Button onClick={this.handleBack}>
+              <Form.Button type='button' onClick={this.handleBack}>
                 Back
               </Form.Button>
 
@@ -230,7 +230,7 @@ export default class AccountCreator extends Component {
             />
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Form.Button onClick={this.handleBack}>
+              <Form.Button type='button' onClick={this.handleBack}>
                 Back
               </Form.Button>
 
@@ -277,7 +277,7 @@ export default class AccountCreator extends Component {
             />
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Form.Button onClick={this.handleBack}>
+              <Form.Button type='button' onClick={this.handleBack}>
                 Back
               </Form.Button>
 
