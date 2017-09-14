@@ -17,7 +17,7 @@ const ONFIDO_STATUS = {
 };
 
 const ONFIDO_URL_REGEX = /applicants\/([a-z0-9-]+)\/checks\/([a-z0-9-]+)$/i;
-const ONFIDO_TAG_REGEX = /^address:(0x[0-9abcdef]+)$/i;
+const ONFIDO_TAG_REGEX = /^address:(0x[0-9abcdef]{40})$/i;
 
 /**
  * Make a call to the Onfido API (V2)

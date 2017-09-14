@@ -6,6 +6,11 @@ const client = redis.createClient(config.get('redis'));
 
 client.on('error', function (err) {
   console.error('Redis error', err);
+
+  if (err instanceof redis.AbortError) {
+    console.error('AbortError - the process will exit and should be restarted');
+    process.exit(1);
+  }
 });
 
 // Promisfy & export required Redis commands
