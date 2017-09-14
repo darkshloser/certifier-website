@@ -174,16 +174,16 @@ export default class AccountCreator extends Component {
             />
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Form.Button onClick={this.handleBack}>
+                Back
+              </Form.Button>
+
               <Form.Button
                 type='submit'
                 primary
                 disabled={!valid}
               >
                 Next
-              </Form.Button>
-
-              <Form.Button onClick={this.handleBack}>
-                Back
               </Form.Button>
             </div>
           </Form>
@@ -230,16 +230,16 @@ export default class AccountCreator extends Component {
             />
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Form.Button onClick={this.handleBack}>
+                Back
+              </Form.Button>
+
               <Form.Button
                 type='submit'
                 primary
                 disabled={!valid}
               >
                 Next
-              </Form.Button>
-
-              <Form.Button onClick={this.handleBack}>
-                Back
               </Form.Button>
             </div>
           </Form>
@@ -277,16 +277,16 @@ export default class AccountCreator extends Component {
             />
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Form.Button onClick={this.handleBack}>
+                Back
+              </Form.Button>
+
               <Form.Button
                 type='submit'
                 primary
                 disabled={!valid}
               >
                 Next
-              </Form.Button>
-
-              <Form.Button onClick={this.handleBack}>
-                Back
               </Form.Button>
             </div>
           </Form>

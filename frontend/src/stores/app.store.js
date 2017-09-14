@@ -62,7 +62,9 @@ class AppStore extends EventEmitter {
 
   async setCertified (address) {
     if (window.parent) {
-      window.parent.postMessage(JSON.stringify({ address }), '*');
+      const action = 'certified';
+
+      window.parent.postMessage(JSON.stringify({ address, action }), '*');
     }
 
     this.goto('certified');

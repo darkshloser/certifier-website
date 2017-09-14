@@ -105,7 +105,7 @@ class MainApp extends Component {
           <Button.Group size='big'>
             <Button onClick={this.handleRestart}>Certify a new identity</Button>
             <Button.Or text='or' />
-            <Button positive>Return to main website</Button>
+            <Button positive onClick={this.handleReturn}>Return to main website</Button>
           </Button.Group>
         </div>
       );
@@ -141,6 +141,15 @@ class MainApp extends Component {
 
   handleRestart = () => {
     appStore.restart();
+  };
+
+  handleReturn = () => {
+    if (window.parent) {
+      const address = feeStore.payer;
+      const action = 'close';
+
+      window.parent.postMessage(JSON.stringify({ address, action }), '*');
+    }
   };
 
   handleStart = () => {
