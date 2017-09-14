@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Button, Form, Header, Message, Container, Segment } from 'semantic-ui-react';
+import { Button, Form, Header, Container, Segment } from 'semantic-ui-react';
 
 import certifierStore from '../../stores/certifier.store';
 import feeStore from '../../stores/fee.store';
@@ -46,7 +46,7 @@ export default class ParityCertifier extends Component {
   }
 
   renderContent () {
-    const { error, firstName, lastName, loading } = certifierStore;
+    const { firstName, lastName, loading } = certifierStore;
 
     const valid = firstName && firstName.length >= 2 &&
       lastName && lastName.length >= 2;
@@ -58,11 +58,7 @@ export default class ParityCertifier extends Component {
             Please enter the following information
           </Header>
 
-          <Form
-            error={!!error}
-          >
-            {this.renderError()}
-
+          <Form>
             <Form.Field>
               <Form.Input
                 label='First Name'
@@ -99,27 +95,10 @@ export default class ParityCertifier extends Component {
     );
   }
 
-  renderError () {
-    const { error } = certifierStore;
-
-    if (!error) {
-      return null;
-    }
-
-    return (
-      <Message
-        error
-        header='Error'
-        content={error.message}
-      />
-    );
-  }
-
   renderOnfidoForm () {
     return (
       <Container>
         <Segment basic>
-          {this.renderError()}
           <div id='onfido-mount' ref={this.handleSetOnfidoElt} />
         </Segment>
       </Container>

@@ -6,6 +6,27 @@ import blockStore from './block.store';
 import feeStore from './fee.store';
 import backend from '../backend';
 
+export const ONFIDO_REASONS = {
+  // If the report has returned information that needs to be evaluated
+  consider: 'Something went wrong with your Identity Check.',
+
+  // If the applicant fails an identity check. This indicates there is
+  // no identity match for this applicant on any of the databases searched
+  unidentified: 'Something went wrong with your Identity Check.',
+
+  // If the report has returned information where the check cannot be
+  // processed further (poor quality image or an unsupported document).
+  rejected: 'Something went wrong with your Identity Check. The image quality of the documents you uploaded might be too low.',
+
+  // If the document that is analysed is suspected to be fraudulent.
+  suspected: 'Something went wrong with your Identity Check.',
+
+  // If any other underlying verifications fail but they don’t necessarily
+  // point to a fraudulent document (such as the name provided by the
+  // applicant doesn’t match the one on the document)
+  caution: 'Something went wrong with your Identity Check.'
+};
+
 const ONFIDO_STATUS = {
   UNKOWN: 'unkown',
   CREATED: 'created',
@@ -14,7 +35,7 @@ const ONFIDO_STATUS = {
 };
 
 class CertifierStore {
-  @observable error;
+  @observable errorReason;
   @observable firstName;
   @observable lastName;
   @observable loading;
@@ -31,7 +52,7 @@ class CertifierStore {
   }
 
   init = () => {
-    this.error = null;
+    this.errorReason = null;
     this.firstName = '';
     this.lastName = '';
     this.loading = false;
@@ -44,7 +65,6 @@ class CertifierStore {
   };
 
   async createApplicant () {
-    this.setError(null);
     this.setLoading(true);
 
     const { payer } = feeStore;
@@ -133,7 +153,7 @@ class CertifierStore {
           return appStore.setCertified(payer);
         }
 
-        this.setError(new Error('Something went wrong with your verification. Please try again.'));
+        this.setErrorReason(reason);
       }
     } catch (error) {
       appStore.addError(error);
@@ -141,13 +161,8 @@ class CertifierStore {
   }
 
   @action
-  setError (error) {
-    if (error) {
-      console.error(error);
-    }
-
-    this.error = error;
-    this.pending = false;
+  setErrorReason (errorReason) {
+    this.errorReason = errorReason;
   }
 
   @action

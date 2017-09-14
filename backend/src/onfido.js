@@ -217,15 +217,17 @@ async function verify (href) {
   }
 
   const reports = await getReports(checkId);
-  const report = reports.find((report) => report.result === 'clear');
   const addressTag = check.tags.find((tag) => ONFIDO_TAG_REGEX.test(tag));
 
   if (!addressTag) {
     throw new Error(`Could not find an address for this applicant check (${applicantId}/${checkId})`);
   }
 
-  if (report) {
-    const countryCode = report.properties['nationality'] || report.properties['issuing_country'];
+  const clearReport = reports.find((report) => report.result === 'clear');
+  const unclearReport = reports.find((report) => report.result !== 'clear');
+
+  if (valid && clearReport) {
+    const countryCode = clearReport.properties['nationality'] || clearReport.properties['issuing_country'];
 
     if (countryCode.toUpperCase() === 'USA') {
       reason = 'blocked-country';
@@ -233,6 +235,10 @@ async function verify (href) {
     }
   } else {
     valid = false;
+
+    if (unclearReport) {
+      reason = unclearReport.sub_result || unclearReport.result;
+    }
   }
 
   const [, address] = ONFIDO_TAG_REGEX.exec(addressTag);

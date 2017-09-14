@@ -21,15 +21,19 @@ class BlockStore extends EventEmitter {
   }
 
   async refresh () {
-    try {
-      const { hash } = await backend.blockHash();
+    // Check for new block-hash only if listeners are
+    // listening, or if none has been fetched yet
+    if (this.listeners('block', true) || !this.hash) {
+      try {
+        const { hash } = await backend.blockHash();
 
-      // Same block, no updates
-      if (this.hash !== hash) {
-        this.update(hash);
+        // Same block, no updates
+        if (this.hash !== hash) {
+          this.update(hash);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
     }
 
     setTimeout(() => {
