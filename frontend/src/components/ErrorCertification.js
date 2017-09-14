@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Button, Header } from 'semantic-ui-react';
 
 import AccountInfo from './AccountInfo';
-import Step from './Step';
 
 import certifierStore, { ONFIDO_REASONS } from '../stores/certifier.store';
 import feeStore from '../stores/fee.store';
