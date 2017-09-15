@@ -12,6 +12,7 @@ export default class ErrorCertification extends Component {
   render () {
     const { errorReason } = certifierStore;
     const { payer } = feeStore;
+    const reason = ONFIDO_REASONS[errorReason];
 
     return (
       <div style={{ textAlign: 'center' }}>
@@ -24,19 +25,17 @@ export default class ErrorCertification extends Component {
           showBalance={false}
         />
 
-        <Header as='h3'>
-          {ONFIDO_REASONS[errorReason]}
+        <Header as='h3' style={{ whiteSpace: 'pre-line' }}>
+          {reason.message}
         </Header>
 
-        {this.renderTryAgain()}
+        {this.renderTryAgain(reason)}
       </div>
     );
   }
 
-  renderTryAgain () {
-    const { errorReason } = certifierStore;
-
-    if (errorReason === 'suspected') {
+  renderTryAgain (reason) {
+    if (!reason.retry) {
       return null;
     }
 

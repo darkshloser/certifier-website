@@ -4,14 +4,20 @@ const { promisify } = require('util');
 
 const client = redis.createClient(config.get('redis'));
 
-client.on('error', function (err) {
-  console.error('Redis error', err);
+function errorHandler (err) {
+  if (err && err.code === 'ECONNREFUSED') {
+    return console.error(err.message);
+  }
 
   if (err instanceof redis.AbortError) {
     console.error('AbortError - the process will exit and should be restarted');
     process.exit(1);
   }
-});
+
+  console.error('Redis error', err);
+}
+
+client.on('error', (err) => errorHandler(err));
 
 // Promisfy & export required Redis commands
 for (const func of [
@@ -20,7 +26,7 @@ for (const func of [
   // Plain keys
   'get', 'set',
   // Hashes
-  'hget', 'hset', 'hdel', 'hscan',
+  'hget', 'hgetall', 'hset', 'hdel', 'hscan',
   // Sets
   'sadd', 'spop', 'smembers', 'sscan', 'srem',
   // Pubsub
@@ -30,3 +36,4 @@ for (const func of [
 }
 
 exports.client = client;
+exports.errorHandler = errorHandler;

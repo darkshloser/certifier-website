@@ -8,23 +8,44 @@ import backend from '../backend';
 
 export const ONFIDO_REASONS = {
   // If the report has returned information that needs to be evaluated
-  consider: 'Something went wrong with your Identity Check.',
+  consider: {
+    message: 'Something went wrong with your Identity Check.',
+    retry: true
+  },
 
   // If the applicant fails an identity check. This indicates there is
   // no identity match for this applicant on any of the databases searched
-  unidentified: 'Something went wrong with your Identity Check.',
+  unidentified: {
+    message: 'Something went wrong with your Identity Check.',
+    retry: true
+  },
 
   // If the report has returned information where the check cannot be
   // processed further (poor quality image or an unsupported document).
-  rejected: 'Something went wrong with your Identity Check. The image quality of the documents you uploaded might be too low.',
-
-  // If the document that is analysed is suspected to be fraudulent.
-  suspected: 'Something went wrong with your Identity Check.',
+  rejected: {
+    message: 'Something went wrong with your Identity Check.\nThe image quality of the documents you uploaded might be too low.',
+    retry: true
+  },
 
   // If any other underlying verifications fail but they don’t necessarily
   // point to a fraudulent document (such as the name provided by the
   // applicant doesn’t match the one on the document)
-  caution: 'Something went wrong with your Identity Check.'
+  caution: {
+    message: 'Something went wrong with your Identity Check.',
+    retry: true
+  },
+
+  // If the document that is analysed is suspected to be fraudulent.
+  suspected: {
+    message: 'Something went wrong with your Identity Check.',
+    retry: false
+  },
+
+  // If the country is USA
+  'blocked-country': {
+    message: 'For legal reasons, you cannot be certified.',
+    retry: false
+  }
 };
 
 const ONFIDO_STATUS = {
@@ -52,7 +73,7 @@ class CertifierStore {
   }
 
   init = () => {
-    this.errorReason = null;
+    this.errorReason = '';
     this.firstName = '';
     this.lastName = '';
     this.loading = false;

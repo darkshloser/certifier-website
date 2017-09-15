@@ -68,7 +68,7 @@ class FeeStore {
         this.setPayer(storedPayer);
 
         if (await this.checkPayer()) {
-          return;
+          return true;
         }
 
         // Otherwise, remove it from LS and continue

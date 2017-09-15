@@ -32,6 +32,42 @@ class Onfido {
   }
 
   /**
+   * Get all the results, keys are addresses, values
+   * are { status: String, applicantId: String, checkId: String }
+   *
+   * @return {Promise<Object|null>}
+   */
+  static async getAll () {
+    const data = await redis.hgetall(ONFIDO_CHECKS);
+
+    if (!data) {
+      return null;
+    }
+
+    const addresses = Object.keys(data);
+
+    // Parse JSON for each entry, fiter out
+    // non-JSON entries
+    const stored = addresses
+      .map((address) => {
+        try {
+          return JSON.parse(data[address]);
+        } catch (error) {
+          return null;
+        }
+      })
+      .reduce((stored, datum, index) => {
+        if (datum) {
+          stored[addresses[index]] = datum;
+        }
+
+        return stored;
+      }, {});
+
+    return stored;
+  }
+
+  /**
    * Set the given data for the given address.
    *
    * @param  {String} address `0x` prefixed address
@@ -87,6 +123,7 @@ class Onfido {
       cb();
     });
 
+    client.on('error', (err) => redis.errorHandler(err));
     client.subscribe(ONFIDO_CHECKS_CHANNEL);
 
     // Call the callback to check all set in case certifier was down

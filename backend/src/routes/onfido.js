@@ -76,24 +76,32 @@ function get ({ certifier, feeRegistrar }) {
     let sdkToken = null;
     let applicantId = null;
 
-    // Create a new applicant if none stored
-    if (!stored || !stored.applicantId) {
+    // Update the existing applicant if one is stored
+    if (stored && stored.applicantId) {
+      applicantId = stored.applicantId;
+
+      // Check that the applicant have no more than 3
+      // checks already
+      const checks = await Onfido.getChecks(applicantId);
+
+      if (checks.length >= 3) {
+        return error(ctx, 400, 'Only 3 checks are allowed per single fee payment');
+      }
+
+      const result = await Onfido.updateApplicant(applicantId, { firstName, lastName });
+
+      sdkToken = result.sdkToken;
+
+    // Otherwise, create a new applicant
+    } else {
       const result = await Onfido.createApplicant({ firstName, lastName });
 
       sdkToken = result.sdkToken;
       applicantId = result.applicantId;
 
-    // Otherwise, update the existing applicant
-    } else {
-      applicantId = stored.applicantId;
-
-      const result = await Onfido.updateApplicant(applicantId, { firstName, lastName });
-
-      sdkToken = result.sdkToken;
+      // Store the applicant id in Redis
+      await store.Onfido.set(address, { status: ONFIDO_STATUS.CREATED, applicantId });
     }
-
-    // Store the applicant id in Redis
-    await store.Onfido.set(address, { status: ONFIDO_STATUS.CREATED, applicantId });
 
     ctx.body = { sdkToken };
   });

@@ -93,7 +93,13 @@ class AppStore extends EventEmitter {
     // Trigger the loaders and wait for them to return
     if (this.loaders[name]) {
       for (let loader of this.loaders[name]) {
-        await loader();
+        // A loader can return a truthy value to
+        // skip further loadings
+        const skip = await loader();
+
+        if (skip) {
+          return;
+        }
       }
     }
 

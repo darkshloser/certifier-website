@@ -68,6 +68,17 @@ async function _call (endpoint, method = 'GET', data = {}) {
 }
 
 /**
+ * Get applicants from Onfido
+ *
+ * @return {Array} list of all applicants
+ */
+async function getApplicants () {
+  const result = await _call(`/applicants/`, 'GET');
+
+  return result.applicants;
+}
+
+/**
  * Get the check from Onfido
  *
  * @param {String} applicantId
@@ -207,22 +218,29 @@ async function verify (href) {
 
   const [, applicantId, checkId] = ONFIDO_URL_REGEX.exec(href);
   const check = await getCheck(applicantId, checkId);
+
+  return verifyCheck({ applicantId, checkId }, check);
+}
+
+async function verifyCheck ({ applicantId, checkId }, check) {
   const status = checkStatus(check);
-
-  let reason = check.result;
-  let { valid } = status;
-
-  if (status.pending) {
-    throw new Error(`onfido check is still pending (${href})`);
-  }
-
-  const reports = await getReports(checkId);
   const addressTag = check.tags.find((tag) => ONFIDO_TAG_REGEX.test(tag));
 
   if (!addressTag) {
     throw new Error(`Could not find an address for this applicant check (${applicantId}/${checkId})`);
   }
 
+  const [, address] = ONFIDO_TAG_REGEX.exec(addressTag);
+
+  if (status.pending) {
+    // throw new Error(`onfido check is still pending (${applicantId}/${checkId})`);
+    return { applicantId, checkId, address, pending: true };
+  }
+
+  let reason = check.result;
+  let { valid } = status;
+
+  const reports = await getReports(checkId);
   const clearReport = reports.find((report) => report.result === 'clear');
   const unclearReport = reports.find((report) => report.result !== 'clear');
 
@@ -241,9 +259,7 @@ async function verify (href) {
     }
   }
 
-  const [, address] = ONFIDO_TAG_REGEX.exec(addressTag);
-
-  return { address, valid, reason };
+  return { applicantId, checkId, address, valid, reason };
 }
 
 module.exports = {
@@ -251,10 +267,13 @@ module.exports = {
   createApplicant,
   createCheck,
   createToken,
+  getApplicants,
   getCheck,
   getChecks,
   updateApplicant,
   verify,
+  verifyCheck,
 
-  ONFIDO_STATUS
+  ONFIDO_STATUS,
+  ONFIDO_TAG_REGEX
 };
