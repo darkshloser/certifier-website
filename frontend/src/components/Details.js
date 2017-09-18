@@ -14,8 +14,8 @@ export default class Details extends Component {
   render () {
     return (
       <AppContainer
-        header={this.renderFooter()}
-        footer={this.renderFooter()}
+        header={this.renderGoBack()}
+        footer={this.renderGoBack()}
         title='LEARN MORE ABOUT PARITY ICO PASSPORT SERVICE'
       >
         <div>
@@ -25,7 +25,7 @@ export default class Details extends Component {
     );
   }
 
-  renderFooter () {
+  renderGoBack () {
     return (
       <div style={{ textAlign: 'right', paddingTop: '0.75em' }}>
         <Link
