@@ -34,7 +34,7 @@ export default class WaitingPayment extends Component {
           as='h3'
           textAlign='center'
         >
-          PLEASE SEND <big>{ fromWei(requiredEth).toFormat() }</big> ETH TO THE
+          PAY NOW BY SENDING <big>{ fromWei(requiredEth).toFormat() }</big> ETH TO THE
           ADDRESS BELOW
         </Header>
 
