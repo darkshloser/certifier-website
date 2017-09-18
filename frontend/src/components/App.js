@@ -40,7 +40,7 @@ class MainApp extends Component {
           link: '/details',
           text: 'Learn more'
         }}
-        title='PARITY IDENTITY CERTIFICATION'
+        title='PARITY ICO PASSPORT SERVICE'
       >
         {this.renderContent()}
       </AppContainer>

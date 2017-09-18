@@ -82,7 +82,7 @@ const config = {
     }),
 
     new HtmlWebpackPlugin({
-      title: 'Auction Certification',
+      title: 'PICOPS - Parity ICO Passport Service',
       template: path.resolve(__dirname, './src/index.ejs')
     })
   ]

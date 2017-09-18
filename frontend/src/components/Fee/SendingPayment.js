@@ -14,7 +14,7 @@ export default class SendingPayment extends Component {
 
   render () {
     const { transaction } = feeStore;
-    const etherscanUrl = 'https://kovan.etherscan.io/tx/' + transaction;
+    const etherscanUrl = 'https://etherscan.io/tx/' + transaction;
 
     return (
       <div style={{ textAlign: 'center' }}>
