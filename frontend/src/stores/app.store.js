@@ -7,7 +7,6 @@ import store from 'store';
 export const CITIZENSHIP_LS_KEY = '_parity-certifier::citizenship';
 export const FEE_HOLDER_LS_KEY = '_parity-certifier::fee-holder';
 export const PAYER_LS_KEY = '_parity-certifier::payer';
-export const STARTED_LS_KEY = '_parity-certifier::started';
 export const TERMS_LS_KEY = '_parity-certifier::agreed-terms::v1';
 
 export const STEPS = {
@@ -52,11 +51,12 @@ class AppStore extends EventEmitter {
       this.skipTerms = true;
     }
 
-    if (store.get(STARTED_LS_KEY) === true) {
+    await this.loadCountries();
+
+    if (this.skipTerms && this.skipCountrySelection) {
       this.skipStart = true;
     }
 
-    await this.loadCountries();
     this.goto('start');
   };
 
@@ -146,7 +146,6 @@ class AppStore extends EventEmitter {
     store.remove(CITIZENSHIP_LS_KEY);
     store.remove(FEE_HOLDER_LS_KEY);
     store.remove(PAYER_LS_KEY);
-    store.remove(STARTED_LS_KEY);
     store.remove(TERMS_LS_KEY);
 
     this.termsAccepted = false;
@@ -189,10 +188,6 @@ class AppStore extends EventEmitter {
     const nextState = uniq(prevState.concat(this.blacklistedCountries));
 
     store.set(CITIZENSHIP_LS_KEY, nextState);
-  }
-
-  storeStarted () {
-    store.set(STARTED_LS_KEY, true);
   }
 
   storeTermsAccepted () {

@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { HashRouter as Router, Route } from 'react-router-dom';
+import { HashRouter as Router, Link, Route } from 'react-router-dom';
 import { Button, Header, Loader } from 'semantic-ui-react';
 
 import AccountInfo from './AccountInfo';
@@ -36,10 +36,7 @@ class MainApp extends Component {
   render () {
     return (
       <AppContainer
-        footer={{
-          link: '/details',
-          text: 'Learn more'
-        }}
+        footer={this.renderFooter()}
         title='PARITY ICO PASSPORT SERVICE'
       >
         {this.renderContent()}
@@ -114,6 +111,25 @@ class MainApp extends Component {
     return null;
   }
 
+  renderFooter () {
+    const { step } = appStore;
+
+    if (step !== STEPS['start']) {
+      return null;
+    }
+
+    return (
+      <div style={{ textAlign: 'right', paddingTop: '0.75em' }}>
+        <Link
+          to='/details'
+          style={{ color: 'gray', fontSize: '1.75em' }}
+        >
+          Learn More
+        </Link>
+      </div>
+    );
+  }
+
   renderStart () {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -156,7 +172,6 @@ class MainApp extends Component {
   };
 
   handleStart = () => {
-    appStore.storeStarted();
     appStore.goto('terms');
   };
 }

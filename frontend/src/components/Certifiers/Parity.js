@@ -30,6 +30,7 @@ export default class ParityCertifier extends Component {
             <AccountInfo
               address={payer}
               showBalance={false}
+              showCertified={false}
             />
 
             <p>

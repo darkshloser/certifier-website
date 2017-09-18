@@ -80,6 +80,7 @@ export default class FromPersonal extends Component {
               <AccountInfo
                 address={address}
                 onClick={onClick}
+                showCertified={false}
               />
             </div>
           );
