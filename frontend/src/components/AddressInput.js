@@ -2,9 +2,10 @@ import keycode from 'keycode';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Input, Segment } from 'semantic-ui-react';
-import { AccountIcon } from 'parity-reactive-ui';
 
 import { isValidAddress } from '../utils';
+
+import AccountIcon from './AccountIcon.js';
 
 export default class AddressInput extends Component {
   static propTypes = {

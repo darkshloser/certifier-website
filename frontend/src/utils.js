@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import Wallet from 'ethereumjs-wallet';
+import { keccak_256 } from 'js-sha3'; // eslint-disable-line camelcase
 
 const WEI = new BigNumber(10).pow(18);
 
@@ -91,6 +92,23 @@ export function hex2int (hex) {
   validateHex(hex);
 
   return parseInt(hex.substring(2), 16);
+}
+
+export function toChecksumAddress (_address) {
+  const address = (_address || '').toLowerCase();
+
+  if (!isValidAddress(address)) {
+    return '';
+  }
+
+  const hash = keccak_256(address.slice(-40));
+  let result = '0x';
+
+  for (let n = 0; n < 40; n++) {
+    result = `${result}${parseInt(hash[n], 16) > 7 ? address[n + 2].toUpperCase() : address[n + 2]}`;
+  }
+
+  return result;
 }
 
 const PADDING = '0000000000000000000000000000000000000000000000000000000000000000';
