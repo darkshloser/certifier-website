@@ -3,8 +3,9 @@ pragma solidity ^0.4.10;
 contract FeeRegistrar {
   /// STRUCTURES
   struct Payer {
-    uint240 index;
-    uint16 count;
+    uint index;
+    uint count;
+    address[] origins;
   }
 
   /// STORAGE
@@ -39,8 +40,10 @@ contract FeeRegistrar {
     return s_payers.length;
   }
 
-  function payer (address who) public constant returns (uint16) {
-    return s_paid[who].count;
+  function payer (address who) public constant returns (uint _count, address[] _origins) {
+    address[] memory m_origins = s_paid[who].origins;
+
+    return (s_paid[who].count, m_origins);
   }
 
   function paid (address who) public constant returns (bool) {
@@ -81,16 +84,27 @@ contract FeeRegistrar {
     require(who != 0x0);
     require(msg.value == fee);
 
-    Payer memory _payer = s_paid[who];
+    uint _count = s_paid[who].count;
+    address[] memory m_payers = s_paid[who].origins;
 
-    if (_payer.count == 0) {
+    if (_count == 0) {
+      s_paid[who].index = s_payers.length;
       s_payers.push(who);
-      _payer.index = uint240(s_payers.length);
     }
 
-    _payer.count += 1;
+    bool senderPaid;
 
-    s_paid[who] = _payer;
+    for (uint i = 0; i < m_payers.length; i++) {
+      if (m_payers[i] == msg.sender) {
+        senderPaid = true;
+      }
+    }
+
+    if (!senderPaid) {
+      s_paid[who].origins.push(msg.sender);
+    }
+
+    s_paid[who].count = _count + 1;
 
     Paid(who);
 
