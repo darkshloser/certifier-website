@@ -34,9 +34,15 @@ export default class ParityCertifier extends Component {
             />
 
             <p>
-              You will have to take a picture of your ID,
-              or upload a scanned image of it.
+              Prepare a document proving your identity (Passport, Driver's Licence or ID).
             </p>
+            <p><strong>
+              You will have to upload scans or high quality pictures of said document on the next step.
+            </strong></p>
+            <p><strong>
+              If you can't provide scans of your document and wish for your fee to be refunded,
+              please contact us at <a href='mailto:picops@parity.io'>picops@parity.io</a>.
+            </strong></p>
           </div>
         )}
         title='CERTIFYING YOUR IDENTITY'

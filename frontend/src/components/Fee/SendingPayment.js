@@ -21,11 +21,11 @@ export default class SendingPayment extends Component {
         <Loader active inline='centered' size='huge' />
 
         <Header as='h2' style={{ textTransform: 'uppercase' }}>
-          Processing your payment
+          Processing your order
         </Header>
 
         <p>
-          Please wait until you payment has been recorded on the blockchain.
+          Please wait until your order has been recorded on the blockchain.
         </p>
 
         {
