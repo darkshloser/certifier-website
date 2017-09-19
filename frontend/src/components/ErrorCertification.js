@@ -50,6 +50,6 @@ export default class ErrorCertification extends Component {
   }
 
   handleTryAgain = () => {
-    certifierStore.setErrorReason(null);
+    certifierStore.init();
   };
 }
