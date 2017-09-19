@@ -144,7 +144,7 @@ class MainApp extends Component {
           textAlign: 'center'
         }}>
           <p style={{ lineHeight: '1.75em' }}>
-            In order to certify your Ethereum address, you will have to issue a small payment of Ether. If you do not currently have an Ethereum wallet and instead store Ether on an exchange, you will have an option to create a wallet file during this process. Once the fee is paid, you will be asked to provide a scan of a document to verify your identity.
+            In order to certify your Ethereum address by associating your ID with the address,  you will have to issue a small payment of Ether. If you do not currently have an Ethereum wallet to be certified and instead store Ether on an exchange, you will have an option to create a wallet file during this process. Once the fee is paid, you will be asked to provide a scan of a document (passport, ID or driver's license) to Onfido, an ID verification service, to verify your identity.
           </p>
           <p style={{ lineHeight: '1.75em' }}>
             Processing the payment and verifying your identity will take a while. Avoid closing this page while it lasts.
