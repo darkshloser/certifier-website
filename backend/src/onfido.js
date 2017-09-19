@@ -238,17 +238,20 @@ async function verifyCheck ({ applicantId, checkId }, check) {
   let { valid } = status;
 
   const reports = await getReports(checkId);
-  const clearReport = reports.find((report) => report.result === 'clear');
-  const unclearReport = reports.find((report) => report.result !== 'clear');
+  const clearReports = reports.filter((report) => report.result === 'clear');
 
-  if (valid && clearReport) {
-    const countryCode = clearReport.properties['nationality'] || clearReport.properties['issuing_country'];
+  if (valid) {
+    clearReports.forEach((clearReport) => {
+      const countryCode = clearReport.properties['nationality'] || clearReport.properties['issuing_country'];
 
-    if (countryCode.toUpperCase() === 'USA') {
-      reason = 'blocked-country';
-      valid = false;
-    }
+      if (countryCode && countryCode.toUpperCase() === 'USA') {
+        reason = 'blocked-country';
+        valid = false;
+      }
+    });
   } else {
+    const unclearReport = reports.find((report) => report.result !== 'clear');
+
     valid = false;
 
     if (unclearReport) {
