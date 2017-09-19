@@ -12,19 +12,16 @@ function get ({ connector, certifier, feeRegistrar }) {
     prefix: '/api/accounts'
   });
 
-  router.get('/:address/fee', async (ctx, next) => {
+  router.get('/:address/incoming-txs', async (ctx, next) => {
     const { address } = ctx.params;
-    const [ balance, paid ] = await Promise.all([
-      connector.balance(address),
-      feeRegistrar.hasPaid(address)
-    ]);
+    const balance = await connector.balance(address);
 
-    // TODO: set starting block to the creation block of the fee contract?
-    const from = hex2big(connector.block.number).sub(100000);
     const incomingTxAddr = new Set();
 
     // Only trace addresses if the balance is non-zero
     if (balance.gt(0)) {
+      // TODO: set starting block to the creation block of the fee contract?
+      const from = hex2big(connector.block.number).sub(100000);
       const trace = await connector.trace({ fromBlock: big2hex(from), toAddress: [address] });
 
       for (const { action } of trace) {
@@ -33,7 +30,18 @@ function get ({ connector, certifier, feeRegistrar }) {
     }
 
     ctx.body = {
-      incomingTxAddr: Array.from(incomingTxAddr),
+      incomingTxs: Array.from(incomingTxAddr)
+    };
+  });
+
+  router.get('/:address/fee', async (ctx, next) => {
+    const { address } = ctx.params;
+    const [ balance, paid ] = await Promise.all([
+      connector.balance(address),
+      feeRegistrar.hasPaid(address)
+    ]);
+
+    ctx.body = {
       balance: '0x' + balance.toString(16),
       paid
     };

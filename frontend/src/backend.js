@@ -15,12 +15,17 @@ class Backend {
     return get(this.url('/block/hash'));
   }
 
+  async getAccountIncomingTxs (address) {
+    const { incomingTxs } = await get(this.url(`/accounts/${address}/incoming-txs`));
+
+    return { incomingTxs };
+  }
+
   async getAccountFeeInfo (address) {
-    const { incomingTxAddr, balance, paid } = await get(this.url(`/accounts/${address}/fee`));
+    const { balance, paid } = await get(this.url(`/accounts/${address}/fee`));
 
     return {
       balance: new BigNumber(balance),
-      incomingTxAddr,
       paid
     };
   }
