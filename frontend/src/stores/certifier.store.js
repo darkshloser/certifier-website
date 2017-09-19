@@ -134,7 +134,7 @@ class CertifierStore {
         {
           type: 'document',
           options: {
-            useWebcam: true
+            useWebcam: false
           }
         },
         // 'face',
