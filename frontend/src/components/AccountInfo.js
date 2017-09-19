@@ -151,7 +151,7 @@ export default class AccountInfo extends Component {
 
     const color = certified
       ? 'green'
-      : 'red';
+      : 'grey';
 
     const style = {
       borderColor: color,
