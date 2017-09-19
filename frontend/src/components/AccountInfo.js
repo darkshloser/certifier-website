@@ -72,7 +72,7 @@ export default class AccountInfo extends Component {
     if (certified !== null) {
       style.color = certified
         ? 'green'
-        : 'red';
+        : 'grey';
     }
 
     return (
@@ -168,7 +168,7 @@ export default class AccountInfo extends Component {
 
     return (
       <div style={style}>
-        Identity {certified ? '' : 'not'} certified
+        { certified ? 'Address certified' : 'Not yet certified' }
       </div>
     );
   }

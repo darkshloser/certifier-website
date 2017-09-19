@@ -46,7 +46,7 @@ export default class PendingCertification extends Component {
 
           <p>
             Please wait until your documents are processed and the
-            result is being saved on the blockchain.
+            result is saved on the blockchain.
           </p>
         </div>
       </Step>

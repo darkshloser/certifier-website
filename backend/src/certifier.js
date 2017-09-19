@@ -29,7 +29,7 @@ class AccountCertifier {
     this.sync();
 
     // Sync with Onfido every 30 minutes
-    setInterval(() => this.sync(), 30 * 60 * 1000);
+    // setInterval(() => this.sync(), 30 * 60 * 1000);
   }
 
   async init () {

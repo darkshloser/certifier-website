@@ -72,36 +72,16 @@ function get ({ certifier, feeRegistrar }) {
       return error(ctx, 400, 'Missing fee payment');
     }
 
-    const stored = await store.Onfido.get(address);
-    let sdkToken = null;
-    let applicantId = null;
+    const checkCount = await store.Onfido.checkCount(address);
 
-    // Update the existing applicant if one is stored
-    if (stored && stored.applicantId) {
-      applicantId = stored.applicantId;
-
-      // Check that the applicant have no more than 3
-      // checks already
-      const checks = await Onfido.getChecks(applicantId);
-
-      if (checks.length >= 3) {
-        return error(ctx, 400, 'Only 3 checks are allowed per single fee payment');
-      }
-
-      const result = await Onfido.updateApplicant(applicantId, { firstName, lastName });
-
-      sdkToken = result.sdkToken;
-
-    // Otherwise, create a new applicant
-    } else {
-      const result = await Onfido.createApplicant({ firstName, lastName });
-
-      sdkToken = result.sdkToken;
-      applicantId = result.applicantId;
-
-      // Store the applicant id in Redis
-      await store.Onfido.set(address, { status: ONFIDO_STATUS.CREATED, applicantId });
+    if (checkCount >= 3) {
+      return error(ctx, 400, 'Only 3 checks are allowed per single fee payment');
     }
+
+    const { sdkToken, applicantId } = await Onfido.createApplicant({ firstName, lastName });
+
+    // Store the applicant id in Redis
+    await store.Onfido.set(address, { status: ONFIDO_STATUS.CREATED, applicantId });
 
     ctx.body = { sdkToken };
   });

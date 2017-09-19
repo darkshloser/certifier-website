@@ -24,7 +24,7 @@ for (const func of [
   // Transactions
   'multi', 'exec', 'discard',
   // Plain keys
-  'get', 'set',
+  'get', 'set', 'incr',
   // Hashes
   'hget', 'hgetall', 'hset', 'hdel', 'hscan',
   // Sets
