@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { AccountIcon } from 'parity-reactive-ui';
 import { Segment } from 'semantic-ui-react';
 
 import backend from '../backend';
-import { fromWei } from '../utils';
+import { fromWei, toChecksumAddress } from '../utils';
+
+import AccountIcon from './AccountIcon.js';
 
 export default class AccountInfo extends Component {
   static propTypes = {
     address: PropTypes.string.isRequired,
-    balance: PropTypes.object,
     showBalance: PropTypes.bool,
     showCertified: PropTypes.bool,
     onClick: PropTypes.func
@@ -56,8 +56,10 @@ export default class AccountInfo extends Component {
   }
 
   render () {
-    const { address, onClick, showBalance, showCertified } = this.props;
+    const { address: _address, onClick, showBalance, showCertified } = this.props;
     const { certified } = this.state;
+
+    const address = toChecksumAddress(_address);
 
     const style = {
       padding: '0.75em 1em 0.75em 0.5em',
