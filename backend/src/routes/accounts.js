@@ -19,12 +19,12 @@ function get ({ connector, certifier, feeRegistrar }) {
       feeRegistrar.hasPaid(address)
     ]);
 
-    // TODO: set starting block to the creation block of the fee contract?
-    const from = hex2big(connector.block.number).sub(100000);
     const incomingTxAddr = new Set();
 
     // Only trace addresses if the balance is non-zero
-    if (balance.gt(0)) {
+    if (balance.gt(0) && !paid) {
+      // TODO: set starting block to the creation block of the fee contract?
+      const from = hex2big(connector.block.number).sub(100000);
       const trace = await connector.trace({ fromBlock: big2hex(from), toAddress: [address] });
 
       for (const { action } of trace) {
