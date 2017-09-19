@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Grid, Header, Image } from 'semantic-ui-react';
+import { Card, Header, Image } from 'semantic-ui-react';
 
 import ExchangeImg from '../../images/exchange.png';
 import EthereumImg from '../../images/ethereum.png';
@@ -10,6 +10,9 @@ export default class AccountType extends Component {
   render () {
     return (
       <div>
+        <Header as='h2' style={{ color: 'green', textAlign: 'center' }}>
+          Payment received successfully!
+        </Header>
         <Header as='h3'>
           HOW DID YOU SEND ETHER?
         </Header>

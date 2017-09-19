@@ -17,8 +17,15 @@ const config = {
       path.resolve(__dirname, 'src/main.js')
     ],
     vendor: [
+      '@parity/ethkey.js',
+      '@parity/wordlist',
+      'bignumber.js',
+      'country-data',
+      'datamaps',
+      'mobx',
       'onfido-sdk-ui',
-      'semantic-ui-react'
+      'react',
+      'react-dom'
     ]
   },
 
@@ -82,7 +89,7 @@ const config = {
     }),
 
     new HtmlWebpackPlugin({
-      title: 'Auction Certification',
+      title: 'PICOPS - Parity ICO Passport Service',
       template: path.resolve(__dirname, './src/index.ejs')
     })
   ]

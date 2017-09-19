@@ -76,7 +76,20 @@ class Onfido {
    * @return {Promise}
    */
   static async set (address, data) {
-    return redis.hset(ONFIDO_CHECKS, address.toLowerCase(), JSON.stringify(data));
+    return await redis.hset(ONFIDO_CHECKS, address.toLowerCase(), JSON.stringify(data));
+  }
+
+  /**
+   * Increment check count for an address, return the current count
+   *
+   * @param {String} address `0x` prefixed address
+   *
+   * @return {Number} number of times this method has been called for this address
+   */
+  static async checkCount (address) {
+    const countCheck = await redis.incr(`${address}:countCheck`);
+
+    return Number(countCheck);
   }
 
   /**

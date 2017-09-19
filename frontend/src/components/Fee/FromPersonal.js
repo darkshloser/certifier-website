@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Button, Grid, Header } from 'semantic-ui-react';
+import { Button, Header } from 'semantic-ui-react';
 
 import feeStore from '../../stores/fee.store';
 import { isValidAddress } from '../../utils';
@@ -80,6 +80,7 @@ export default class FromPersonal extends Component {
               <AccountInfo
                 address={address}
                 onClick={onClick}
+                showCertified={false}
               />
             </div>
           );

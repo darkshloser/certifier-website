@@ -14,18 +14,18 @@ export default class SendingPayment extends Component {
 
   render () {
     const { transaction } = feeStore;
-    const etherscanUrl = 'https://kovan.etherscan.io/tx/' + transaction;
+    const etherscanUrl = 'https://etherscan.io/tx/' + transaction;
 
     return (
       <div style={{ textAlign: 'center' }}>
         <Loader active inline='centered' size='huge' />
 
         <Header as='h2' style={{ textTransform: 'uppercase' }}>
-          Processing your payment
+          Processing your order
         </Header>
 
         <p>
-          Please wait until you payment has been recorded on the blockchain.
+          Please wait until your order has been recorded on the blockchain.
         </p>
 
         {

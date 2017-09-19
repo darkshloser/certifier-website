@@ -119,6 +119,8 @@ export default class AccountCreator extends Component {
           <AccountInfo
             address={wallet.address}
             balance={wallet.balance}
+            showCertified={false}
+            showBalance={false}
           />
 
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -130,7 +132,7 @@ export default class AccountCreator extends Component {
               color='green'
               onClick={this.handleDone}
             >
-              Pay the fee
+              Process the order
             </Button>
           </div>
         </Grid.Column>

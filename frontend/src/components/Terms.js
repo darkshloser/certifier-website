@@ -19,7 +19,7 @@ export default class Terms extends Component {
           TERMS & CONDITIONS
         </Header>
         <Segment basic textAlign='left' style={{
-          maxHeight: 200,
+          maxHeight: 350,
           marginBottom: '2em',
           overflow: 'auto'
         }}>

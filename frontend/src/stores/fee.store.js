@@ -115,13 +115,16 @@ class FeeStore {
 
   async checkWallet () {
     const { address } = this.wallet;
-    const { balance, incomingTxAddr } = await backend.getAccountFeeInfo(address);
+    const { balance } = await backend.getAccountFeeInfo(address);
 
     if (balance.gte(this.totalFee)) {
+      const { incomingTxs } = await backend.getAccountIncomingTxs(address);
+
+      this.setIncomingChoices(incomingTxs);
       this.goto('account-selection');
     }
 
-    this.setBalance(balance, incomingTxAddr);
+    this.setBalance(balance);
   }
 
   async emptyWallet (payer) {
@@ -258,9 +261,12 @@ class FeeStore {
     return store.get(FEE_HOLDER_LS_KEY);
   }
 
-  @action setBalance (balance, incomingChoices) {
-    this.incomingChoices = incomingChoices;
+  @action setBalance (balance) {
     this.wallet = Object.assign({}, this.wallet, { balance });
+  }
+
+  @action setIncomingChoices (incomingChoices) {
+    this.incomingChoices = incomingChoices;
   }
 
   @action setPayer (payer) {
