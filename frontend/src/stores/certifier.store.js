@@ -73,13 +73,17 @@ class CertifierStore {
   }
 
   init = () => {
+    this._init();
+  };
+
+  @action _init () {
     this.errorReason = '';
     this.firstName = '';
     this.lastName = '';
     this.loading = false;
     this.onfido = false;
     this.pending = false;
-  };
+  }
 
   load = async () => {
     await this.checkCertification();
