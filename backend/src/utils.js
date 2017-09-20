@@ -93,6 +93,12 @@ function ejs2val (value, type) {
   return value;
 }
 
+function keccak256 (data) {
+  return keccak('keccak256')
+    .update(Buffer.from(data))
+    .digest('hex');
+}
+
 function toChecksumAddress (_address) {
   const address = (_address || '').toLowerCase();
 
@@ -180,6 +186,7 @@ module.exports = {
   int2date,
   int2hex,
   pause,
+  keccak256,
   toChecksumAddress,
   waitForConfirmations
 };

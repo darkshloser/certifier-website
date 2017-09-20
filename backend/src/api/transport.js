@@ -5,7 +5,20 @@
 
 const WebSocket = require('ws');
 
-const { hex2int, pause } = require('../utils');
+const { hex2int, pause, keccak256 } = require('../utils');
+
+const requestCache = new Map();
+
+class Cache {
+  constructor (promise, ttl, cleanup) {
+    this._promise = promise;
+    this._timeout = setTimeout(cleanup, ttl);
+  }
+
+  get promise () {
+    return this._promise;
+  }
+}
 
 class Subscription {
   /**
@@ -257,6 +270,13 @@ class RpcTransport {
     const ws = await this._ws;
     const id = this.nextId();
     const requests = this._requests;
+    const hash = keccak256(JSON.stringify({ method, params })).slice(-20);
+    const cache = requestCache.get(hash);
+
+    if (cache) {
+      return cache.promise;
+    }
+
     const message = {
       id,
       method,
@@ -266,11 +286,17 @@ class RpcTransport {
 
     ws.send(JSON.stringify(message));
 
-    return new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, reject) => {
       const request = new Request(message, resolve, reject, () => requests.delete(id), error);
 
       requests.set(id, request);
     });
+
+    requestCache.set(hash, new Cache(promise, 5000, () => {
+      requestCache.delete(hash);
+    }));
+
+    return promise;
   }
 
   /**
