@@ -24,5 +24,6 @@ function rateLimiter (address, ip) {
 
 module.exports = {
   error,
+  getIp,
   rateLimiter
 };
