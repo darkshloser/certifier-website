@@ -30,12 +30,11 @@ async function rateLimiter (_address, ip) {
   if (count >= RATE_LIMITED_ADDRESSES) {
     const all = await redis.hgetall(hkey);
 
-    for (let i = 0; i < count; i++) {
-      const storedAddress = all[2 * i];
-      const updatedAt = parseInt(all[2 * i + 1]);
+    for (let raddress in all) {
+      const updatedAt = parseInt(all[raddress]);
 
       if (now - updatedAt >= RATE_LIMITER_TTL) {
-        await redis.hdel(hkey, storedAddress);
+        await redis.hdel(hkey, raddress);
       }
     }
 

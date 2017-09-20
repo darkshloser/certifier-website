@@ -26,7 +26,7 @@ async function main () {
   const certifier = new Certifier(connector, config.get('certifierContract'));
 
   app.use(async (ctx, next) => {
-    ctx.ip = ctx.req.headers['x-forwarded-for'] || ctx.req.connection.remoteAddress;
+    ctx.remoteAddress = ctx.req.headers['x-forwarded-for'] || ctx.req.connection.remoteAddress;
 
     try {
       await next();
