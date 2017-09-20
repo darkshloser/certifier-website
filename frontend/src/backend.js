@@ -34,13 +34,13 @@ class Backend {
     return get(this.url(`/onfido/${address}`));
   }
 
-  async createApplicant (address, { country, firstName, lastName, signature, stoken }) {
+  async createApplicant (address, { country, firstName, lastName, signature, message }) {
     return post(this.url(`/onfido/${address}/applicant`), {
       country,
       firstName,
       lastName,
       signature,
-      stoken
+      message
     });
   }
 

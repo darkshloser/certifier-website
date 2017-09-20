@@ -1,3 +1,4 @@
+import EthJS from 'ethereumjs-util';
 import { action, observable } from 'mobx';
 import Onfido from 'onfido-sdk-ui';
 
@@ -92,13 +93,27 @@ class CertifierStore {
   async createApplicant () {
     this.setLoading(true);
 
+    if (!feeStore.storedPhrase) {
+      throw new Error('The account that sent the fee have not been found in local storage');
+    }
+
     const { payer } = feeStore;
     const { firstName, lastName } = this;
+
+    const wallet = await feeStore.getWallet();
+    const privateKey = Buffer.from(wallet.secret.slice(2), 'hex');
+    const message = `PICOPS::create-applicant::${payer}::${firstName} ${lastName}`;
+
+    const msgHash = EthJS.hashPersonalMessage(EthJS.toBuffer(message));
+    const { v, r, s } = EthJS.ecsign(msgHash, privateKey);
+    const signature = EthJS.toRpcSig(v, r, s);
 
     try {
       const { sdkToken } = await backend.createApplicant(payer, {
         firstName,
-        lastName
+        lastName,
+        message,
+        signature
       });
 
       this.shouldMountOnfido = true;

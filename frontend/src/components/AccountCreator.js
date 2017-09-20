@@ -362,7 +362,7 @@ export default class AccountCreator extends Component {
   };
 
   handleDone = () => {
-    this.props.onDone(this.state.jsonWallet);
+    this.props.onDone(this.state.wallet.address);
   };
 
   handleDownload = () => {
