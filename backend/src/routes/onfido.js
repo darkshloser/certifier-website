@@ -91,7 +91,7 @@ function get ({ certifier, feeRegistrar }) {
     const signPubKey = EthJS.ecrecover(msgHash, v, r, s);
     const signAddress = buf2add(EthJS.pubToAddress(signPubKey));
 
-    const paymentOrigins = await feeRegistrar.paymentOrigins(address);
+    const { paymentCount, paymentOrigins } = await feeRegistrar.paymentStatus(address);
 
     if (!paymentOrigins.includes(signAddress)) {
       console.error('signature / payment origin mismatch', { paymentOrigins, signAddress });
@@ -100,7 +100,7 @@ function get ({ certifier, feeRegistrar }) {
 
     const checkCount = await store.Onfido.checkCount(address);
 
-    if (checkCount >= 3) {
+    if (checkCount >= paymentCount * 3) {
       return error(ctx, 400, 'Only 3 checks are allowed per single fee payment');
     }
 
@@ -128,8 +128,8 @@ function get ({ certifier, feeRegistrar }) {
     const { applicantId } = stored;
     const checks = await Onfido.getChecks(applicantId);
 
-    if (checks.length >= 3) {
-      return error(ctx, 400, 'Only 3 checks are allowed per single fee payment');
+    if (checks.length > 0) {
+      return error(ctx, 400, 'Cannot create any more checks for this applicant');
     }
 
     const { checkId } = await Onfido.createCheck(applicantId, address);
