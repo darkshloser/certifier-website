@@ -71,6 +71,10 @@ function pause (time) {
   });
 }
 
+function isValidAddress (value) {
+  return value && value.length === 42 && /^0x[0-9a-g]{40}$/i.test(value);
+}
+
 function ejs2val (value, type) {
   if (Array.isArray(value)) {
     const subtype = /^(.+)\[.*\]$/.exec(type)[1];
@@ -181,6 +185,7 @@ module.exports = {
   hex2buf,
   int2date,
   int2hex,
+  isValidAddress,
   pause,
   keccak256,
   toChecksumAddress,
