@@ -184,7 +184,11 @@ class CertifierStore {
         return appStore.setCertified(payer);
       }
 
-      if (status === ONFIDO_STATUS.PENDING || status === ONFIDO_STATUS.UNKOWN) {
+      if (status === ONFIDO_STATUS.UNKOWN) {
+        return;
+      }
+
+      if (status === ONFIDO_STATUS.PENDING) {
         return this.setPending(true);
       }
 
