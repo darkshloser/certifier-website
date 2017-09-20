@@ -122,30 +122,16 @@ class RpcTransport {
    * Abstraction over the JSON-RPC WebSocket API.
    * Allows to perform requests as Promises and subscribe to methods.
    *
-   * @param {String}  url             WebSocket to connect to
-   * @param {Boolean} options.caching Whether or not requests should be cached
+   * @param {String} url WebSocket to connect to
    */
-  constructor (url, { caching = false } = {}) {
+  constructor (url) {
     this._url = url;
     this._connected = false;
     this._id = 0;
     this._requests = new Map();
     this._subscriptions = new Map();
-    this._requestCache = caching ? new Map() : null;
 
     this.connect();
-  }
-
-  /**
-   * Clear the internal requests cache.
-   * Will throw an exception if the transport isn't caching.
-   */
-  invalidateCache () {
-    if (!this._requestCache) {
-      throw new Error('Attempt to invalidate cache on non-caching transport');
-    }
-
-    this._requestCache.clear();
   }
 
   /**
@@ -271,19 +257,6 @@ class RpcTransport {
     const ws = await this._ws;
     const id = this.nextId();
     const requests = this._requests;
-    const requestCache = this._requestCache;
-    const hash = requestCache
-      ? keccak256(JSON.stringify({ method, params })).slice(-20)
-      : null;
-
-    if (hash) {
-      const cached = requestCache.get(hash);
-
-      if (cached) {
-        return cached;
-      }
-    }
-
     const message = {
       id,
       method,
@@ -293,17 +266,11 @@ class RpcTransport {
 
     ws.send(JSON.stringify(message));
 
-    const promise = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const request = new Request(message, resolve, reject, () => requests.delete(id), error);
 
       requests.set(id, request);
     });
-
-    if (hash) {
-      requestCache.set(hash, promise);
-    }
-
-    return promise;
   }
 
   /**
@@ -353,4 +320,56 @@ class RpcTransport {
   }
 }
 
-module.exports = RpcTransport;
+class CachingTransport extends RpcTransport {
+  /**
+   * Variant of `RpcTransport` that will cache request results
+   *
+   * @param {String} url WebSocket to connect to
+   */
+  constructor (url) {
+    super(url);
+
+    this._requestCache = new Map();
+  }
+
+  /**
+   * Clear the internal requests cache.
+   */
+  invalidateCache () {
+    this._requestCache.clear();
+  }
+
+  /**
+   * Perform a single request to JSON-RPC API.
+   *
+   * @param  {String} method RPC method name
+   * @param  {...Any} params RPC parameters
+   *
+   * @return {Any}           result from the API
+   */
+  async request (method, ...params) {
+    const requestCache = this._requestCache;
+    const hash = keccak256(JSON.stringify({ method, params })).slice(-20);
+    const cached = requestCache.get(hash);
+
+    if (cached) {
+      return cached;
+    }
+
+    const promise = super.request(method, ...params);
+
+    requestCache.set(hash, promise);
+
+    if (requestCache.size > 10000) {
+      // Start dropping keys in FIFO fashion
+      requestCache.delete(requestCache.keys().next().value);
+    }
+
+    return promise;
+  }
+}
+
+module.exports = {
+  RpcTransport,
+  CachingTransport
+};

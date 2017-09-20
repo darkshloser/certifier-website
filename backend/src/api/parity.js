@@ -5,7 +5,7 @@
 
 const EventEmitter = require('events');
 
-const RpcTransport = require('./transport');
+const { CachingTransport } = require('./transport');
 const { hex2big, hex2date } = require('../utils');
 
 class ParityConnector extends EventEmitter {
@@ -17,7 +17,7 @@ class ParityConnector extends EventEmitter {
   constructor (url) {
     super();
 
-    this._transport = new RpcTransport(url, { caching: true });
+    this._transport = new CachingTransport(url);
 
     this
       .transport
