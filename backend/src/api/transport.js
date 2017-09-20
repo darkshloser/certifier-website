@@ -5,7 +5,7 @@
 
 const WebSocket = require('ws');
 
-const { hex2int, pause } = require('../utils');
+const { hex2int, pause, keccak256 } = require('../utils');
 
 class Subscription {
   /**
@@ -122,16 +122,30 @@ class RpcTransport {
    * Abstraction over the JSON-RPC WebSocket API.
    * Allows to perform requests as Promises and subscribe to methods.
    *
-   * @param {String} url WebSocket to connect to
+   * @param {String}  url             WebSocket to connect to
+   * @param {Boolean} options.caching Whether or not requests should be cached
    */
-  constructor (url) {
+  constructor (url, { caching = false } = {}) {
     this._url = url;
     this._connected = false;
     this._id = 0;
     this._requests = new Map();
     this._subscriptions = new Map();
+    this._requestCache = caching ? new Map() : null;
 
     this.connect();
+  }
+
+  /**
+   * Clear the internal requests cache.
+   * Will throw an exception if the transport isn't caching.
+   */
+  invalidateCache () {
+    if (!this._requestCache) {
+      throw new Error('Attempt to invalidate cache on non-caching transport');
+    }
+
+    this._requestCache.clear();
   }
 
   /**
@@ -257,6 +271,19 @@ class RpcTransport {
     const ws = await this._ws;
     const id = this.nextId();
     const requests = this._requests;
+    const requestCache = this._requestCache;
+    const hash = requestCache
+      ? keccak256(JSON.stringify({ method, params })).slice(-20)
+      : null;
+
+    if (hash) {
+      const cached = requestCache.get(hash);
+
+      if (cached) {
+        return cached;
+      }
+    }
+
     const message = {
       id,
       method,
@@ -266,11 +293,17 @@ class RpcTransport {
 
     ws.send(JSON.stringify(message));
 
-    return new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, reject) => {
       const request = new Request(message, resolve, reject, () => requests.delete(id), error);
 
       requests.set(id, request);
     });
+
+    if (hash) {
+      requestCache.set(hash, promise);
+    }
+
+    return promise;
   }
 
   /**
