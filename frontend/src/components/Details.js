@@ -68,7 +68,7 @@ export default class Details extends Component {
     const { addressCopied, abiCopied, understood } = this.state;
     const { certifierAddress } = appStore;
 
-    if (!understood || !certifierAddress) {
+    if (!understood) {
       return null;
     }
 
