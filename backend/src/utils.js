@@ -106,11 +106,7 @@ function toChecksumAddress (_address) {
     throw new Error('address must be 20 bytes long');
   }
 
-  const hashBuffer = keccak('keccak256')
-              .update(Buffer.from(address.slice(-40)))
-              .digest();
-
-  const hash = buf2hex(hashBuffer);
+  const hash = buf2hex(keccak256(address.slice(-40)));
   let result = '0x';
 
   for (let n = 0; n < 40; n++) {
