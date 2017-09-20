@@ -1,3 +1,4 @@
+import EthJS from 'ethereumjs-util';
 import { action, observable } from 'mobx';
 import Onfido from 'onfido-sdk-ui';
 
@@ -49,7 +50,7 @@ export const ONFIDO_REASONS = {
 };
 
 const ONFIDO_STATUS = {
-  UNKOWN: 'unkown',
+  UNKNOWN: 'unknown',
   CREATED: 'created',
   PENDING: 'pending',
   COMPLETED: 'completed'
@@ -92,13 +93,27 @@ class CertifierStore {
   async createApplicant () {
     this.setLoading(true);
 
+    if (!feeStore.storedPhrase) {
+      throw new Error('The account that sent the fee have not been found in local storage');
+    }
+
     const { payer } = feeStore;
     const { firstName, lastName } = this;
+
+    const wallet = await feeStore.getWallet();
+    const privateKey = Buffer.from(wallet.secret.slice(2), 'hex');
+    const message = `PICOPS::create-applicant::${payer}::${firstName} ${lastName}`;
+
+    const msgHash = EthJS.hashPersonalMessage(EthJS.toBuffer(message));
+    const { v, r, s } = EthJS.ecsign(msgHash, privateKey);
+    const signature = EthJS.toRpcSig(v, r, s);
 
     try {
       const { sdkToken } = await backend.createApplicant(payer, {
         firstName,
-        lastName
+        lastName,
+        message,
+        signature
       });
 
       this.shouldMountOnfido = true;
@@ -169,6 +184,10 @@ class CertifierStore {
         return appStore.setCertified(payer);
       }
 
+      if (status === ONFIDO_STATUS.UNKNOWN) {
+        return;
+      }
+
       if (status === ONFIDO_STATUS.PENDING) {
         return this.setPending(true);
       }
@@ -187,6 +206,10 @@ class CertifierStore {
 
   @action
   setErrorReason (errorReason) {
+    if (errorReason && !ONFIDO_REASONS[errorReason]) {
+      return console.error(`unknown error reason: ${errorReason}`);
+    }
+
     this.errorReason = errorReason;
   }
 

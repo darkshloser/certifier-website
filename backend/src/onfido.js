@@ -10,7 +10,7 @@ const fetch = require('node-fetch');
 const { token } = config.get('onfido');
 
 const ONFIDO_STATUS = {
-  UNKOWN: 'unkown',
+  UNKNOWN: 'unknown',
   CREATED: 'created',
   PENDING: 'pending',
   COMPLETED: 'completed'

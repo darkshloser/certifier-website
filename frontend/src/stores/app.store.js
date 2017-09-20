@@ -72,7 +72,7 @@ class AppStore extends EventEmitter {
 
   async goto (name) {
     if (!STEPS[name]) {
-      throw new Error(`unkown step ${name}`);
+      throw new Error(`unknown step ${name}`);
     }
 
     if (name === 'start' && this.skipStart) {
@@ -116,7 +116,7 @@ class AppStore extends EventEmitter {
     this.blacklistedCountries = blCountries
       .filter((countryKey) => {
         if (!countries[countryKey]) {
-          console.error(new Error('unkown country key: ' + countryKey));
+          console.error(new Error('unknown country key: ' + countryKey));
           return false;
         }
 
@@ -136,7 +136,7 @@ class AppStore extends EventEmitter {
 
   register (step, loader) {
     if (!STEPS[step]) {
-      throw new Error(`unkown step ${step}`);
+      throw new Error(`unknown step ${step}`);
     }
 
     this.loaders[step] = (this.loaders[step] || []).concat(loader);
@@ -154,6 +154,10 @@ class AppStore extends EventEmitter {
   }
 
   addError (error) {
+    if (!error) {
+      return console.error('no error given....', error);
+    }
+
     console.error(error);
     this.addMessage({ content: error.message, type: 'error', title: 'An error occured' });
   }

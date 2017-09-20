@@ -141,7 +141,7 @@ class AccountCertifier {
     const sAddresses = Object.keys(stored);
 
     // The stored values in Redis or COMPLETED (and we know it's the right info),
-    // or not COMPLETED (might be PENDING, CREATED, UNKOWN)
+    // or not COMPLETED (might be PENDING, CREATED, UNKNOWN)
     const completeAddresses = sAddresses.filter((add) => stored[add].status === ONFIDO_STATUS.COMPLETED);
     const completeApplicantIds = completeAddresses.map((add) => stored[add].applicantId);
 
