@@ -65,7 +65,7 @@ export default class CountrySelector extends Component {
                 color: 'red',
                 fontWeight: 'bold'
               }}>
-                ( For legal reasons cannot be certified )
+                ( US Citizen )
               </p>
             </div>
           </div>
@@ -76,7 +76,7 @@ export default class CountrySelector extends Component {
             </Card>
 
             <div style={{ textAlign: 'center' }}>
-              <p>Rest of the world.</p>
+              <p>Non-US citizen – Rest of the world</p>
             </div>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default class CountrySelector extends Component {
         <Header icon='world' content='Unfortunately, you cannot continue...' />
         <Modal.Content>
           <p>
-            Due to legal limitations citizens of this country cannot be certified.
+            PICOPS is not offered to US citizens at this stage.
           </p>
         </Modal.Content>
         <Modal.Actions>
