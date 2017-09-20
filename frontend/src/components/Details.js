@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Checkbox, Header, Grid, Input, Popup } from 'semantic-ui-react';
 
+import appStore from '../stores/app.store';
 import CertifierABI from '../../../backend/src/abis/MultiCertifier.json';
 import DetailsMD from '../details.md';
 
 import AppContainer from './AppContainer';
 
 const CERTIFIER_ABI = JSON.stringify(CertifierABI);
-const CERTIFIER_ADDRESS = '0x06C4AF12D9E3501C173b5D1B9dd9cF6DCC095b98';
 
 export default class Details extends Component {
   state = {
@@ -66,8 +66,9 @@ export default class Details extends Component {
 
   renderMore () {
     const { addressCopied, abiCopied, understood } = this.state;
+    const { certifierAddress } = appStore;
 
-    if (!understood) {
+    if (!understood || !certifierAddress) {
       return null;
     }
 
@@ -93,7 +94,7 @@ export default class Details extends Component {
             action
             fluid
             readOnly
-            value={CERTIFIER_ADDRESS}
+            value={certifierAddress}
           >
             {input}
             <Popup
@@ -131,7 +132,7 @@ export default class Details extends Component {
   }
 
   handleCopyAddress = () => {
-    copy(CERTIFIER_ADDRESS);
+    copy(appStore.certifierAddress);
 
     this.setState({ addressCopied: true });
 

@@ -4,6 +4,8 @@ import { difference, uniq } from 'lodash';
 import { action, observable } from 'mobx';
 import store from 'store';
 
+import backend from '../backend';
+
 export const CITIZENSHIP_LS_KEY = '_parity-certifier::citizenship';
 export const FEE_HOLDER_LS_KEY = '_parity-certifier::fee-holder';
 export const PAYER_LS_KEY = '_parity-certifier::payer';
@@ -28,6 +30,7 @@ if (padding) {
 
 class AppStore extends EventEmitter {
   blacklistedCountries = [];
+  certifierAddress = null;
   loaders = {};
   padding = padding;
 
@@ -47,6 +50,8 @@ class AppStore extends EventEmitter {
   }
 
   load = async () => {
+    this.certifierAddress = await backend.certifierAddress();
+
     if (store.get(TERMS_LS_KEY) === true) {
       this.skipTerms = true;
     }
