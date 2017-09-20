@@ -7,31 +7,6 @@ const WebSocket = require('ws');
 
 const { hex2int, pause, keccak256 } = require('../utils');
 
-const requestCache = new Map();
-
-class Cache {
-  /**
-   * Cache holding a promise of a result of a request
-   *
-   * @param {Promise}  promise to cache
-   * @param {Number}   ttl     in ms
-   * @param {Function} cleanup to run after ttl
-   */
-  constructor (promise, ttl, cleanup) {
-    this._promise = promise;
-    this._timeout = setTimeout(cleanup, ttl);
-  }
-
-  /**
-   * Get the internal promise
-   *
-   * @return {Promise}
-   */
-  get promise () {
-    return this._promise;
-  }
-}
-
 class Subscription {
   /**
    * Abstraction over the Parity RPC PubSub subscription.
@@ -147,16 +122,30 @@ class RpcTransport {
    * Abstraction over the JSON-RPC WebSocket API.
    * Allows to perform requests as Promises and subscribe to methods.
    *
-   * @param {String} url WebSocket to connect to
+   * @param {String}  url             WebSocket to connect to
+   * @param {Boolean} options.caching Whether or not requests should be cached
    */
-  constructor (url) {
+  constructor (url, { caching = false } = {}) {
     this._url = url;
     this._connected = false;
     this._id = 0;
     this._requests = new Map();
     this._subscriptions = new Map();
+    this._requestCache = caching ? new Map() : null;
 
     this.connect();
+  }
+
+  /**
+   * Clear the internal requests cache.
+   * Will throw an exception if the transport isn't caching.
+   */
+  invalidateCache () {
+    if (!this._requestCache) {
+      throw new Error('Attempt to invalidate cache on non-caching transport');
+    }
+
+    this._requestCache.clear();
   }
 
   /**
@@ -282,11 +271,17 @@ class RpcTransport {
     const ws = await this._ws;
     const id = this.nextId();
     const requests = this._requests;
-    const hash = keccak256(JSON.stringify({ method, params })).slice(-20);
-    const cache = requestCache.get(hash);
+    const requestCache = this._requestCache;
+    const hash = requestCache
+      ? keccak256(JSON.stringify({ method, params })).slice(-20)
+      : null;
 
-    if (cache) {
-      return cache.promise;
+    if (hash) {
+      const cached = requestCache.get(hash);
+
+      if (cached) {
+        return cached;
+      }
     }
 
     const message = {
@@ -304,9 +299,9 @@ class RpcTransport {
       requests.set(id, request);
     });
 
-    requestCache.set(hash, new Cache(promise, 5000, () => {
-      requestCache.delete(hash);
-    }));
+    if (hash) {
+      requestCache.set(hash, promise);
+    }
 
     return promise;
   }
