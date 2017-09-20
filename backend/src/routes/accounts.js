@@ -20,8 +20,7 @@ function get ({ connector, certifier, feeRegistrar }) {
 
     // Only trace addresses if the balance is non-zero
     if (balance.gt(0)) {
-      // TODO: set starting block to the creation block of the fee contract?
-      const from = hex2big(connector.block.number).sub(10000);
+      const from = hex2big(connector.block.number).sub(5000); // approx 24h
       const trace = await connector.trace({ fromBlock: big2hex(from), toAddress: [address] });
 
       for (const { action } of trace) {
