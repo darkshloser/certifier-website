@@ -8,37 +8,54 @@ const redis = require('../redis');
 // No more than 20 addresses per IP
 const RATE_LIMITED_ADDRESSES = 20;
 
+// TTL for an address per IP (in miliseconds)
+const RATE_LIMITER_TTL = 24 * 3600 * 1000;
+
 function error (ctx, code = 400, body = 'Invalid request') {
   ctx.status = code;
   ctx.body = body;
 }
 
-function getIp () {
+async function rateLimiter (_address, ip) {
+  const address = _address.toLowerCase();
+  const hkey = `picops::rate-limiter::${ip}`;
+  const now = Date.now();
+  let count;
 
-}
+  // Update the key TTL
+  await redis.pexpire(hkey, RATE_LIMITER_TTL);
 
-async function rateLimiter (address, ip) {
-  const key = `picops::rate-limiter::${ip}`;
-  const json = await redis.get(key);
-  const addresses = json
-    ? JSON.parse(json)
-    : [];
+  count = await redis.hlen(hkey);
 
-  // Address is already there, everything is OK
-  if (addresses.includes(address)) {
+  if (count >= RATE_LIMITED_ADDRESSES) {
+    const all = await redis.hgetall(hkey);
+
+    for (let i = 0; i < count; i++) {
+      const storedAddress = all[2 * i];
+      const updatedAt = parseInt(all[2 * i + 1]);
+
+      if (now - updatedAt >= RATE_LIMITER_TTL) {
+        await redis.hdel(hkey, storedAddress);
+      }
+    }
+
+    count = await redis.hlen(hkey);
+  }
+
+  if (count < RATE_LIMITED_ADDRESSES || await redis.hexists(hkey, address)) {
+    // Set the address' value
+    await redis.hset(hkey, address, now.toString());
     return;
   }
 
-  if (addresses.length >= RATE_LIMITED_ADDRESSES) {
-    throw new Error('you exceeded the number of addresses your IP can use');
-  }
+  const error = new Error('you exceeded the number of addresses your IP can use');
 
-  addresses.push(address);
-  await redis.set(key, JSON.stringify(addresses));
+  // Too Many Requests
+  error.status = 429;
+  throw error;
 }
 
 module.exports = {
   error,
-  getIp,
   rateLimiter
 };
