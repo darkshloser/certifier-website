@@ -6,6 +6,7 @@
 const EthJS = require('ethereumjs-util');
 const Router = require('koa-router');
 
+const Identity = require('../identity');
 const Onfido = require('../onfido');
 const store = require('../store');
 const { error } = require('./utils');
@@ -49,10 +50,12 @@ function get ({ certifier, feeRegistrar }) {
    */
   router.get('/:address', async (ctx, next) => {
     const { address } = ctx.params;
-    const stored = await store.Onfido.get(address) || {};
+    const identity = new Identity(address);
+
+    const stored = await identity.get();
     const certified = await certifier.isCertified(address);
 
-    const { result, status = ONFIDO_STATUS.UNKNOWN, reason = 'unknown', error = '' } = stored;
+    const { result, status, reason, error } = stored;
 
     ctx.body = { certified, status, result, reason, error };
   });

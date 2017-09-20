@@ -17,6 +17,51 @@ const REDIS_APPLICANTS_KEY = 'applicants';
 const REDIS_CHECKS_KEY = 'checks';
 const REDIS_STATUS_KEY = 'status';
 
+class RedisValue {
+  /**
+   * Constructor, taking as argument the Redis HKEY
+   * and the value key where the ids will be stored,
+   * and from which the single value data keys will
+   * be derived
+   *
+   * @param  {String} hkey - The Redis hash key
+   * @param  {[type]} vkey - The Redis value key
+   */
+  constructor (hkey, vkey) {
+    this._hkey = hkey;
+    this._vkey = vkey;
+  }
+
+  get hkey () {
+    return this._hkey;
+  }
+
+  get vkey () {
+    return this._vkey;
+  }
+
+  /**
+   * Get the resource's value from Redis,
+   * or null if innexistant
+   *
+   * @return {Promise<String|null>}
+   */
+  async get () {
+    const value = await redis.hget(this.hkey, this.vkey);
+
+    return value || null;
+  }
+
+  /**
+   * Set the given data at as the resources value.
+   *
+   * @param {String} data
+   */
+  async set (data) {
+    await redis.hset(this.hkey, this.vkey);
+  }
+}
+
 class RedisSet {
   /**
    * Constructor, taking as argument the Redis HKEY
@@ -102,6 +147,7 @@ class RedisSet {
    */
   async store (data) {
     const { id } = data;
+    let nextData = Object.assign({}, data);
 
     if (!id) {
       throw new Error(`no id has been found in the given data to store : ${JSON.stringify(data)}`);
@@ -112,9 +158,14 @@ class RedisSet {
     if (!ids.includes(id)) {
       ids.push(id);
       await redis.hset(this.hkey, this.vkey, JSON.stringify(ids));
+    } else {
+      const prevData = await this.get(id);
+
+      // Don't overwrite, append data
+      nextData = Object.assign({}, prevData || {}, nextData);
     }
 
-    await redis.hset(this.hkey, `${this.vkey}:${id}`, JSON.stringify(data));
+    await redis.hset(this.hkey, `${this.vkey}:${id}`, JSON.stringify(nextData));
   }
 }
 
@@ -132,7 +183,12 @@ class Identity {
     }
 
     this._address = address;
-    this._hkey = `picops::identity_${address.toLowerCase()}`;
+    this._hkey = `${Identity.HKEY_PREFIX}${address.toLowerCase()}`;
+
+    this.applicants = new RedisSet(this.hkey, REDIS_APPLICANTS_KEY);
+    this.checks = new RedisSet(this.hkey, REDIS_CHECKS_KEY);
+
+    this.status = new RedisValue(this.hkey, REDIS_STATUS_KEY);
   }
 
   get address () {
@@ -143,85 +199,19 @@ class Identity {
     return this._hkey;
   }
 
-  async getApplicants () {
-    const applicantIds = await this.getApplicantIds();
-    const applicants = {};
-
-    for (let applicantId of applicantIds) {
-      const json = await redis.hget(this.hkey, `${REDIS_APPLICANTS_KEY}:${applicantId}`);
-      let applicant;
-
-      try {
-        applicant = JSON.parse(json);
-      } catch (error) {
-        throw new Error(`could not parse applicant ${applicantId} for ${this.address} : "${json}"`);
-      }
-
-      applicants[applicantId] = applicant;
-    }
-
-    return applicants;
+  async exists () {
+    return await redis.exists(this.hkey);
   }
 
-  async getApplicantIds () {
-    const json = await redis.hget(this.hkey, REDIS_APPLICANTS_KEY);
-    let applicantIds;
+  async get () {
+    const [ status ] = await Promise.all([
+      this.status.get()
+    ]);
 
-    try {
-      applicantIds = JSON.parse(json);
-    } catch (error) {
-      throw new Error(`could not parse applicant ids for ${this.address} : "${json}"`);
-    }
-
-    return applicantIds.sort((elA, elB) => elA.updated - elB.updated);
-  }
-
-  async getCheckIds () {
-    const json = await redis.hget(this.hkey, REDIS_CHECKS_KEY);
-    let checkIds;
-
-    try {
-      checkIds = JSON.parse(json);
-    } catch (error) {
-      throw new Error(`could not parse check ids for ${this.address} : "${json}"`);
-    }
-
-    return checkIds.sort((elA, elB) => elA.updated - elB.updated);
-  }
-
-  async getStatus () {
-    const status = await redis.hget(this.hkey, REDIS_STATUS_KEY);
-
-    if (!STATUS[status]) {
-      throw new Error(`unkown status for ${this.address} : "${status}"`);
-    }
-
-    return status;
-  }
-
-  async storeApplicant (applicant) {
-    const { id } = applicant;
-    const applicantIds = await this.getApplicantIds();
-
-    if (!applicantIds.includes(id)) {
-      applicantIds.push(id);
-      await redis.hset(this.hkey, REDIS_APPLICANTS_KEY, JSON.stringify(applicantIds));
-    }
-
-    await redis.hset(this.hkey, `${REDIS_APPLICANTS_KEY}:${id}`, JSON.stringify(applicant));
-  }
-
-  async storeCheck (check) {
-    const { id } = check;
-    const checkIds = await this.getCheckIds();
-
-    if (!checkIds.includes(id)) {
-      checkIds.push(id);
-      await redis.hset(this.hkey, REDIS_CHECKS_KEY, JSON.stringify(checkIds));
-    }
-
-    await redis.hset(this.hkey, `${REDIS_CHECKS_KEY}:${id}`, JSON.stringify(check));
+    return { status };
   }
 }
+
+Identity.HKEY_PREFIX = 'picops::identity_';
 
 module.exports = Identity;

@@ -30,7 +30,9 @@ for (const func of [
   // Sets
   'sadd', 'spop', 'smembers', 'sscan', 'srem',
   // Pubsub
-  'publish', 'subscribe'
+  'publish', 'subscribe',
+  // Keys
+  'exists'
 ]) {
   exports[func] = promisify(client[func].bind(client));
 }
