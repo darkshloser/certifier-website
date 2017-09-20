@@ -10,6 +10,10 @@ function error (ctx, code = 400, body = 'Invalid request') {
   ctx.body = body;
 }
 
+function getIp () {
+
+}
+
 function rateLimiter (address, ip) {
   const exceeded = false;
 
