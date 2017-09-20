@@ -184,7 +184,7 @@ class CertifierStore {
         return appStore.setCertified(payer);
       }
 
-      if (status === ONFIDO_STATUS.PENDING) {
+      if (status === ONFIDO_STATUS.PENDING || status === ONFIDO_STATUS.UNKOWN) {
         return this.setPending(true);
       }
 
@@ -202,6 +202,10 @@ class CertifierStore {
 
   @action
   setErrorReason (errorReason) {
+    if (errorReason && !ONFIDO_REASONS[errorReason]) {
+      return console.error(`unkown error reason: ${errorReason}`);
+    }
+
     this.errorReason = errorReason;
   }
 
