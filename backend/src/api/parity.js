@@ -17,13 +17,15 @@ class ParityConnector extends EventEmitter {
   constructor (url) {
     super();
 
-    this._transport = new RpcTransport(url);
+    this._transport = new RpcTransport(url, { caching: true });
 
     this
       .transport
       .subscribe('eth_getBlockByNumber', 'latest', false)
       .forEach((block) => {
         block.timestamp = hex2date(block.timestamp);
+
+        this._transport.invalidateCache();
 
         this.block = block;
         this.emit('block', block);
