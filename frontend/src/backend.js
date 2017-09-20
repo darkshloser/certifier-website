@@ -80,12 +80,6 @@ class Backend {
     return del(this.url(`/accounts/${address}/pending/${sign}`));
   }
 
-  async getTx (txHash) {
-    const { transaction } = await get(this.url(`/tx/${txHash}`));
-
-    return transaction;
-  }
-
   async sendFeeTx (tx) {
     const { hash } = await post(this.url('/fee-tx'), { tx });
 
