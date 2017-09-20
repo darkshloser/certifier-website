@@ -10,11 +10,23 @@ const { hex2int, pause, keccak256 } = require('../utils');
 const requestCache = new Map();
 
 class Cache {
+  /**
+   * Cache holding a promise of a result of a request
+   *
+   * @param {Promise}  promise to cache
+   * @param {Number}   ttl     in ms
+   * @param {Function} cleanup to run after ttl
+   */
   constructor (promise, ttl, cleanup) {
     this._promise = promise;
     this._timeout = setTimeout(cleanup, ttl);
   }
 
+  /**
+   * Get the internal promise
+   *
+   * @return {Promise}
+   */
   get promise () {
     return this._promise;
   }
