@@ -1,11 +1,12 @@
 import copy from 'copy-to-clipboard';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Checkbox, Header, Grid, Input, Popup } from 'semantic-ui-react';
+import { Button, Checkbox, Header, Grid, Input, Popup, Segment } from 'semantic-ui-react';
 
 import appStore from '../stores/app.store';
 import CertifierABI from '../../../backend/src/abis/MultiCertifier.json';
 import DetailsMD from '../details.md';
+import TermsOfUseMD from '../terms-of-use.md';
 
 import AppContainer from './AppContainer';
 
@@ -25,10 +26,25 @@ export default class Details extends Component {
       <AppContainer
         header={this.renderGoBack()}
         footer={this.renderGoBack()}
+        style={{ paddingTop: '1em' }}
         title='LEARN MORE ABOUT PARITY ICO PASSPORT SERVICE'
       >
         <div>
-          <DetailsMD />
+          <Segment vertical>
+            <DetailsMD />
+          </Segment>
+
+          <Segment vertical>
+            <h2>
+              PARITY BACKGROUND - CHECK APPLICATION BINARY INTERFACE
+              <br />
+              TERMS OF USE
+            </h2>
+            <div style={{ height: 400, overflow: 'auto' }}>
+              <TermsOfUseMD />
+            </div>
+          </Segment>
+
           <div style={{
             alignItems: 'center',
             display: 'flex',
