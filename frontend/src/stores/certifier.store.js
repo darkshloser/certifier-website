@@ -50,7 +50,7 @@ export const ONFIDO_REASONS = {
 };
 
 const ONFIDO_STATUS = {
-  UNKOWN: 'unkown',
+  UNKNOWN: 'unknown',
   CREATED: 'created',
   PENDING: 'pending',
   COMPLETED: 'completed'
@@ -184,7 +184,7 @@ class CertifierStore {
         return appStore.setCertified(payer);
       }
 
-      if (status === ONFIDO_STATUS.UNKOWN) {
+      if (status === ONFIDO_STATUS.UNKNOWN) {
         return;
       }
 
@@ -207,7 +207,7 @@ class CertifierStore {
   @action
   setErrorReason (errorReason) {
     if (errorReason && !ONFIDO_REASONS[errorReason]) {
-      return console.error(`unkown error reason: ${errorReason}`);
+      return console.error(`unknown error reason: ${errorReason}`);
     }
 
     this.errorReason = errorReason;

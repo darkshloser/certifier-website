@@ -43,7 +43,7 @@ function get ({ certifier, feeRegistrar }) {
    * Get the current status of Onfido certification
    * for the given address.
    *
-   * The status can be unkown, created, pending or completed.
+   * The status can be unknown, created, pending or completed.
    * The result is set if the status is completed, whether to
    * success or fail.
    */
@@ -52,7 +52,7 @@ function get ({ certifier, feeRegistrar }) {
     const stored = await store.Onfido.get(address) || {};
     const certified = await certifier.isCertified(address);
 
-    const { result, status = ONFIDO_STATUS.UNKOWN, reason = 'unknown', error = '' } = stored;
+    const { result, status = ONFIDO_STATUS.UNKNOWN, reason = 'unknown', error = '' } = stored;
 
     ctx.body = { certified, status, result, reason, error };
   });

@@ -257,7 +257,7 @@ class Contract {
   async logs (eventNames, options) {
     const events = eventNames.map((eventName) => {
       if (!this._events.has(eventName)) {
-        throw new Error(`Unkown event ${eventName}`);
+        throw new Error(`Unknown event ${eventName}`);
       }
 
       return this._events.get(eventName);

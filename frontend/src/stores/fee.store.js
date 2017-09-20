@@ -195,7 +195,7 @@ class FeeStore {
 
   @action goto (step) {
     if (!STEPS[step]) {
-      throw new Error(`unkown step ${step}`);
+      throw new Error(`unknown step ${step}`);
     }
 
     this.step = STEPS[step];
