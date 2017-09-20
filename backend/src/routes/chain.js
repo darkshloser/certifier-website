@@ -8,7 +8,7 @@ const Router = require('koa-router');
 
 const { buyins } = require('../store');
 const { buf2hex, buf2big, big2hex } = require('../utils');
-const { error } = require('./utils');
+const { error, rateLimiter } = require('./utils');
 
 function get ({ connector, certifier, feeRegistrar }) {
   const router = new Router({
@@ -23,14 +23,6 @@ function get ({ connector, certifier, feeRegistrar }) {
     ctx.body = { hash: connector.block.hash };
   });
 
-  router.get('/tx/:hash', async (ctx, next) => {
-    const { hash } = ctx.params;
-
-    const transaction = await connector.getTx(hash);
-
-    ctx.body = { transaction };
-  });
-
   router.post('/tx', async (ctx, next) => {
     const { tx } = ctx.request.body;
 
@@ -42,6 +34,9 @@ function get ({ connector, certifier, feeRegistrar }) {
     }
 
     const from = buf2hex(txObj.from);
+
+    await rateLimiter(from, ctx.remoteAddress);
+
     const certified = await certifier.isCertified(from);
 
     const value = buf2big(txObj.value);
@@ -79,6 +74,9 @@ function get ({ connector, certifier, feeRegistrar }) {
     const txObj = new EthereumTx(txBuf);
 
     const from = buf2hex(txObj.from);
+
+    await rateLimiter(from, ctx.remoteAddress);
+
     const to = buf2hex(txObj.to);
     const toHasPaid = await feeRegistrar.hasPaid(to);
 

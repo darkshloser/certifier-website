@@ -70,22 +70,6 @@ class Backend {
     return nonce;
   }
 
-  async getPendingTx (address) {
-    const { pending } = await get(this.url(`/accounts/${address}/pending`));
-
-    return pending;
-  }
-
-  async deletePendingTx (address, sign) {
-    return del(this.url(`/accounts/${address}/pending/${sign}`));
-  }
-
-  async getTx (txHash) {
-    const { transaction } = await get(this.url(`/tx/${txHash}`));
-
-    return transaction;
-  }
-
   async sendFeeTx (tx) {
     const { hash } = await post(this.url('/fee-tx'), { tx });
 

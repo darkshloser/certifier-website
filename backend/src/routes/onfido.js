@@ -8,7 +8,7 @@ const Router = require('koa-router');
 
 const Onfido = require('../onfido');
 const store = require('../store');
-const { error } = require('./utils');
+const { error, rateLimiter } = require('./utils');
 const { buf2add } = require('../utils');
 
 const { ONFIDO_STATUS } = Onfido;
@@ -49,6 +49,9 @@ function get ({ certifier, feeRegistrar }) {
    */
   router.get('/:address', async (ctx, next) => {
     const { address } = ctx.params;
+
+    await rateLimiter(address, ctx.remoteAddress);
+
     const stored = await store.Onfido.get(address) || {};
     const certified = await certifier.isCertified(address);
 
@@ -59,6 +62,9 @@ function get ({ certifier, feeRegistrar }) {
 
   router.post('/:address/applicant', async (ctx, next) => {
     const { address } = ctx.params;
+
+    await rateLimiter(address, ctx.remoteAddress);
+
     const { firstName, lastName, signature, message } = ctx.request.body;
 
     if (!firstName || !lastName || firstName.length < 2 || lastName.length < 2) {
@@ -114,6 +120,9 @@ function get ({ certifier, feeRegistrar }) {
 
   router.post('/:address/check', async (ctx, next) => {
     const { address } = ctx.params;
+
+    await rateLimiter(address, ctx.remoteAddress);
+
     const stored = await store.Onfido.get(address);
     const certified = await certifier.isCertified(address);
 
