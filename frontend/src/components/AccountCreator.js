@@ -1,11 +1,13 @@
+import { phraseToWallet } from '@parity/ethkey.js';
+import { randomPhrase } from '@parity/wordlist';
 import FileSaver from 'file-saver';
 import { observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
+import appStore from '../stores/app.store';
 import { createWallet } from '../utils';
-import feeStore from '../stores/fee.store';
 
 import AccountInfo from './AccountInfo';
 
@@ -32,8 +34,24 @@ export default class AccountCreator extends Component {
     recoveryRepeat: '',
     recoveryVerification: '',
     step: 0,
+    jsonWallet: null,
     wallet: null
   };
+
+  componentWillMount () {
+    this.generateWallet()
+      .catch((error) => {
+        appStore.addError(error);
+      });
+  }
+
+  async generateWallet () {
+    const phrase = randomPhrase(12);
+    const { address, secret } = await phraseToWallet(phrase);
+    const wallet = { address, secret, phrase };
+
+    this.setState({ wallet });
+  }
 
   valid () {
     const { step } = this.state;
@@ -61,7 +79,7 @@ export default class AccountCreator extends Component {
     if (STEPS[step] === 'recovery-repeat') {
       const { recoveryRepeat } = this.state;
 
-      if (recoveryRepeat.trim() === feeStore.wallet.phrase) {
+      if (recoveryRepeat.trim() === this.state.wallet.phrase) {
         return true;
       }
     }
@@ -96,7 +114,7 @@ export default class AccountCreator extends Component {
   }
 
   renderDownload () {
-    const { wallet } = feeStore;
+    const { wallet } = this.state;
 
     return (
       <Grid>
@@ -118,7 +136,6 @@ export default class AccountCreator extends Component {
 
           <AccountInfo
             address={wallet.address}
-            balance={wallet.balance}
             showCertified={false}
             showBalance={false}
           />
@@ -195,7 +212,7 @@ export default class AccountCreator extends Component {
   }
 
   renderRecoveryWrite () {
-    const { phrase } = feeStore.wallet;
+    const { phrase } = this.state.wallet;
     const { recoveryVerification } = this.state;
     const valid = this.valid();
 
@@ -345,14 +362,14 @@ export default class AccountCreator extends Component {
   };
 
   handleDone = () => {
-    this.props.onDone(this.state.wallet);
+    this.props.onDone(this.state.jsonWallet);
   };
 
   handleDownload = () => {
-    const { wallet } = this.state;
-    const blob = new Blob([JSON.stringify(wallet)], { type: 'text/json;charset=utf-8' });
+    const { jsonWallet } = this.state;
+    const blob = new Blob([JSON.stringify(jsonWallet)], { type: 'text/json;charset=utf-8' });
 
-    FileSaver.saveAs(blob, `${wallet.id}.json`);
+    FileSaver.saveAs(blob, `${jsonWallet.id}.json`);
   };
 
   handleNext = async (event) => {
@@ -369,12 +386,12 @@ export default class AccountCreator extends Component {
     const nextStep = this.state.step + 1;
 
     if (STEPS[nextStep] === 'download') {
-      const { secret } = feeStore.wallet;
+      const { secret } = this.state.wallet;
       const { password } = this.state;
 
-      const wallet = await createWallet(secret, password);
+      const jsonWallet = await createWallet(secret, password);
 
-      this.setState({ wallet }, () => {
+      this.setState({ jsonWallet }, () => {
         this.handleDownload();
       });
     }

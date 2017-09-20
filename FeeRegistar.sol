@@ -1,41 +1,55 @@
 pragma solidity ^0.4.10;
 
 contract FeeRegistrar {
+
   /// STRUCTURES
+
   struct Payer {
+    // the payer index in `s_payers`
     uint index;
+    // the number of times the fee has been paid
     uint count;
+    // who paid for the fee
     address[] origins;
   }
 
+
   /// STORAGE
+
   address public owner;
   address public treasury;
   uint public fee;
 
-  // a mapping of addresses to their position
-  // in the `s_payers` list
+  // a mapping of addresses to a `Payer` struct
   mapping(address => Payer) s_paid;
   // a list of each payers
   address[] s_payers;
 
+
   /// EVENTS
+
   event Paid (address who);
 
+
   /// MODIFIERS
+
   modifier only_owner {
     require(msg.sender == owner);
     _;
   }
 
+
   /// CONSTRUCTOR
+
   function FeeRegistrar (address _treasury, uint _fee) {
     owner = msg.sender;
     treasury = _treasury;
     fee = _fee;
   }
 
+
   /// PUBLIC CONSTANT METHODS
+
   function count () public constant returns (uint) {
     return s_payers.length;
   }
@@ -79,7 +93,9 @@ contract FeeRegistrar {
     return m_payers;
   }
 
+
   /// PUBLIC METHODS
+
   function pay (address who) external payable {
     require(who != 0x0);
     require(msg.value == fee);
@@ -111,10 +127,8 @@ contract FeeRegistrar {
     treasury.transfer(msg.value);
   }
 
+
   /// RESTRICTED (owner only) METHODS
-  function setFee (uint _fee) external only_owner {
-    fee = _fee;
-  }
 
   function setOwner (address _owner) external only_owner {
     owner = _owner;

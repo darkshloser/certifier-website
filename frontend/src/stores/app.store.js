@@ -154,6 +154,10 @@ class AppStore extends EventEmitter {
   }
 
   addError (error) {
+    if (!error) {
+      return console.error('no error given....', error);
+    }
+
     console.error(error);
     this.addMessage({ content: error.message, type: 'error', title: 'An error occured' });
   }

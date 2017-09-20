@@ -18,9 +18,7 @@ export default class FromExchange extends Component {
     feeStore.goto('account-selection');
   };
 
-  handleDone = () => {
-    const { wallet } = feeStore;
-
+  handleDone = (wallet) => {
     feeStore.setPayer(wallet.address);
     feeStore.sendPayment();
   };

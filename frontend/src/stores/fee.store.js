@@ -10,8 +10,8 @@ import appStore, { FEE_HOLDER_LS_KEY, PAYER_LS_KEY } from './app.store';
 import blockStore from './block.store';
 import { isValidAddress } from '../utils';
 
-// Gas Limit of 100k gas
-const FEE_REGISTRAR_GAS_LIMIT = new BigNumber('0x186a0');
+// Gas Limit of 200k gas
+const FEE_REGISTRAR_GAS_LIMIT = new BigNumber('0x30d40');
 // Gas Price of 5Gwei
 const FEE_REGISTRAR_GAS_PRICE = new BigNumber('0x12a05f200');
 // Signature of `pay(address)`
@@ -139,14 +139,12 @@ class FeeStore {
 
       if (wallet.address === payer) {
         console.warn('will not empty the account: the payer is the wallet holder');
-        store.remove(FEE_HOLDER_LS_KEY);
         return;
       }
 
       const { balance } = await backend.getAccountFeeInfo(wallet.address);
 
       if (balance.eq(0)) {
-        store.remove(FEE_HOLDER_LS_KEY);
         return;
       }
 
@@ -177,7 +175,6 @@ class FeeStore {
       const { hash } = await backend.sendFeeTx(serializedTx);
 
       console.warn('sent emptying account tx', hash);
-      store.remove(FEE_HOLDER_LS_KEY);
     } catch (error) {
       appStore.addError(error);
     }
