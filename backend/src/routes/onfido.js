@@ -3,11 +3,13 @@
 
 'use strict';
 
+const EthJS = require('ethereumjs-util');
 const Router = require('koa-router');
 
 const Onfido = require('../onfido');
 const store = require('../store');
 const { error } = require('./utils');
+const { buf2add } = require('../utils');
 
 const { ONFIDO_STATUS } = Onfido;
 
@@ -57,7 +59,19 @@ function get ({ certifier, feeRegistrar }) {
 
   router.post('/:address/applicant', async (ctx, next) => {
     const { address } = ctx.params;
-    const { firstName, lastName } = ctx.request.body;
+    const { firstName, lastName, signature, message } = ctx.request.body;
+
+    if (!firstName || !lastName || firstName.length < 2 || lastName.length < 2) {
+      return error(ctx, 400, 'First name and last name should be at least 2 characters long');
+    }
+
+    if (!signature) {
+      return error(ctx, 400, 'Missing signature');
+    }
+
+    if (!message) {
+      return error(ctx, 400, 'Missing signature\'s message');
+    }
 
     const [certified, paid] = await Promise.all([
       certifier.isCertified(address),
@@ -70,6 +84,18 @@ function get ({ certifier, feeRegistrar }) {
 
     if (!paid) {
       return error(ctx, 400, 'Missing fee payment');
+    }
+
+    const msgHash = EthJS.hashPersonalMessage(EthJS.toBuffer(message));
+    const { v, r, s } = EthJS.fromRpcSig(signature);
+    const signPubKey = EthJS.ecrecover(msgHash, v, r, s);
+    const signAddress = buf2add(EthJS.pubToAddress(signPubKey));
+
+    const paymentOrigins = await feeRegistrar.paymentOrigins(address);
+
+    if (!paymentOrigins.includes(signAddress)) {
+      console.error('signature / payment origin mismatch', { paymentOrigins, signAddress });
+      return error(ctx, 400, 'Signature / payment origin mismatch');
     }
 
     const checkCount = await store.Onfido.checkCount(address);

@@ -40,6 +40,19 @@ class Fee extends Contract {
 
     return fee;
   }
+
+  /**
+   * Get the payment origins
+   *
+   * @param {String}  address `0x` prefixed
+   *
+   * @return {Promise<Array>}
+   */
+  async paymentOrigins (address) {
+    const [ , paymentOrigins ] = await this.methods.payer(address).get();
+
+    return paymentOrigins;
+  }
 }
 
 module.exports = Fee;

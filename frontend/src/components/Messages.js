@@ -29,7 +29,7 @@ export default class Messages extends Component {
   }
 
   renderMessage (message) {
-    const { id, content, title, type } = message;
+    const { id, content, title } = message;
 
     const onDismiss = () => {
       appStore.removeMessage(id);
