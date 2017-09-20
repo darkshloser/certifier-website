@@ -46,7 +46,8 @@ class AppStore extends EventEmitter {
   constructor () {
     super();
 
-    this.load();
+    this.load()
+      .catch((error) => this.addError(error));
   }
 
   load = async () => {
