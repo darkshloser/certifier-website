@@ -39,6 +39,9 @@ function get ({ connector, certifier, feeRegistrar }) {
 
   router.get('/:address/fee', async (ctx, next) => {
     const { address } = ctx.params;
+
+    await rateLimiter(address, ctx.remoteAddress);
+
     const [ balance, paid ] = await Promise.all([
       connector.balance(address),
       feeRegistrar.hasPaid(address)
@@ -52,6 +55,8 @@ function get ({ connector, certifier, feeRegistrar }) {
 
   router.get('/:address/nonce', async (ctx, next) => {
     const { address } = ctx.params;
+
+    await rateLimiter(address, ctx.remoteAddress);
 
     const nonce = await connector.nextNonce(address);
 
