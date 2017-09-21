@@ -223,7 +223,7 @@ async function verifyCheck ({ applicantId, checkId }, check) {
   const documentReport = reports.find((report) => report.name === 'document');
 
   if (valid && documentReport) {
-    const documentInvalidReason = verifyDocument(documentReport);
+    const documentInvalidReason = await verifyDocument(documentReport);
 
     if (documentInvalidReason) {
       reason = documentInvalidReason;
