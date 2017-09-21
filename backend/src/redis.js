@@ -28,7 +28,7 @@ for (const func of [
   // Hashes
   'hget', 'hgetall', 'hset', 'hdel', 'hscan', 'hlen', 'hexists',
   // Sets
-  'sadd', 'spop', 'smembers', 'sscan', 'srem',
+  'sadd', 'spop', 'smembers', 'sscan', 'srem', 'sismember',
   // Pubsub
   'publish', 'subscribe',
   // Expires

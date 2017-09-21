@@ -7,6 +7,9 @@ const config = require('config');
 const qs = require('qs');
 const fetch = require('node-fetch');
 
+const store = require('./store');
+const { keccak256 } = require('./utils');
+
 const { token } = config.get('onfido');
 
 const ONFIDO_STATUS = {
@@ -170,27 +173,6 @@ async function createApplicant ({ firstName, lastName }) {
   return { applicantId: applicant.id, sdkToken };
 }
 
-/**
- * Update an applicant on Onfido
- *
- * @param {String} applicantId
- * @param {String} options.country
- * @param {String} options.firstName
- * @param {String} options.lastName
- *
- * @return {Object} contains `sdkToken` (String)
- */
-async function updateApplicant (applicantId, { firstName, lastName }) {
-  await _call(`/applicants/${applicantId}`, 'PUT', {
-    first_name: firstName,
-    last_name: lastName
-  });
-
-  const sdkToken = await createToken(applicantId);
-
-  return { sdkToken };
-}
-
 async function createToken (applicantId) {
   const sdk = await _call('/sdk_token', 'POST', {
     applicant_id: applicantId,
@@ -238,17 +220,15 @@ async function verifyCheck ({ applicantId, checkId }, check) {
   let { valid } = status;
 
   const reports = await getReports(checkId);
-  const clearReports = reports.filter((report) => report.result === 'clear');
+  const documentReport = reports.find((report) => report.name === 'document');
 
-  if (valid) {
-    clearReports.forEach((clearReport) => {
-      const countryCode = clearReport.properties['nationality'] || clearReport.properties['issuing_country'];
+  if (valid && documentReport) {
+    const documentInvalidReason = verifyDocument(documentReport);
 
-      if (countryCode && countryCode.toUpperCase() === 'USA') {
-        reason = 'blocked-country';
-        valid = false;
-      }
-    });
+    if (documentInvalidReason) {
+      reason = documentInvalidReason;
+      valid = false;
+    }
   } else {
     const unclearReport = reports.find((report) => report.result !== 'clear');
 
@@ -262,6 +242,32 @@ async function verifyCheck ({ applicantId, checkId }, check) {
   return { applicantId, checkId, address, valid, reason };
 }
 
+/**
+ * Check that the document isn't from US and hasn't been used before
+ *
+ * @param {Object} documentReport as sent from Onfido
+ *
+ * @return {String|null} string reason for rejection, or null if okay
+ */
+async function verifyDocument (documentReport) {
+  const { properties } = documentReport;
+  const countryCode = properties['nationality'] || properties['issuing_country'];
+
+  if (countryCode && countryCode.toUpperCase() === 'USA') {
+    return 'blocked-country';
+  }
+
+  const hash = keccak256(JSON.stringify(properties['document_numbers']));
+
+  if (store.hasDocumentBeenUsed(hash)) {
+    return 'used-document';
+  }
+
+  store.markDocumentAsUsed(hash);
+
+  return null;
+}
+
 module.exports = {
   checkStatus,
   createApplicant,
@@ -270,7 +276,6 @@ module.exports = {
   getApplicants,
   getCheck,
   getChecks,
-  updateApplicant,
   verify,
   verifyCheck,
 

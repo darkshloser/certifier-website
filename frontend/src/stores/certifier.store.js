@@ -46,6 +46,12 @@ export const ONFIDO_REASONS = {
   'blocked-country': {
     message: 'For legal reasons, you cannot be certified.',
     retry: false
+  },
+
+  // If the document has been used before
+  'used-document': {
+    message: 'This document has been used before to certify an address',
+    retry: false
   }
 };
 
