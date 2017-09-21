@@ -14,9 +14,6 @@ module.exports = {
     host: '127.0.0.1',
     port: 6379
   },
-  recaptcha: {
-    secret: '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
-  },
   account: {
     filename: 'empty-phrase.json',
     password: ''
