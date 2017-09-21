@@ -107,8 +107,8 @@ function toChecksumAddress (_address) {
   }
 
   const hashBuffer = keccak('keccak256')
-              .update(Buffer.from(address.slice(-40)))
-              .digest();
+    .update(Buffer.from(address.slice(-40)))
+    .digest();
 
   const hash = buf2hex(hashBuffer);
   let result = '0x';

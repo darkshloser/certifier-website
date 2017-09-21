@@ -77,7 +77,7 @@ class Store {
    * @return {Promise}
    */
   static async set (address, data) {
-    return await redis.hset(ONFIDO_CHECKS, address.toLowerCase(), JSON.stringify(data));
+    return redis.hset(ONFIDO_CHECKS, address.toLowerCase(), JSON.stringify(data));
   }
 
   /**
@@ -101,7 +101,7 @@ class Store {
    * @return {Boolean}
    */
   static async hasDocumentBeenUsed (hash) {
-    return await redis.sismember(USED_DOCUMENTS, hash);
+    return redis.sismember(USED_DOCUMENTS, hash);
   }
 
   /**
