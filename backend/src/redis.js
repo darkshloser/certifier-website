@@ -24,11 +24,11 @@ for (const func of [
   // Transactions
   'multi', 'exec', 'discard',
   // Plain keys
-  'get', 'set', 'incr',
+  'keys', 'del', 'get', 'set', 'incr',
   // Hashes
   'hget', 'hgetall', 'hset', 'hdel', 'hscan', 'hlen', 'hexists',
   // Sets
-  'sadd', 'spop', 'smembers', 'sscan', 'srem',
+  'sadd', 'spop', 'smembers', 'sscan', 'srem', 'sismember',
   // Pubsub
   'publish', 'subscribe',
   // Keys

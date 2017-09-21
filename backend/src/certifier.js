@@ -26,7 +26,7 @@ class AccountCertifier {
     this._certifier = new Certifier(this._connector, contractAddress);
 
     this.init();
-    this.sync();
+    // this.sync();
 
     // Sync with Onfido every 30 minutes
     // setInterval(() => this.sync(), 30 * 60 * 1000);
@@ -34,7 +34,7 @@ class AccountCertifier {
 
   async init () {
     try {
-      await store.Onfido.subscribe(async () => this.verifyOnfidos());
+      await store.subscribe(async () => this.verifyOnfidos());
       console.warn('Started account certifier!');
     } catch (error) {
       console.error(error);
@@ -48,7 +48,7 @@ class AccountCertifier {
 
     this._verifyLock = true;
 
-    await store.Onfido.scan(async (href) => this.verifyOnfido(href));
+    await store.scan(async (href) => this.verifyOnfido(href));
 
     this._verifyLock = false;
   }
@@ -66,7 +66,7 @@ class AccountCertifier {
       console.error(error);
 
       if (address) {
-        await store.Onfido.set(address, {
+        await store.set(address, {
           status: ONFIDO_STATUS.COMPLETED,
           result: 'fail',
           reason: 'error',
@@ -74,7 +74,7 @@ class AccountCertifier {
         });
       }
     } finally {
-      await store.Onfido.remove(href);
+      await store.remove(href);
     }
   }
 
@@ -90,7 +90,7 @@ class AccountCertifier {
 
     try {
       if (pending) {
-        await store.Onfido.set(address, {
+        await store.set(address, {
           status: ONFIDO_STATUS.PENDING,
           applicantId, checkId
         });
@@ -109,7 +109,7 @@ class AccountCertifier {
         console.warn(`${address} is already certified...`);
       }
 
-      await store.Onfido.set(address, {
+      await store.set(address, {
         status: ONFIDO_STATUS.COMPLETED,
         result: valid ? 'success' : 'fail',
         reason,
@@ -118,7 +118,7 @@ class AccountCertifier {
     } catch (error) {
       console.error(error);
 
-      await store.Onfido.set(address, {
+      await store.set(address, {
         status: ONFIDO_STATUS.COMPLETED,
         result: 'fail',
         reason: 'error',
@@ -137,7 +137,7 @@ class AccountCertifier {
   }
 
   async _sync () {
-    const stored = await store.Onfido.getAll();
+    const stored = await store.getAll();
     const sAddresses = Object.keys(stored);
 
     // The stored values in Redis or COMPLETED (and we know it's the right info),

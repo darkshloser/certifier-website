@@ -7,8 +7,9 @@ const redis = require('./redis');
 
 const ONFIDO_CHECKS = 'onfido-checks';
 const ONFIDO_CHECKS_CHANNEL = 'onfido-checks-channel';
+const USED_DOCUMENTS = 'used-documents';
 
-class Onfido {
+class Store {
   /**
    * Get the data for the given address.
    *
@@ -76,7 +77,7 @@ class Onfido {
    * @return {Promise}
    */
   static async set (address, data) {
-    return await redis.hset(ONFIDO_CHECKS, address.toLowerCase(), JSON.stringify(data));
+    return redis.hset(ONFIDO_CHECKS, address.toLowerCase(), JSON.stringify(data));
   }
 
   /**
@@ -90,6 +91,26 @@ class Onfido {
     const countCheck = await redis.incr(`${address}:countCheck`);
 
     return Number(countCheck);
+  }
+
+  /**
+   * Check if a document has been used before
+   *
+   * @param {String} hash keccak256 hash of the document_numbers JSON string
+   *
+   * @return {Boolean}
+   */
+  static async hasDocumentBeenUsed (hash) {
+    return redis.sismember(USED_DOCUMENTS, hash);
+  }
+
+  /**
+   * Mark document as used before
+   *
+   * @param {String} hash keccak256 hash of the document_numbers JSON string
+   */
+  static async markDocumentAsUsed (hash) {
+    await redis.sadd(USED_DOCUMENTS, hash);
   }
 
   /**
@@ -165,6 +186,4 @@ class Onfido {
   }
 }
 
-module.exports = {
-  Onfido
-};
+module.exports = Store;

@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 
-import { del, get, post } from './utils';
+import { get, post } from './utils';
 
 class Backend {
   constructor (url) {
@@ -35,6 +35,8 @@ class Backend {
   }
 
   async createApplicant (address, { country, firstName, lastName, signature, message }) {
+    console.warn('sending `createApplicant` from FE to BE');
+
     return post(this.url(`/onfido/${address}/applicant`), {
       country,
       firstName,

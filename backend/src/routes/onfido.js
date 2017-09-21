@@ -29,8 +29,7 @@ function get ({ certifier, feeRegistrar }) {
 
     const hmac = crypto.createHmac('sha1', webhookToken);
 
-    // TODO: Find a way to get original body before parsing
-    hmac.update(JSON.stringify(ctx.request.body));
+    hmac.update(ctx.request.rawBody);
 
     if (!payload || signature !== hmac.digest('hex')) {
       return error(ctx);
@@ -44,7 +43,7 @@ function get ({ certifier, feeRegistrar }) {
 
     if (action === 'check.completed') {
       console.warn('[WEBHOOK] Check completed', object.href);
-      await store.Onfido.push(object.href);
+      await store.push(object.href);
     }
 
     ctx.body = 'OK';
@@ -116,7 +115,7 @@ function get ({ certifier, feeRegistrar }) {
       return error(ctx, 400, 'Signature / payment origin mismatch');
     }
 
-    const checkCount = await store.Onfido.checkCount(address);
+    const checkCount = await store.checkCount(address);
 
     if (checkCount >= paymentCount * 3) {
       return error(ctx, 400, 'Only 3 checks are allowed per single fee payment');
@@ -125,7 +124,7 @@ function get ({ certifier, feeRegistrar }) {
     const { sdkToken, applicantId } = await Onfido.createApplicant({ firstName, lastName });
 
     // Store the applicant id in Redis
-    await store.Onfido.set(address, { status: ONFIDO_STATUS.CREATED, applicantId });
+    await store.set(address, { status: ONFIDO_STATUS.CREATED, applicantId });
 
     ctx.body = { sdkToken };
   });
@@ -135,7 +134,7 @@ function get ({ certifier, feeRegistrar }) {
 
     await rateLimiter(address, ctx.remoteAddress);
 
-    const stored = await store.Onfido.get(address);
+    const stored = await store.get(address);
     const certified = await certifier.isCertified(address);
 
     if (certified) {
@@ -155,8 +154,10 @@ function get ({ certifier, feeRegistrar }) {
 
     const { checkId } = await Onfido.createCheck(applicantId, address);
 
+    console.warn(`> created check ${checkId} for ${applicantId}`);
+
     // Store the applicant id in Redis
-    await store.Onfido.set(address, { status: ONFIDO_STATUS.PENDING, applicantId, checkId });
+    await store.set(address, { status: ONFIDO_STATUS.PENDING, applicantId, checkId });
 
     ctx.body = { result: 'ok' };
   });
