@@ -28,8 +28,7 @@ function get ({ certifier, feeRegistrar }) {
 
     const hmac = crypto.createHmac('sha1', webhookToken);
 
-    // TODO: Find a way to get original body before parsing
-    hmac.update(JSON.stringify(ctx.request.body));
+    hmac.update(ctx.request.rawBody);
 
     if (!payload || signature !== hmac.digest('hex')) {
       return error(ctx);
