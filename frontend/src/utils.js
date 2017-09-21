@@ -26,9 +26,17 @@ export function fromWei (value) {
   return new BigNumber(value).div(WEI);
 }
 
+function checkStatus (response) {
+  // To many Requests
+  if (response.status === 429) {
+    throw new Error('Too many requests have been sent from the same IP.');
+  }
+}
+
 export async function get (url) {
   let response = await fetch(url);
 
+  checkStatus(response);
   return response.json();
 }
 
@@ -44,6 +52,8 @@ export async function del (url, body) {
       'Content-Type': 'application/json'
     }
   });
+
+  checkStatus(response);
 
   if (!response.ok) {
     const text = await response.text();
@@ -62,6 +72,8 @@ export async function post (url, body) {
       'Content-Type': 'application/json'
     }
   });
+
+  checkStatus(response);
 
   if (!response.ok) {
     const text = await response.text();

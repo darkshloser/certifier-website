@@ -5,7 +5,9 @@
 
 const config = require('config');
 const qs = require('qs');
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
+const fetch = require('/home/nicolas/Scripts/fetch');
+const parseLink = require('parse-link-header');
 
 const store = require('./store');
 const { keccak256 } = require('./utils');
@@ -35,11 +37,7 @@ const SANDBOX_DOCUMENT_HASH = hashDocumentNumbers([{
  *
  * @return {Object|String} response from the API, JSON is automatically parsed
  */
-async function _call (endpoint, method = 'GET', data = {}) {
-  const body = method === 'POST'
-    ? qs.stringify(data, { arrayFormat: 'brackets', encode: false })
-    : '';
-
+async function _call (endpoint, method = 'GET', data = {}, attempts = 0) {
   const headers = {
     Authorization: `Token token=${token}`
   };
@@ -48,30 +46,51 @@ async function _call (endpoint, method = 'GET', data = {}) {
     headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
   }
 
-  return fetch(`https://api.onfido.com/v2${endpoint}`, {
-    method,
-    headers,
-    body
-  })
-    .then(async (r) => {
-      const rc = r.clone();
+  const url = endpoint.includes('api.onfido.com')
+    ? endpoint
+    : `https://api.onfido.com/v2${endpoint}`;
 
-      try {
-        const json = await r.json();
+  const options = { method, headers };
 
-        return json;
-      } catch (error) {
-        return rc.text();
-      }
-    })
-    .then((data) => {
-      if (data && data.error) {
-        console.warn('onfido error', data.error);
-        throw new Error(data.error.message);
-      }
+  if (method === 'POST') {
+    options.body = qs.stringify(data, { arrayFormat: 'brackets', encode: false });
+  }
 
-      return data;
+  const r = await fetch(url, options);
+
+  // Too many requests
+  if (r.status === 429) {
+    const timeout = Math.floor(Math.random() * Math.pow(2, attempts) * 1000);
+
+    console.warn(`[Too Many Request] will retry in ${Math.round(timeout / 1000)}s`);
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        _call(endpoint, method, data, attempts + 1).then(resolve).catch(reject);
+      }, timeout);
     });
+  }
+
+  const rc = r.clone();
+  const link = r.headers.get('link');
+
+  let result;
+
+  try {
+    result = await r.json();
+  } catch (error) {
+    result = await rc.text();
+  }
+
+  if (result && result.error) {
+    console.warn('onfido error', result.error);
+    throw new Error(result.error.message);
+  }
+
+  if (link) {
+    result._links = parseLink(link);
+  }
+
+  return result;
 }
 
 /**
@@ -80,9 +99,19 @@ async function _call (endpoint, method = 'GET', data = {}) {
  * @return {Array} list of all applicants
  */
 async function getApplicants () {
-  const result = await _call(`/applicants/`, 'GET');
+  const result = await _call(`/applicants/?per_page=50`, 'GET');
 
-  return result.applicants;
+  let applicants = result.applicants.slice();
+  let links = result._links;
+
+  while (links && links.next) {
+    const nextResult = await _call(links.next.url, 'GET');
+
+    applicants = applicants.concat(nextResult.applicants);
+    links = nextResult._links;
+  }
+
+  return applicants;
 }
 
 /**

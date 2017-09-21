@@ -21,6 +21,29 @@ const REDIS_REASON_KEY = 'reason';
 const REDIS_RESULT_KEY = 'result';
 const REDIS_STATUS_KEY = 'status';
 
+class Applicant {
+  constructor () {
+    this.checks = [];
+    this.status = STATUS.CREATED;
+  }
+
+  json () {
+    const { checks, status } = this;
+
+    return JSON.stringify({ checks, status });
+  }
+
+  load (data) {
+    if (data.checks !== undefined) {
+      this.checks = data.checks;
+    }
+
+    if (data.status !== undefined) {
+      this.status = data.status;
+    }
+  }
+}
+
 class RedisValue {
   /**
    * Constructor, taking as argument the Redis HKEY
@@ -62,7 +85,11 @@ class RedisValue {
    * @param {String} data
    */
   async set (data) {
-    await redis.hset(this.hkey, this.vkey);
+    if (data) {
+      return redis.hset(this.hkey, this.vkey, data);
+    }
+
+    return redis.hdel(this.hkey, this.vkey);
   }
 }
 
@@ -90,21 +117,33 @@ class RedisSet {
   }
 
   /**
+   * Return the number of elements in the resources'
+   * set
+   *
+   * @todo  Better size method
+   *
+   * @return {Promise<Number>}
+   */
+  async count () {
+    const ids = await this.getIds();
+
+    return ids.length;
+  }
+
+  /**
    * Return all resources stored in Redis
    * for this specific set.
-   * The Promise resolves with an Object, which
-   * keys are the ids, and value the actual data
+   * The Promise resolves with an Array containing
+   * all the data Objects
    *
-   * @return {Promise<Object>}
+   * @return {Promise<Array>}
    */
   async getAll () {
     const ids = await this.getIds();
-    const all = {};
+    const all = [];
 
     for (let id of ids) {
-      const data = await this.get(id);
-
-      all[id] = data;
+      all.push(await this.get(id));
     }
 
     return all;
@@ -118,9 +157,17 @@ class RedisSet {
    * @return {Promise<Object|null>}
    */
   async get (id) {
-    const data = await redis.hget(this.hkey, `${this.vkey}:${id}`);
+    const json = await redis.hget(this.hkey, `${this.vkey}:${id}`);
 
-    return data || null;
+    if (!json) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(json);
+    } catch (error) {
+      throw new Error(`could not parse data for ${this.hkey}::${this.vkey}::${id} : "${json}"`);
+    }
   }
 
   /**
@@ -151,7 +198,6 @@ class RedisSet {
    */
   async store (data) {
     const { id } = data;
-    let nextData = Object.assign({}, data);
 
     if (!id) {
       throw new Error(`no id has been found in the given data to store : ${JSON.stringify(data)}`);
@@ -162,14 +208,9 @@ class RedisSet {
     if (!ids.includes(id)) {
       ids.push(id);
       await redis.hset(this.hkey, this.vkey, JSON.stringify(ids));
-    } else {
-      const prevData = await this.get(id);
-
-      // Don't overwrite, append data
-      nextData = Object.assign({}, prevData || {}, nextData);
     }
 
-    await redis.hset(this.hkey, `${this.vkey}:${id}`, JSON.stringify(nextData));
+    await redis.hset(this.hkey, `${this.vkey}:${id}`, JSON.stringify(data));
   }
 }
 
@@ -207,7 +248,7 @@ class Identity {
   }
 
   async exists () {
-    return await redis.exists(this.hkey);
+    return redis.exists(this.hkey);
   }
 
   async getData () {
@@ -219,6 +260,15 @@ class Identity {
     ]);
 
     return { error, reason, result, status };
+  }
+
+  async setData ({ error, reson, result, status }) {
+    await Promise.all([
+      this.error.set(error),
+      this.reason.set(reson),
+      this.result.set(result),
+      this.status.set(status)
+    ]);
   }
 }
 

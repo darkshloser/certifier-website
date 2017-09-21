@@ -63,10 +63,9 @@ function get ({ certifier, feeRegistrar }) {
     await rateLimiter(address, ctx.remoteAddress);
 
     const identity = new Identity(address);
-    const identityData = await identity.getData();
-    const certified = await certifier.isCertified(address);
 
-    const { result, status, reason, error } = identityData;
+    const { result, status, reason, error } = await identity.getData();
+    const certified = await certifier.isCertified(address);
 
     ctx.body = { certified, status, result, reason, error };
   });
@@ -115,16 +114,17 @@ function get ({ certifier, feeRegistrar }) {
       return error(ctx, 400, 'Signature / payment origin mismatch');
     }
 
-    const checkCount = await store.checkCount(address);
+    const identity = new Identity(address);
 
-    if (checkCount >= paymentCount * 3) {
+    if (await identity.checks.count() >= paymentCount * 3) {
       return error(ctx, 400, 'Only 3 checks are allowed per single fee payment');
     }
 
     const { sdkToken, applicantId } = await Onfido.createApplicant({ firstName, lastName });
 
     // Store the applicant id in Redis
-    await store.set(address, { status: ONFIDO_STATUS.CREATED, applicantId });
+    await identity.applicants.store({ id: applicantId, status: ONFIDO_STATUS.CREATED });
+    await identity.setData({ status: ONFIDO_STATUS.CREATED });
 
     ctx.body = { sdkToken };
   });
@@ -134,30 +134,37 @@ function get ({ certifier, feeRegistrar }) {
 
     await rateLimiter(address, ctx.remoteAddress);
 
-    const stored = await store.get(address);
     const certified = await certifier.isCertified(address);
 
     if (certified) {
       return error(ctx, 400, 'Already certified');
     }
 
-    if (!stored || stored.status !== ONFIDO_STATUS.CREATED || !stored.applicantId) {
+    const identity = new Identity(address);
+    const applicants = await identity.applicants.getAll();
+    const applicant = applicants.find((app) => app.status === ONFIDO_STATUS.CREATED);
+
+    if (!applicant) {
       return error(ctx, 400, 'No application has been created for this address');
     }
 
-    const { applicantId } = stored;
-    const checks = await Onfido.getChecks(applicantId);
+    const checks = await Onfido.getChecks(applicant.id);
 
     if (checks.length > 0) {
       return error(ctx, 400, 'Cannot create any more checks for this applicant');
     }
 
-    const { checkId } = await Onfido.createCheck(applicantId, address);
+    const { checkId } = await Onfido.createCheck(applicant.id, address);
 
-    console.warn(`> created check ${checkId} for ${applicantId}`);
+    console.warn(`> created check ${checkId} for ${applicant.id}`);
 
     // Store the applicant id in Redis
-    await store.set(address, { status: ONFIDO_STATUS.PENDING, applicantId, checkId });
+    applicant.checkId = checkId;
+    applicant.status = ONFIDO_STATUS.PENDING;
+
+    await identity.applicants.store(applicant);
+    await identity.checks.store({ id: checkId, status: ONFIDO_STATUS.PENDING });
+    await identity.setData({ status: ONFIDO_STATUS.PENDING });
 
     ctx.body = { result: 'ok' };
   });

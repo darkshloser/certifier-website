@@ -4,6 +4,7 @@
 'use strict';
 
 const redis = require('./redis');
+const Identity = require('./identity');
 
 const ONFIDO_CHECKS = 'onfido-checks';
 const ONFIDO_CHECKS_CHANNEL = 'onfido-checks-channel';
@@ -66,6 +67,19 @@ class Store {
       }, {});
 
     return stored;
+  }
+
+  /**
+   * Get all the identities stored in Redis
+   *
+   * @return {Promise<[Identity]>}
+   */
+  static async getAllIdentities () {
+    const keys = await redis.keys(`${Identity.HKEY_PREFIX}*`);
+    const addresses = keys.map((key) => key.replace(Identity.HKEY_PREFIX, ''));
+    const identities = addresses.map((address) => new Identity(address));
+
+    return identities;
   }
 
   /**

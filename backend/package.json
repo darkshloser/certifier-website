@@ -31,6 +31,7 @@
     "koa-router": "7.2.1",
     "lodash.chunk": "4.2.0",
     "node-fetch": "1.7.3",
+    "parse-link-header": "1.0.1",
     "qs": "6.5.1",
     "redis": "2.8.0",
     "sha1": "1.1.1",
