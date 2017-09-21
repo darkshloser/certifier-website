@@ -21,10 +21,10 @@ const ONFIDO_STATUS = {
 
 const ONFIDO_URL_REGEX = /applicants\/([a-z0-9-]+)\/checks\/([a-z0-9-]+)$/i;
 const ONFIDO_TAG_REGEX = /^address:(0x[0-9abcdef]{40})$/i;
-const SANDBOX_DOCUMENT_HASH = keccak256(JSON.stringify([{
+const SANDBOX_DOCUMENT_HASH = hashDocumentNumbers([{
   type: 'passport',
   value: '9999999999'
-}]));
+}]);
 
 /**
  * Make a call to the Onfido API (V2)
@@ -247,6 +247,22 @@ async function verifyCheck ({ applicantId, checkId }, check) {
 }
 
 /**
+ * Deterministic way to hash the array of document numbers
+ *
+ * @param {Array} documentNumbers array of document numbers as returned from Onfido
+ *
+ * @return {String} keccak256 hash
+ */
+function hashDocumentNumbers (documentNumbers) {
+  const string = documentNumbers
+                  .map(({ value, type }) => `${value}:${type}`)
+                  .sort()
+                  .join(',');
+
+  return keccak256(string);
+}
+
+/**
  * Check that the document isn't from US and hasn't been used before
  *
  * @param {Object} documentReport as sent from Onfido
@@ -261,7 +277,7 @@ async function verifyDocument (documentReport) {
     return 'blocked-country';
   }
 
-  const hash = keccak256(JSON.stringify(properties['document_numbers']));
+  const hash = hashDocumentNumbers(properties['document_numbers']);
 
   // Allow sandbox documents to go through
   if (hash === SANDBOX_DOCUMENT_HASH) {
