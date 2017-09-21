@@ -153,6 +153,8 @@ function get ({ certifier, feeRegistrar }) {
 
     const { checkId } = await Onfido.createCheck(applicantId, address);
 
+    console.warn(`> created check ${checkId} for ${applicantId}`);
+
     // Store the applicant id in Redis
     await store.set(address, { status: ONFIDO_STATUS.PENDING, applicantId, checkId });
 
