@@ -67,6 +67,12 @@ function get ({ connector, certifier, feeRegistrar }) {
     ctx.body = { fee: '0x' + fee.toString(16), feeRegistrar: address };
   });
 
+  router.get('/certifier', async (ctx, next) => {
+    const { address } = certifier;
+
+    ctx.body = { certifier: address };
+  });
+
   router.post('/fee-tx', async (ctx, next) => {
     const { tx } = ctx.request.body;
 

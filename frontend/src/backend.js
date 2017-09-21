@@ -48,6 +48,12 @@ class Backend {
     return post(this.url(`/onfido/${address}/check`));
   }
 
+  async certifierAddress () {
+    const { certifier } = await get(this.url(`/certifier`));
+
+    return certifier;
+  }
+
   async fee () {
     const { fee, feeRegistrar } = await get(this.url(`/fee`));
 
