@@ -7,6 +7,9 @@ const config = require('config');
 const qs = require('qs');
 const fetch = require('node-fetch');
 
+const store = require('./store');
+const { keccak256 } = require('./utils');
+
 const { token } = config.get('onfido');
 
 const ONFIDO_STATUS = {
@@ -18,6 +21,10 @@ const ONFIDO_STATUS = {
 
 const ONFIDO_URL_REGEX = /applicants\/([a-z0-9-]+)\/checks\/([a-z0-9-]+)$/i;
 const ONFIDO_TAG_REGEX = /^address:(0x[0-9abcdef]{40})$/i;
+const SANDBOX_DOCUMENT_HASH = hashDocumentNumbers([{
+  type: 'passport',
+  value: '9999999999'
+}]);
 
 /**
  * Make a call to the Onfido API (V2)
@@ -170,27 +177,6 @@ async function createApplicant ({ firstName, lastName }) {
   return { applicantId: applicant.id, sdkToken };
 }
 
-/**
- * Update an applicant on Onfido
- *
- * @param {String} applicantId
- * @param {String} options.country
- * @param {String} options.firstName
- * @param {String} options.lastName
- *
- * @return {Object} contains `sdkToken` (String)
- */
-async function updateApplicant (applicantId, { firstName, lastName }) {
-  await _call(`/applicants/${applicantId}`, 'PUT', {
-    first_name: firstName,
-    last_name: lastName
-  });
-
-  const sdkToken = await createToken(applicantId);
-
-  return { sdkToken };
-}
-
 async function createToken (applicantId) {
   const sdk = await _call('/sdk_token', 'POST', {
     applicant_id: applicantId,
@@ -238,17 +224,15 @@ async function verifyCheck ({ applicantId, checkId }, check) {
   let { valid } = status;
 
   const reports = await getReports(checkId);
-  const clearReports = reports.filter((report) => report.result === 'clear');
+  const documentReport = reports.find((report) => report.name === 'document');
 
-  if (valid) {
-    clearReports.forEach((clearReport) => {
-      const countryCode = clearReport.properties['nationality'] || clearReport.properties['issuing_country'];
+  if (valid && documentReport) {
+    const documentInvalidReason = await verifyDocument(documentReport);
 
-      if (countryCode && countryCode.toUpperCase() === 'USA') {
-        reason = 'blocked-country';
-        valid = false;
-      }
-    });
+    if (documentInvalidReason) {
+      reason = documentInvalidReason;
+      valid = false;
+    }
   } else {
     const unclearReport = reports.find((report) => report.result !== 'clear');
 
@@ -262,6 +246,53 @@ async function verifyCheck ({ applicantId, checkId }, check) {
   return { applicantId, checkId, address, valid, reason };
 }
 
+/**
+ * Deterministic way to hash the array of document numbers
+ *
+ * @param {Array} documentNumbers array of document numbers as returned from Onfido
+ *
+ * @return {String} keccak256 hash
+ */
+function hashDocumentNumbers (documentNumbers) {
+  const string = documentNumbers
+                  .map(({ value, type }) => `${value}:${type}`)
+                  .sort()
+                  .join(',');
+
+  return keccak256(string);
+}
+
+/**
+ * Check that the document isn't from US and hasn't been used before
+ *
+ * @param {Object} documentReport as sent from Onfido
+ *
+ * @return {String|null} string reason for rejection, or null if okay
+ */
+async function verifyDocument (documentReport) {
+  const { properties } = documentReport;
+  const countryCode = properties['nationality'] || properties['issuing_country'];
+
+  if (countryCode && countryCode.toUpperCase() === 'USA') {
+    return 'blocked-country';
+  }
+
+  const hash = hashDocumentNumbers(properties['document_numbers']);
+
+  // Allow sandbox documents to go through
+  if (hash === SANDBOX_DOCUMENT_HASH) {
+    return null;
+  }
+
+  if (store.hasDocumentBeenUsed(hash)) {
+    return 'used-document';
+  }
+
+  store.markDocumentAsUsed(hash);
+
+  return null;
+}
+
 module.exports = {
   checkStatus,
   createApplicant,
@@ -270,7 +301,6 @@ module.exports = {
   getApplicants,
   getCheck,
   getChecks,
-  updateApplicant,
   verify,
   verifyCheck,
 
