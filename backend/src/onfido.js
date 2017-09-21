@@ -53,25 +53,25 @@ async function _call (endpoint, method = 'GET', data = {}) {
     headers,
     body
   })
-  .then(async (r) => {
-    const rc = r.clone();
+    .then(async (r) => {
+      const rc = r.clone();
 
-    try {
-      const json = await r.json();
+      try {
+        const json = await r.json();
 
-      return json;
-    } catch (error) {
-      return rc.text();
-    }
-  })
-  .then((data) => {
-    if (data && data.error) {
-      console.warn('onfido error', data.error);
-      throw new Error(data.error.message);
-    }
+        return json;
+      } catch (error) {
+        return rc.text();
+      }
+    })
+    .then((data) => {
+      if (data && data.error) {
+        console.warn('onfido error', data.error);
+        throw new Error(data.error.message);
+      }
 
-    return data;
-  });
+      return data;
+    });
 }
 
 /**
@@ -94,7 +94,7 @@ async function getApplicants () {
  * @return {Object} check returned by the Onfido API
  */
 async function getCheck (applicantId, checkId) {
-  return await _call(`/applicants/${applicantId}/checks/${checkId}`, 'GET');
+  return _call(`/applicants/${applicantId}/checks/${checkId}`, 'GET');
 }
 
 /**
@@ -255,9 +255,9 @@ async function verifyCheck ({ applicantId, checkId }, check) {
  */
 function hashDocumentNumbers (documentNumbers) {
   const string = documentNumbers
-                  .map(({ value, type }) => `${value}:${type}`)
-                  .sort()
-                  .join(',');
+    .map(({ value, type }) => `${value}:${type}`)
+    .sort()
+    .join(',');
 
   return keccak256(string);
 }
