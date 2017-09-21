@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 
-import { del, get, post } from './utils';
+import { get, post } from './utils';
 
 class Backend {
   constructor (url) {
