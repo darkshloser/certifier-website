@@ -26,7 +26,7 @@ class AccountCertifier {
     this._certifier = new Certifier(this._connector, contractAddress);
 
     this.init();
-    this.sync();
+    // this.sync();
 
     // Sync with Onfido every 30 minutes
     // setInterval(() => this.sync(), 30 * 60 * 1000);

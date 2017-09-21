@@ -35,6 +35,8 @@ class Backend {
   }
 
   async createApplicant (address, { country, firstName, lastName, signature, message }) {
+    console.warn('sending `createApplicant` from FE to BE');
+
     return post(this.url(`/onfido/${address}/applicant`), {
       country,
       firstName,

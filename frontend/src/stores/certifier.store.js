@@ -70,9 +70,8 @@ class CertifierStore {
   @observable onfido;
   @observable pending;
 
-  onfidoObject = null;
-  sdkToken = null;
-  shouldMountOnfido = false;
+  sdkToken;
+  shouldMountOnfido;
 
   constructor () {
     appStore.register('certify', this.load);
@@ -86,6 +85,8 @@ class CertifierStore {
   };
 
   @action _init () {
+    this.unmountOnfido();
+
     this.errorReason = '';
     this.firstName = '';
     this.lastName = '';
@@ -93,7 +94,6 @@ class CertifierStore {
     this.onfido = false;
     this.pending = false;
 
-    this.onfidoObject = null;
     this.sdkToken = null;
     this.shouldMountOnfido = false;
   }
@@ -103,6 +103,7 @@ class CertifierStore {
   };
 
   async createApplicant () {
+    console.warn('certifier_store::createApplicant');
     this.setLoading(true);
 
     if (!feeStore.storedPhrase) {
@@ -121,6 +122,7 @@ class CertifierStore {
     const signature = EthJS.toRpcSig(v, r, s);
 
     try {
+      console.warn('certifier_store::createApplicant calling backend');
       const { sdkToken } = await backend.createApplicant(payer, {
         firstName,
         lastName,
@@ -128,6 +130,7 @@ class CertifierStore {
         signature
       });
 
+      console.warn('certifier_store::createApplicant got sdkToken : ' + sdkToken);
       this.shouldMountOnfido = true;
       this.sdkToken = sdkToken;
 
@@ -155,12 +158,21 @@ class CertifierStore {
       return;
     }
 
+    let completed = false;
+
+    const onComplete = () => {
+      if (!completed) {
+        this.handleOnfidoComplete();
+        completed = true;
+      }
+    };
+
     this.shouldMountOnfido = false;
     this.onfidoObject = Onfido.init({
       useModal: false,
       token: this.sdkToken,
       containerId: 'onfido-mount',
-      onComplete: () => this.handleOnfidoComplete(),
+      onComplete: onComplete,
       steps: [
         {
           type: 'document',
