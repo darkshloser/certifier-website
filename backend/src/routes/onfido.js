@@ -64,10 +64,10 @@ function get ({ certifier, feeRegistrar }) {
     await rateLimiter(address, ctx.remoteAddress);
 
     const identity = new Identity(address);
-    const stored = await identity.get();
+    const identityData = await identity.getData();
     const certified = await certifier.isCertified(address);
 
-    const { result, status, reason, error } = stored;
+    const { result, status, reason, error } = identityData;
 
     ctx.body = { certified, status, result, reason, error };
   });

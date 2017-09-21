@@ -15,6 +15,10 @@ const STATUS = {
 
 const REDIS_APPLICANTS_KEY = 'applicants';
 const REDIS_CHECKS_KEY = 'checks';
+
+const REDIS_ERROR_KEY = 'error';
+const REDIS_REASON_KEY = 'reason';
+const REDIS_RESULT_KEY = 'result';
 const REDIS_STATUS_KEY = 'status';
 
 class RedisValue {
@@ -188,6 +192,9 @@ class Identity {
     this.applicants = new RedisSet(this.hkey, REDIS_APPLICANTS_KEY);
     this.checks = new RedisSet(this.hkey, REDIS_CHECKS_KEY);
 
+    this.error = new RedisValue(this.hkey, REDIS_ERROR_KEY);
+    this.reason = new RedisValue(this.hkey, REDIS_REASON_KEY);
+    this.result = new RedisValue(this.hkey, REDIS_RESULT_KEY);
     this.status = new RedisValue(this.hkey, REDIS_STATUS_KEY);
   }
 
@@ -203,12 +210,15 @@ class Identity {
     return await redis.exists(this.hkey);
   }
 
-  async get () {
-    const [ status ] = await Promise.all([
+  async getData () {
+    const [ error, reason, result, status ] = await Promise.all([
+      this.error.get(),
+      this.reason.get(),
+      this.result.get(),
       this.status.get()
     ]);
 
-    return { status };
+    return { error, reason, result, status };
   }
 }
 
