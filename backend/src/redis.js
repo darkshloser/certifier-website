@@ -26,13 +26,15 @@ for (const func of [
   // Plain keys
   'get', 'set', 'incr',
   // Hashes
-  'hget', 'hgetall', 'hset', 'hdel', 'hscan',
+  'hget', 'hgetall', 'hset', 'hdel', 'hscan', 'hlen', 'hexists',
   // Sets
   'sadd', 'spop', 'smembers', 'sscan', 'srem',
   // Pubsub
   'publish', 'subscribe',
   // Keys
-  'exists'
+  'exists',
+  // Expires
+  'pexpire'
 ]) {
   exports[func] = promisify(client[func].bind(client));
 }

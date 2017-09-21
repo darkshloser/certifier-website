@@ -5,24 +5,34 @@
 
 const EthJS = require('ethereumjs-util');
 const Router = require('koa-router');
+const crypto = require('crypto');
+const config = require('config');
 
 const Identity = require('../identity');
 const Onfido = require('../onfido');
 const store = require('../store');
-const { error } = require('./utils');
+const { error, rateLimiter } = require('./utils');
 const { buf2add } = require('../utils');
 
 const { ONFIDO_STATUS } = Onfido;
 
 function get ({ certifier, feeRegistrar }) {
+  const webhookToken = config.get('onfido.webhookToken');
+
   const router = new Router({
     prefix: '/api/onfido'
   });
 
   router.post('/webhook', async (ctx, next) => {
     const { payload } = ctx.request.body;
+    const signature = ctx.request.headers['x-signature'];
 
-    if (!payload) {
+    const hmac = crypto.createHmac('sha1', webhookToken);
+
+    // TODO: Find a way to get original body before parsing
+    hmac.update(JSON.stringify(ctx.request.body));
+
+    if (!payload || signature !== hmac.digest('hex')) {
       return error(ctx);
     }
 
@@ -50,8 +60,10 @@ function get ({ certifier, feeRegistrar }) {
    */
   router.get('/:address', async (ctx, next) => {
     const { address } = ctx.params;
-    const identity = new Identity(address);
 
+    await rateLimiter(address, ctx.remoteAddress);
+
+    const identity = new Identity(address);
     const stored = await identity.get();
     const certified = await certifier.isCertified(address);
 
@@ -62,6 +74,9 @@ function get ({ certifier, feeRegistrar }) {
 
   router.post('/:address/applicant', async (ctx, next) => {
     const { address } = ctx.params;
+
+    await rateLimiter(address, ctx.remoteAddress);
+
     const { firstName, lastName, signature, message } = ctx.request.body;
 
     if (!firstName || !lastName || firstName.length < 2 || lastName.length < 2) {
@@ -94,7 +109,7 @@ function get ({ certifier, feeRegistrar }) {
     const signPubKey = EthJS.ecrecover(msgHash, v, r, s);
     const signAddress = buf2add(EthJS.pubToAddress(signPubKey));
 
-    const paymentOrigins = await feeRegistrar.paymentOrigins(address);
+    const { paymentCount, paymentOrigins } = await feeRegistrar.paymentStatus(address);
 
     if (!paymentOrigins.includes(signAddress)) {
       console.error('signature / payment origin mismatch', { paymentOrigins, signAddress });
@@ -103,7 +118,7 @@ function get ({ certifier, feeRegistrar }) {
 
     const checkCount = await store.Onfido.checkCount(address);
 
-    if (checkCount >= 3) {
+    if (checkCount >= paymentCount * 3) {
       return error(ctx, 400, 'Only 3 checks are allowed per single fee payment');
     }
 
@@ -117,6 +132,9 @@ function get ({ certifier, feeRegistrar }) {
 
   router.post('/:address/check', async (ctx, next) => {
     const { address } = ctx.params;
+
+    await rateLimiter(address, ctx.remoteAddress);
+
     const stored = await store.Onfido.get(address);
     const certified = await certifier.isCertified(address);
 
@@ -131,8 +149,8 @@ function get ({ certifier, feeRegistrar }) {
     const { applicantId } = stored;
     const checks = await Onfido.getChecks(applicantId);
 
-    if (checks.length >= 3) {
-      return error(ctx, 400, 'Only 3 checks are allowed per single fee payment');
+    if (checks.length > 0) {
+      return error(ctx, 400, 'Cannot create any more checks for this applicant');
     }
 
     const { checkId } = await Onfido.createCheck(applicantId, address);

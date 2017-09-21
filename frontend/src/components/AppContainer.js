@@ -4,7 +4,7 @@ import { Container, Header, Segment } from 'semantic-ui-react';
 
 import appStore from '../stores/app.store';
 
-const contentStyle = {
+const baseContentStyle = {
   backgroundColor: 'white',
   padding: '4em 2.5em'
 };
@@ -15,7 +15,12 @@ export default class AppContainer extends Component {
     title: PropTypes.string.isRequired,
 
     footer: PropTypes.node,
-    header: PropTypes.node
+    header: PropTypes.node,
+    style: PropTypes.object
+  };
+
+  static defaultProps = {
+    style: {}
   };
 
   render () {
@@ -30,6 +35,8 @@ export default class AppContainer extends Component {
       style.paddingBottom = '2em';
       style.paddingTop = '5em';
     }
+
+    const contentStyle = Object.assign({}, baseContentStyle, this.props.style);
 
     const titleNode = padding
       ? <Header as='h4'>{title}</Header>

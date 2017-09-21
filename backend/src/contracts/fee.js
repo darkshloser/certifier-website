@@ -42,16 +42,19 @@ class Fee extends Contract {
   }
 
   /**
-   * Get the payment origins
+   * Get the payment origins (addresses) and count
    *
-   * @param {String}  address `0x` prefixed
+   * @param {String} address `0x` prefixed
    *
-   * @return {Promise<Array>}
+   * @return {Promise<Object>} contains `paymentCount` and `paymentOrigins`
    */
-  async paymentOrigins (address) {
-    const [ , paymentOrigins ] = await this.methods.payer(address).get();
+  async paymentStatus (address) {
+    const [ paymentCount, paymentOrigins ] = await this.methods.payer(address).get();
 
-    return paymentOrigins;
+    return {
+      paymentCount,
+      paymentOrigins
+    };
   }
 }
 

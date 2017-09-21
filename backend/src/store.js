@@ -110,9 +110,9 @@ class Onfido {
 
       next = Number(cursor);
 
-      for (const href of hrefs) {
-        await callback(href);
-      }
+      await Promise.all(
+        hrefs.map((href) => callback(href))
+      );
 
     // `next` will be `0` at the end of iteration, explained here:
     // https://redis.io/commands/scan

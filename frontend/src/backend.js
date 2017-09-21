@@ -48,6 +48,12 @@ class Backend {
     return post(this.url(`/onfido/${address}/check`));
   }
 
+  async certifierAddress () {
+    const { certifier } = await get(this.url(`/certifier`));
+
+    return certifier;
+  }
+
   async fee () {
     const { fee, feeRegistrar } = await get(this.url(`/fee`));
 
@@ -68,22 +74,6 @@ class Backend {
     const { nonce } = await get(this.url(`/accounts/${address}/nonce`));
 
     return nonce;
-  }
-
-  async getPendingTx (address) {
-    const { pending } = await get(this.url(`/accounts/${address}/pending`));
-
-    return pending;
-  }
-
-  async deletePendingTx (address, sign) {
-    return del(this.url(`/accounts/${address}/pending/${sign}`));
-  }
-
-  async getTx (txHash) {
-    const { transaction } = await get(this.url(`/tx/${txHash}`));
-
-    return transaction;
   }
 
   async sendFeeTx (tx) {

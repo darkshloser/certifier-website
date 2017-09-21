@@ -5,6 +5,7 @@
 
 const Router = require('koa-router');
 
+const { rateLimiter } = require('./utils');
 const { hex2big, big2hex } = require('../utils');
 
 function get ({ connector, certifier, feeRegistrar }) {
@@ -14,6 +15,9 @@ function get ({ connector, certifier, feeRegistrar }) {
 
   router.get('/:address/incoming-txs', async (ctx, next) => {
     const { address } = ctx.params;
+
+    await rateLimiter(address, ctx.remoteAddress);
+
     const balance = await connector.balance(address);
 
     const incomingTxAddr = new Set();
@@ -35,6 +39,9 @@ function get ({ connector, certifier, feeRegistrar }) {
 
   router.get('/:address/fee', async (ctx, next) => {
     const { address } = ctx.params;
+
+    await rateLimiter(address, ctx.remoteAddress);
+
     const [ balance, paid ] = await Promise.all([
       connector.balance(address),
       feeRegistrar.hasPaid(address)
@@ -48,6 +55,8 @@ function get ({ connector, certifier, feeRegistrar }) {
 
   router.get('/:address/nonce', async (ctx, next) => {
     const { address } = ctx.params;
+
+    await rateLimiter(address, ctx.remoteAddress);
 
     const nonce = await connector.nextNonce(address);
 

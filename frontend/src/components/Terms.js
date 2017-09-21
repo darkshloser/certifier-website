@@ -26,7 +26,7 @@ export default class Terms extends Component {
           <TermsMD />
         </Segment>
         <Checkbox
-          label={`I confirm that I have read and agreed to the Terms and Conditions`}
+          label={`I confirm that I have read and agreed to the Terms & Conditions`}
           checked={termsAccepted}
           onChange={this.handleTermsChecked}
         />
