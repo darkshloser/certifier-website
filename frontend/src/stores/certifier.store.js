@@ -65,6 +65,7 @@ class CertifierStore {
   @observable pending;
 
   sdkToken = null;
+  shouldMountOnfido = false;
 
   constructor () {
     appStore.register('certify', this.load);
@@ -84,6 +85,9 @@ class CertifierStore {
     this.loading = false;
     this.onfido = false;
     this.pending = false;
+
+    this.sdkToken = null;
+    this.shouldMountOnfido = false;
   }
 
   load = async () => {
