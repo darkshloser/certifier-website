@@ -5,6 +5,8 @@
 
 const EthJS = require('ethereumjs-util');
 const Router = require('koa-router');
+const crypto = require('crypto');
+const config = require('config');
 
 const Onfido = require('../onfido');
 const store = require('../store');
@@ -14,14 +16,22 @@ const { buf2add } = require('../utils');
 const { ONFIDO_STATUS } = Onfido;
 
 function get ({ certifier, feeRegistrar }) {
+  const webhookToken = config.get('onfido.webhookToken');
+
   const router = new Router({
     prefix: '/api/onfido'
   });
 
   router.post('/webhook', async (ctx, next) => {
     const { payload } = ctx.request.body;
+    const signature = ctx.request.headers['x-signature'];
 
-    if (!payload) {
+    const hmac = crypto.createHmac('sha1', webhookToken);
+
+    // TODO: Find a way to get original body before parsing
+    hmac.update(JSON.stringify(ctx.request.body));
+
+    if (!payload || signature !== hmac.digest('hex')) {
       return error(ctx);
     }
 
