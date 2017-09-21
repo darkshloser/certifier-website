@@ -64,6 +64,7 @@ class CertifierStore {
   @observable onfido;
   @observable pending;
 
+  onfidoObject = null;
   sdkToken = null;
   shouldMountOnfido = false;
 
@@ -86,6 +87,7 @@ class CertifierStore {
     this.onfido = false;
     this.pending = false;
 
+    this.onfidoObject = null;
     this.sdkToken = null;
     this.shouldMountOnfido = false;
   }
