@@ -21,6 +21,10 @@ const ONFIDO_STATUS = {
 
 const ONFIDO_URL_REGEX = /applicants\/([a-z0-9-]+)\/checks\/([a-z0-9-]+)$/i;
 const ONFIDO_TAG_REGEX = /^address:(0x[0-9abcdef]{40})$/i;
+const SANDBOX_DOCUMENT_HASH = keccak256(JSON.stringify([{
+  type: 'passport',
+  value: '9999999999'
+}]));
 
 /**
  * Make a call to the Onfido API (V2)
@@ -258,6 +262,11 @@ async function verifyDocument (documentReport) {
   }
 
   const hash = keccak256(JSON.stringify(properties['document_numbers']));
+
+  // Allow sandbox documents to go through
+  if (hash === SANDBOX_DOCUMENT_HASH) {
+    return null;
+  }
 
   if (store.hasDocumentBeenUsed(hash)) {
     return 'used-document';
