@@ -124,7 +124,6 @@ function get ({ certifier, feeRegistrar }) {
 
     // Store the applicant id in Redis
     await identity.applicants.store({ id: applicantId, status: ONFIDO_STATUS.CREATED });
-    await identity.setData({ status: ONFIDO_STATUS.CREATED });
 
     ctx.body = { sdkToken };
   });
@@ -164,7 +163,6 @@ function get ({ certifier, feeRegistrar }) {
 
     await identity.applicants.store(applicant);
     await identity.checks.store({ id: checkId, status: ONFIDO_STATUS.PENDING });
-    await identity.setData({ status: ONFIDO_STATUS.PENDING });
 
     ctx.body = { result: 'ok' };
   });

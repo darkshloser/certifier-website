@@ -5,8 +5,8 @@
 
 const config = require('config');
 const qs = require('qs');
-// const fetch = require('node-fetch');
-const fetch = require('/home/nicolas/Scripts/fetch');
+const fetch = require('node-fetch');
+// const fetch = require('/home/nicolas/Scripts/fetch');
 const parseLink = require('parse-link-header');
 
 const store = require('./store');
@@ -72,6 +72,7 @@ async function _call (endpoint, method = 'GET', data = {}, attempts = 0) {
 
   const rc = r.clone();
   const link = r.headers.get('link');
+  const count = r.headers.get('x-total-count');
 
   let result;
 
@@ -88,6 +89,10 @@ async function _call (endpoint, method = 'GET', data = {}, attempts = 0) {
 
   if (link) {
     result._links = parseLink(link);
+  }
+
+  if (count) {
+    result._count = parseInt(count);
   }
 
   return result;
@@ -112,6 +117,12 @@ async function getApplicants () {
   }
 
   return applicants;
+}
+
+async function getApplicantsCount () {
+  const result = await _call(`/applicants/?per_page=1`, 'GET');
+
+  return result._count || 0;
 }
 
 /**
@@ -206,6 +217,16 @@ async function createApplicant ({ firstName, lastName }) {
   return { applicantId: applicant.id, sdkToken };
 }
 
+/**
+ * Delete an applicant on Onfido (will
+ * work only for applicants with no checks)
+ *
+ * @param {String} applicantId
+ */
+async function deleteApplicant (applicantId) {
+  await _call(`/applicants/${applicantId}`, 'DELETE');
+}
+
 async function createToken (applicantId) {
   const sdk = await _call('/sdk_token', 'POST', {
     applicant_id: applicantId,
@@ -235,18 +256,18 @@ async function verify (href) {
 }
 
 async function verifyCheck ({ applicantId, checkId }, check) {
+  const creationDate = check.created_at;
   const status = checkStatus(check);
   const addressTag = check.tags.find((tag) => ONFIDO_TAG_REGEX.test(tag));
 
   if (!addressTag) {
-    throw new Error(`Could not find an address for this applicant check (${applicantId}/${checkId})`);
+    throw new Error(`could not find an address for "/applicants/${applicantId}/checks/${checkId}"`);
   }
 
   const [, address] = ONFIDO_TAG_REGEX.exec(addressTag);
 
   if (status.pending) {
-    // throw new Error(`onfido check is still pending (${applicantId}/${checkId})`);
-    return { applicantId, checkId, address, pending: true };
+    return { applicantId, checkId, address, creationDate, pending: true };
   }
 
   let reason = check.result;
@@ -272,7 +293,7 @@ async function verifyCheck ({ applicantId, checkId }, check) {
     }
   }
 
-  return { applicantId, checkId, address, valid, reason };
+  return { applicantId, checkId, address, valid, reason, creationDate };
 }
 
 /**
@@ -327,7 +348,9 @@ module.exports = {
   createApplicant,
   createCheck,
   createToken,
+  deleteApplicant,
   getApplicants,
+  getApplicantsCount,
   getCheck,
   getChecks,
   verify,

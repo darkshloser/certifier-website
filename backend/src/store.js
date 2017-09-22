@@ -11,6 +11,14 @@ const ONFIDO_CHECKS_CHANNEL = 'onfido-checks-channel';
 const USED_DOCUMENTS = 'used-documents';
 
 class Store {
+  static async addInvalidApplicantId (applicantId) {
+    await redis.sadd('picops::invalid-applicants', applicantId);
+  }
+
+  static async getInvalidApplicantIds () {
+    return redis.smembers('picops::invalid-applicants');
+  }
+
   /**
    * Get the data for the given address.
    *
@@ -75,8 +83,7 @@ class Store {
    * @return {Promise<[Identity]>}
    */
   static async getAllIdentities () {
-    const keys = await redis.keys(`${Identity.HKEY_PREFIX}*`);
-    const addresses = keys.map((key) => key.replace(Identity.HKEY_PREFIX, ''));
+    const addresses = await redis.smembers(Identity.REDIS_PREFIX);
     const identities = addresses.map((address) => new Identity(address));
 
     return identities;
@@ -145,9 +152,9 @@ class Store {
 
       next = Number(cursor);
 
-      await Promise.all(
-        hrefs.map((href) => callback(href))
-      );
+      for (let href of hrefs) {
+        await callback(href);
+      }
 
     // `next` will be `0` at the end of iteration, explained here:
     // https://redis.io/commands/scan
