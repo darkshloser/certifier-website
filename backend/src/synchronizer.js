@@ -65,24 +65,34 @@ class Synchronizer {
     console.warn('> fetching number of applicants from Onfido...');
 
     const oApplicantsCount = await Onfido.getApplicantsCount();
+    const missingApplicants = oApplicantsCount - completedApplicants.length - invalidApplicantIds.length;
 
-    console.warn(`> there are ${oApplicantsCount} applicants in Onfido`);
+    console.warn(`> there are ${oApplicantsCount} applicants in Onfido, thus ${missingApplicants} missing`);
 
-    if (oApplicantsCount === completedApplicants.length + invalidApplicantIds.length) {
+    if (missingApplicants <= 0) {
       console.warn('> all applicants are synced');
       return;
     }
 
     // Get all applicants from Onfido
     console.warn('> fetching list of applicants from Onfido...');
-    const oApplicants = await Onfido.getApplicants();
+    // Fetch twice what's needed, just in case...
+    let oApplicants = await Onfido.getApplicants(missingApplicants * 2);
 
     console.warn(`> found ${oApplicants.length} applicants from Onfido`);
 
     // We need to check the status of applicants which aren't COMPLETED locally
     // and are not stored as invalid (eg. wrong or no address)
-    const toCheckApplicants = oApplicants
+    let toCheckApplicants = oApplicants
       .filter((app) => !completedApplicantIds.includes(app.id) && !invalidApplicantIds.includes(app.id));
+
+    if (toCheckApplicants.length < missingApplicants) {
+      console.warn(`> could not fetch enough missing applicants (${toCheckApplicants.length} / ${missingApplicants}). will fetch all of them...`);
+
+      oApplicants = await Onfido.getApplicants();
+      toCheckApplicants = oApplicants
+        .filter((app) => !completedApplicantIds.includes(app.id) && !invalidApplicantIds.includes(app.id));
+    }
 
     console.warn(`> there are ${toCheckApplicants.length} applicants on Onfido that needs to be synced`);
     // Get the checks from the incomplete applicants

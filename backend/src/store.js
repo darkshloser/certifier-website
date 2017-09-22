@@ -11,70 +11,25 @@ const ONFIDO_CHECKS_CHANNEL = 'onfido-checks-channel';
 const USED_DOCUMENTS = 'used-documents';
 
 class Store {
+  /**
+   * Add an invalid applicant id (eg. no address linked
+   * to it). This is useful so we don't go the Onfido
+   * to check the status of this applicant (which won't
+   * be stored in DB because no address is linked to it).
+   *
+   * @param {String} applicantId
+   */
   static async addInvalidApplicantId (applicantId) {
     await redis.sadd('picops::invalid-applicants', applicantId);
   }
 
+  /**
+   * Get a list of all the invalid applicant ids.
+   *
+   * @return {Promise<[String]>}
+   */
   static async getInvalidApplicantIds () {
     return redis.smembers('picops::invalid-applicants');
-  }
-
-  /**
-   * Get the data for the given address.
-   *
-   * @param  {String} address `0x` prefixed address
-   *
-   * @return {Promise<Object|null>}
-   */
-  static async get (address) {
-    const data = await redis.hget(ONFIDO_CHECKS, address.toLowerCase());
-
-    if (!data) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(data);
-    } catch (error) {
-      console.error(`could not parse JSON data: ${data}`);
-      return null;
-    }
-  }
-
-  /**
-   * Get all the results, keys are addresses, values
-   * are { status: String, applicantId: String, checkId: String }
-   *
-   * @return {Promise<Object|null>}
-   */
-  static async getAll () {
-    const data = await redis.hgetall(ONFIDO_CHECKS);
-
-    if (!data) {
-      return null;
-    }
-
-    const addresses = Object.keys(data);
-
-    // Parse JSON for each entry, fiter out
-    // non-JSON entries
-    const stored = addresses
-      .map((address) => {
-        try {
-          return JSON.parse(data[address]);
-        } catch (error) {
-          return null;
-        }
-      })
-      .reduce((stored, datum, index) => {
-        if (datum) {
-          stored[addresses[index]] = datum;
-        }
-
-        return stored;
-      }, {});
-
-    return stored;
   }
 
   /**
@@ -87,18 +42,6 @@ class Store {
     const identities = addresses.map((address) => new Identity(address));
 
     return identities;
-  }
-
-  /**
-   * Set the given data for the given address.
-   *
-   * @param  {String} address `0x` prefixed address
-   * @param  {Object} data    Javascript Object to set
-   *
-   * @return {Promise}
-   */
-  static async set (address, data) {
-    return redis.hset(ONFIDO_CHECKS, address.toLowerCase(), JSON.stringify(data));
   }
 
   /**

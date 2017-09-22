@@ -6,7 +6,6 @@
 const config = require('config');
 const qs = require('qs');
 const fetch = require('node-fetch');
-// const fetch = require('/home/nicolas/Scripts/fetch');
 const parseLink = require('parse-link-header');
 
 const store = require('./store');
@@ -101,9 +100,20 @@ async function _call (endpoint, method = 'GET', data = {}, attempts = 0) {
 /**
  * Get applicants from Onfido
  *
+ * @param {Number} limit the number of applicants (0 being the whole set)
+ *
  * @return {Array} list of all applicants
  */
-async function getApplicants () {
+async function getApplicants (limit = 0) {
+  // if limit is small enough, return one page
+  // with `limit` results
+  if (limit > 0 && limit < 50) {
+    const result = await _call(`/applicants/?per_page=${limit}`, 'GET');
+
+    return result.applicants;
+  }
+
+  // Otherwise, fetch all pages
   const result = await _call(`/applicants/?per_page=50`, 'GET');
 
   let applicants = result.applicants.slice();
