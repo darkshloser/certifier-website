@@ -72,7 +72,7 @@ function pause (time) {
 }
 
 function isValidAddress (value) {
-  return value && value.length === 42 && /^0x[0-9a-g]{40}$/i.test(value);
+  return value && value.length === 42 && /^0x[0-9a-f]{40}$/i.test(value);
 }
 
 function ejs2val (value, type) {
@@ -101,6 +101,14 @@ function keccak256 (data) {
   return keccak('keccak256')
     .update(Buffer.from(data))
     .digest('hex');
+}
+
+async function sleep (duration) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, duration);
+  });
 }
 
 function toChecksumAddress (_address) {
@@ -188,6 +196,7 @@ module.exports = {
   isValidAddress,
   pause,
   keccak256,
+  sleep,
   toChecksumAddress,
   waitForConfirmations
 };

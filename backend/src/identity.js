@@ -13,32 +13,24 @@ const STATUS = {
   COMPLETED: 'completed'
 };
 
+const RESULT = {
+  FAIL: 'fail',
+  SUCCESS: 'success'
+};
+
 const REDIS_PREFIX = 'picops::identities';
 
-const REDIS_APPLICANTS_KEY = 'applicants';
-const REDIS_CHECKS_KEY = 'checks';
-
-const REDIS_ERROR_KEY = 'error';
-const REDIS_REASON_KEY = 'reason';
-const REDIS_RESULT_KEY = 'result';
-const REDIS_STATUS_KEY = 'status';
-
-class RedisSet {
+class Resource {
   /**
    * Constructor, taking as argument the
    * prefix that will be used in Redis
    *
-   * @param  {String} prefix   - The Redis prefix
-   * @param  {[String]} fields - An Array of fields
+   * @param  {String} prefix      - The Redis prefix
+   * @param  {Identity} identity  - The linked identity
    */
-  constructor (prefix, fields, identity) {
-    this._fields = fields;
+  constructor (prefix, identity) {
     this._prefix = prefix;
     this._identity = identity;
-  }
-
-  get fields () {
-    return this._fields;
   }
 
   get identity () {
@@ -56,7 +48,7 @@ class RedisSet {
    * @return {Promise<Number>}
    */
   async count () {
-    return redis.scard(this.prefix);
+    return redis.hlen(this.prefix);
   }
 
   /**
@@ -68,12 +60,16 @@ class RedisSet {
    * @return {Promise<Array>}
    */
   async getAll () {
-    const ids = await this.getIds();
-    const all = [];
-
-    for (let id of ids) {
-      all.push(await this.get(id));
-    }
+    const results = await redis.hvals(this.prefix);
+    const all = results
+      .map((json) => {
+        try {
+          return JSON.parse(json);
+        } catch (error) {
+          console.error(`could not deserialise '${json}'`);
+        }
+      })
+      .filter((data) => data);
 
     return all;
   }
@@ -91,15 +87,16 @@ class RedisSet {
       return null;
     }
 
-    const object = { id };
+    const json = await redis.hget(this.prefix, id);
+    let data = null;
 
-    for (let field of this.fields) {
-      const value = await redis.hget(`${this.prefix}::${id}`, field);
-
-      object[field] = value || null;
+    try {
+      data = JSON.parse(json);
+    } catch (error) {
+      console.error(`could not deserialise '${json}'`);
     }
 
-    return object;
+    return data;
   }
 
   /**
@@ -108,7 +105,7 @@ class RedisSet {
    * @return {Promise<Array>}
    */
   async getIds () {
-    return redis.smembers(this.prefix);
+    return redis.hkeys(this.prefix);
   }
 
   /**
@@ -118,7 +115,7 @@ class RedisSet {
    * @return {Promise<Boolean>}
    */
   async has (id) {
-    return redis.sismember(this.prefix, id);
+    return redis.hexists(this.prefix, id);
   }
 
   /**
@@ -135,25 +132,11 @@ class RedisSet {
       throw new Error(`no id has been found in the given data to store : ${JSON.stringify(data)}`);
     }
 
-    if (!await this.identity.exists()) {
-      await this.identity.create();
-    }
+    // Create identity in case not created yet
+    await this.identity.create();
 
-    // If a new element, add it to the set of ids
-    if (!await this.has(id)) {
-      await redis.sadd(this.prefix, id);
-    }
-
-    for (let field of this.fields) {
-      const value = data[field];
-
-      // Set the field's value if any, or delete from HSET
-      if (value) {
-        await redis.hset(`${this.prefix}::${id}`, field, value);
-      } else {
-        await redis.hdel(`${this.prefix}::${id}`, field);
-      }
-    }
+    // Store the actual data
+    await redis.hset(this.prefix, id, JSON.stringify(data));
   }
 }
 
@@ -174,20 +157,8 @@ class Identity {
 
     const prefix = `${REDIS_PREFIX}::${this.address}`;
 
-    this._applicants = new RedisSet(
-      `${prefix}::${REDIS_APPLICANTS_KEY}`,
-      ['checkId'],
-      this
-    );
-
-    this._checks = new RedisSet(
-      `${prefix}::${REDIS_CHECKS_KEY}`,
-      [
-        'applicantId', 'creationDate',
-        'status', 'result', 'reason', 'error'
-      ],
-      this
-    );
+    this._applicants = new Resource(`${prefix}::applicants`, this);
+    this._checks = new Resource(`${prefix}::checks`, this);
   }
 
   get address () {
@@ -212,11 +183,13 @@ class Identity {
 
   async getData () {
     if (!await this.exists()) {
-      return {};
+      return { status: STATUS.UNKOWN };
     }
 
+    // @todo Sort checks by creation date as a ZSET
     const checks = await this.checks.getAll();
-    const check = checks.sort((checkA, checkB) => new Date(checkB.creationDate) - new Date(checkA.creationDate))[0];
+    const check = checks
+      .sort((checkA, checkB) => new Date(checkB.creationDate) - new Date(checkA.creationDate))[0];
 
     // No check, but exists. An application should have
     // been created, but no checks for now
@@ -224,12 +197,39 @@ class Identity {
       return { status: STATUS.CREATED };
     }
 
-    const { error, reason, result, status } = check;
+    return check;
+  }
 
-    return { error, reason, result, status };
+  async storeVerification (verification) {
+    const {
+      valid,
+      reason,
+      pending,
+      applicantId,
+      checkId,
+      creationDate,
+      documentHash
+    } = verification;
+
+    const check = { id: checkId, applicantId, creationDate, documentHash };
+
+    await this.applicants.store({ id: applicantId, checkId });
+
+    if (pending) {
+      return this.checks.store(Object.assign({}, check, { status: STATUS.PENDING }));
+    }
+
+    await this.checks.store(Object.assign({}, check, {
+      status: STATUS.COMPLETED,
+      result: valid ? RESULT.SUCCESS : RESULT.FAIL,
+      reason
+    }));
   }
 }
 
 Identity.REDIS_PREFIX = REDIS_PREFIX;
+
+Identity.RESULT = RESULT;
+Identity.STATUS = STATUS;
 
 module.exports = Identity;

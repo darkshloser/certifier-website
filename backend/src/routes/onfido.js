@@ -14,8 +14,6 @@ const store = require('../store');
 const { error, rateLimiter } = require('./utils');
 const { buf2add } = require('../utils');
 
-const { ONFIDO_STATUS } = Onfido;
-
 function get ({ certifier, feeRegistrar }) {
   const webhookToken = config.get('onfido.webhookToken');
 
@@ -123,7 +121,8 @@ function get ({ certifier, feeRegistrar }) {
     const { sdkToken, applicantId } = await Onfido.createApplicant({ firstName, lastName });
 
     // Store the applicant id in Redis
-    await identity.applicants.store({ id: applicantId, status: ONFIDO_STATUS.CREATED });
+    await store.addApplicant(applicantId);
+    await identity.applicants.store({ id: applicantId, status: Identity.STATUS.CREATED });
 
     ctx.body = { sdkToken };
   });
@@ -141,7 +140,7 @@ function get ({ certifier, feeRegistrar }) {
 
     const identity = new Identity(address);
     const applicants = await identity.applicants.getAll();
-    const applicant = applicants.find((app) => app.status === ONFIDO_STATUS.CREATED);
+    const applicant = applicants.find((app) => app.status === Identity.STATUS.CREATED);
 
     if (!applicant) {
       return error(ctx, 400, 'No application has been created for this address');
@@ -159,10 +158,10 @@ function get ({ certifier, feeRegistrar }) {
 
     // Store the applicant id in Redis
     applicant.checkId = checkId;
-    applicant.status = ONFIDO_STATUS.PENDING;
+    applicant.status = Identity.STATUS.PENDING;
 
     await identity.applicants.store(applicant);
-    await identity.checks.store({ id: checkId, status: ONFIDO_STATUS.PENDING });
+    await identity.checks.store({ id: checkId, status: Identity.STATUS.PENDING });
 
     ctx.body = { result: 'ok' };
   });

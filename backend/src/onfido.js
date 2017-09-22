@@ -9,16 +9,9 @@ const fetch = require('node-fetch');
 const parseLink = require('parse-link-header');
 
 const store = require('./store');
-const { keccak256 } = require('./utils');
+const { keccak256, sleep } = require('./utils');
 
 const { token } = config.get('onfido');
-
-const ONFIDO_STATUS = {
-  UNKNOWN: 'unknown',
-  CREATED: 'created',
-  PENDING: 'pending',
-  COMPLETED: 'completed'
-};
 
 const ONFIDO_URL_REGEX = /applicants\/([a-z0-9-]+)\/checks\/([a-z0-9-]+)$/i;
 const ONFIDO_TAG_REGEX = /^address:(0x[0-9abcdef]{40})$/i;
@@ -55,30 +48,25 @@ async function _call (endpoint, method = 'GET', data = {}, attempts = 0) {
     options.body = qs.stringify(data, { arrayFormat: 'brackets', encode: false });
   }
 
-  const r = await fetch(url, options);
+  const response = await fetch(url, options);
 
   // Too many requests
-  if (r.status === 429) {
-    const timeout = Math.floor(Math.random() * Math.pow(2, attempts) * 1000);
+  if (response.status === 429) {
+    const timeout = Math.floor(Math.pow(2, attempts) * 1000);
 
     console.warn(`[Too Many Request] will retry in ${Math.round(timeout / 1000)}s`);
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        _call(endpoint, method, data, attempts + 1).then(resolve).catch(reject);
-      }, timeout);
-    });
+    await sleep(timeout);
+    return _call(endpoint, method, data, attempts + 1);
   }
 
-  const rc = r.clone();
-  const link = r.headers.get('link');
-  const count = r.headers.get('x-total-count');
+  const link = response.headers.get('link');
+  const count = response.headers.get('x-total-count');
 
-  let result;
+  let result = await response.text();
 
   try {
-    result = await r.json();
+    result = JSON.parse(result);
   } catch (error) {
-    result = await rc.text();
   }
 
   if (result && result.error) {
@@ -100,33 +88,27 @@ async function _call (endpoint, method = 'GET', data = {}, attempts = 0) {
 /**
  * Get applicants from Onfido
  *
- * @param {Number} limit the number of applicants (0 being the whole set)
- *
- * @return {Array} list of all applicants
+ * @param {Function} callback  - Callback function called
+ *                             for each applicant. Returns wether
+ *                             we should fetch more applicants or
+ *                             not.
  */
-async function getApplicants (limit = 0) {
-  // if limit is small enough, return one page
-  // with `limit` results
-  if (limit > 0 && limit < 50) {
-    const result = await _call(`/applicants/?per_page=${limit}`, 'GET');
-
-    return result.applicants;
-  }
-
-  // Otherwise, fetch all pages
-  const result = await _call(`/applicants/?per_page=50`, 'GET');
-
-  let applicants = result.applicants.slice();
-  let links = result._links;
+async function getApplicants (callback) {
+  let links = { next: { url: '/applicants/?per_page=40' } };
 
   while (links && links.next) {
-    const nextResult = await _call(links.next.url, 'GET');
+    const result = await _call(links.next.url, 'GET');
 
-    applicants = applicants.concat(nextResult.applicants);
-    links = nextResult._links;
+    for (let applicant of result.applicants) {
+      const continueFetch = await callback(applicant);
+
+      if (!continueFetch) {
+        return;
+      }
+    }
+
+    links = result._links;
   }
-
-  return applicants;
 }
 
 async function getApplicantsCount () {
@@ -262,12 +244,6 @@ async function verify (href) {
   const [, applicantId, checkId] = ONFIDO_URL_REGEX.exec(href);
   const check = await getCheck(applicantId, checkId);
 
-  return verifyCheck({ applicantId, checkId }, check);
-}
-
-async function verifyCheck ({ applicantId, checkId }, check) {
-  const creationDate = check.created_at;
-  const status = checkStatus(check);
   const addressTag = check.tags.find((tag) => ONFIDO_TAG_REGEX.test(tag));
 
   if (!addressTag) {
@@ -276,8 +252,17 @@ async function verifyCheck ({ applicantId, checkId }, check) {
 
   const [, address] = ONFIDO_TAG_REGEX.exec(addressTag);
 
+  return verifyCheck({ applicantId, checkId }, address, check);
+}
+
+async function verifyCheck ({ applicantId, checkId }, address, check) {
+  const creationDate = check.created_at;
+  const status = checkStatus(check);
+  const result = { applicantId, checkId, address, creationDate };
+
   if (status.pending) {
-    return { applicantId, checkId, address, creationDate, pending: true };
+    result.pending = true;
+    return result;
   }
 
   let reason = check.result;
@@ -287,10 +272,14 @@ async function verifyCheck ({ applicantId, checkId }, check) {
   const documentReport = reports.find((report) => report.name === 'document');
 
   if (valid && documentReport) {
-    const documentInvalidReason = await verifyDocument(documentReport);
+    const documentVerification = await verifyDocument(documentReport);
 
-    if (documentInvalidReason) {
-      reason = documentInvalidReason;
+    if (documentVerification.hash) {
+      result.documentHash = documentVerification.hash;
+    }
+
+    if (!documentVerification.valid) {
+      reason = documentVerification.reason;
       valid = false;
     }
   } else {
@@ -303,7 +292,9 @@ async function verifyCheck ({ applicantId, checkId }, check) {
     }
   }
 
-  return { applicantId, checkId, address, valid, reason, creationDate };
+  result.valid = valid;
+  result.reason = reason;
+  return result;
 }
 
 /**
@@ -334,23 +325,22 @@ async function verifyDocument (documentReport) {
   const countryCode = properties['nationality'] || properties['issuing_country'];
 
   if (countryCode && countryCode.toUpperCase() === 'USA') {
-    return 'blocked-country';
+    return { valid: false, reason: 'blocked-country' };
   }
 
   const hash = hashDocumentNumbers(properties['document_numbers']);
 
   // Allow sandbox documents to go through
   if (hash === SANDBOX_DOCUMENT_HASH) {
-    return null;
+    return { valid: true, hash };
   }
 
   if (store.hasDocumentBeenUsed(hash)) {
-    return 'used-document';
+    return { valid: false, reason: 'used-document', hash };
   }
 
   store.markDocumentAsUsed(hash);
-
-  return null;
+  return { valid: true, hash };
 }
 
 module.exports = {
@@ -366,6 +356,5 @@ module.exports = {
   verify,
   verifyCheck,
 
-  ONFIDO_STATUS,
   ONFIDO_TAG_REGEX
 };

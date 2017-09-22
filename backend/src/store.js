@@ -6,55 +6,65 @@
 const redis = require('./redis');
 const Identity = require('./identity');
 
-const ONFIDO_CHECKS = 'onfido-checks';
 const ONFIDO_CHECKS_CHANNEL = 'onfido-checks-channel';
 const USED_DOCUMENTS = 'used-documents';
 
 class Store {
   /**
-   * Add an invalid applicant id (eg. no address linked
-   * to it). This is useful so we don't go the Onfido
-   * to check the status of this applicant (which won't
-   * be stored in DB because no address is linked to it).
+   * Add an applicant id to a Redis set
    *
    * @param {String} applicantId
    */
-  static async addInvalidApplicantId (applicantId) {
-    await redis.sadd('picops::invalid-applicants', applicantId);
+  static async addApplicant (applicantId) {
+    return redis.sadd('picops::applicants', applicantId);
   }
 
   /**
-   * Get a list of all the invalid applicant ids.
+   * Count the number of stored applicants
    *
-   * @return {Promise<[String]>}
+   * @return {Promise<Number>}
    */
-  static async getInvalidApplicantIds () {
-    return redis.smembers('picops::invalid-applicants');
+  static async countApplicants () {
+    return redis.scard('picops::applicants');
   }
 
   /**
-   * Get all the identities stored in Redis
+   * Return whether the given applicant id
+   * is already known
    *
-   * @return {Promise<[Identity]>}
+   * @param {String} applicantId
+   *
+   * @return {Promise<Boolean>}
    */
-  static async getAllIdentities () {
-    const addresses = await redis.smembers(Identity.REDIS_PREFIX);
-    const identities = addresses.map((address) => new Identity(address));
-
-    return identities;
+  static async hasApplicant (applicantId) {
+    return redis.sismember('picops::applicants', applicantId);
   }
 
   /**
-   * Increment check count for an address, return the current count
+   * Iterate over all identities
    *
-   * @param {String} address `0x` prefixed address
+   * @param  {Function} callback takes 1 argument:
+   *                             - address (`String`)
+   *                             will `await` for any returned `Promise`.
    *
-   * @return {Number} number of times this method has been called for this address
+   * @return {Promise} resolves after all identities have been processed
    */
-  static async checkCount (address) {
-    const countCheck = await redis.incr(`${address}:countCheck`);
+  static async scanIdentities (callback) {
+    let next = 0;
 
-    return Number(countCheck);
+    do {
+      // Get a batch of responses
+      const [cursor, addresses] = await redis.sscan(Identity.REDIS_PREFIX, next);
+
+      next = Number(cursor);
+
+      for (let address of addresses) {
+        await callback(new Identity(address));
+      }
+
+    // `next` will be `0` at the end of iteration, explained here:
+    // https://redis.io/commands/scan
+    } while (next !== 0);
   }
 
   /**

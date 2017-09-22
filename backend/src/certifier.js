@@ -10,9 +10,6 @@ const Identity = require('./identity');
 const Onfido = require('./onfido');
 const store = require('./store');
 const ParityConnector = require('./api/parity');
-// const { waitForConfirmations } = require('./utils');
-
-const { ONFIDO_STATUS } = Onfido;
 
 class AccountCertifier {
   static run (wsUrl, contractAddress) {
@@ -51,7 +48,7 @@ class AccountCertifier {
   }
 
   async verifyOnfido (href) {
-    console.warn('verifying', href);
+    console.warn(`> verifying ${href}...`);
 
     try {
       const verification = await Onfido.verify(href);
@@ -62,31 +59,26 @@ class AccountCertifier {
     } finally {
       await store.remove(href);
     }
+
+    console.warn(`> verified!\n`);
   }
 
   async storeVerification (verification) {
     const {
       address,
       valid,
-      reason,
-      pending,
       applicantId,
       checkId,
-      creationDate
+      creationDate,
+      documentHash
     } = verification;
 
+    const check = { id: checkId, applicantId, creationDate, documentHash };
     const identity = new Identity(address);
 
     try {
-      // Create the applicant if not in DB
-      if (!await identity.applicants.has(applicantId)) {
-        await identity.applicants.store({ id: applicantId, checkId });
-      }
-
-      if (pending) {
-        await identity.checks.store({ id: checkId, status: ONFIDO_STATUS.PENDING, applicantId, creationDate });
-        return;
-      }
+      await store.addApplicant(applicantId);
+      await identity.storeVerification(verification);
 
       const certified = await this._certifier.isCertified(address);
 
@@ -94,25 +86,15 @@ class AccountCertifier {
         console.warn(`> certifying ${address}...`);
         await this._certifier.certify(address);
       }
-
-      await identity.checks.store({
-        id: checkId,
-        status: ONFIDO_STATUS.COMPLETED,
-        result: valid ? 'success' : 'fail',
-        applicantId,
-        reason
-      });
     } catch (error) {
       console.error(error);
 
-      await identity.checks.store({
-        id: checkId,
-        status: ONFIDO_STATUS.COMPLETED,
-        result: 'fail',
+      await identity.checks.store(Object.assign({}, check, {
+        status: Identity.STATUS.COMPLETED,
+        result: Identity.RESULT.FAIL,
         reason: 'error',
-        applicantId,
         error: error.message
-      });
+      }));
     }
   }
 }

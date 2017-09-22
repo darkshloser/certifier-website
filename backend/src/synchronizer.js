@@ -7,8 +7,6 @@ const Identity = require('./identity');
 const Onfido = require('./onfido');
 const store = require('./store');
 
-const { ONFIDO_STATUS } = Onfido;
-
 function sorter (dataA, dataB) {
   const dateA = new Date(dataA.created_at);
   const dateB = new Date(dataB.created_at);
@@ -18,9 +16,51 @@ function sorter (dataA, dataB) {
 
 class Synchronizer {
   constructor () {
+    // this.verify();
     this.sync();
     // Sync with Onfido every 30 minutes
     // setInterval(() => this.sync(), 30 * 60 * 1000);
+  }
+
+  async verify () {
+    try {
+      await this._verify();
+      console.warn('\n> verification done!');
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async _verify () {
+    console.warn('> verifying Redis DB data...\n');
+
+    await store.scanIdentities(async (identity) => {
+      let checks = await identity.checks.getAll();
+
+      const hrefs = checks
+        .filter((check) => {
+          // Every check must have a creation date
+          if (!check.creationDate) {
+            return true;
+          }
+
+          // Every successful check must include a document hash
+          if (check.status === Identity.RESULT.SUCCESS && !check.documentHash) {
+            return true;
+          }
+
+          return false;
+        })
+        .map((check) => `/applicants/${check.applicantId}/checks/${check.id}`);
+
+      if (hrefs.length > 0) {
+        console.warn(`> found ${hrefs.length} checks to update`);
+
+        for (let href of hrefs) {
+          await store.push(href);
+        }
+      }
+    });
   }
 
   async sync () {
@@ -30,103 +70,117 @@ class Synchronizer {
     } catch (error) {
       console.error(error);
     }
-
-    // process.exit(0);
   }
 
   async _sync () {
     console.warn('> syncing Redis DB with Onfido...\n');
 
-    // Get all identities stored in Redis
-    const identities = await store.getAllIdentities();
-    const applicants = [];
+    console.warn('> syncing local applicants...');
+    // Scan all identities stored in Redis
+    await store.scanIdentities(async (identity) => {
+      const applicants = await identity.applicants.getAll();
 
-    console.warn(`> found ${identities.length} identities in DB`);
-
-    // Fetch the applicants for each identity
-    for (let identity of identities) {
-      for (let applicant of await identity.applicants.getAll()) {
-        if (applicant.checkId) {
-          applicant.check = await identity.checks.get(applicant.checkId);
-        }
-
-        applicants.push(applicant);
+      // Sync all stored applicants
+      for (let applicant of applicants) {
+        await this.syncApplicant(identity, applicant);
       }
-    }
+    });
 
-    // Filter applicants which are stored as completed (should be in sync)
-    const completedApplicants = applicants
-      .filter((applicant) => applicant.check.status === ONFIDO_STATUS.COMPLETED);
-    const completedApplicantIds = completedApplicants.map((app) => app.id);
-    const invalidApplicantIds = await store.getInvalidApplicantIds();
-
-    console.warn(`> found ${invalidApplicantIds.length} invalid applicant ids in DB`);
-    console.warn(`> found ${applicants.length} applicants in DB, ${completedApplicants.length} of which are completed`);
-    console.warn('> fetching number of applicants from Onfido...');
-
+    console.warn('> getting applicant count from Onfido...');
+    const sApplicantsCount = await store.countApplicants();
     const oApplicantsCount = await Onfido.getApplicantsCount();
-    const missingApplicants = oApplicantsCount - completedApplicants.length - invalidApplicantIds.length;
 
-    console.warn(`> there are ${oApplicantsCount} applicants in Onfido, thus ${missingApplicants} missing`);
-
-    if (missingApplicants <= 0) {
-      console.warn('> all applicants are synced');
+    if (sApplicantsCount >= oApplicantsCount) {
+      console.warn('> got all applicants in DB');
       return;
     }
 
-    // Get all applicants from Onfido
-    console.warn('> fetching list of applicants from Onfido...');
-    // Fetch twice what's needed, just in case...
-    let oApplicants = await Onfido.getApplicants(missingApplicants * 2);
-
-    console.warn(`> found ${oApplicants.length} applicants from Onfido`);
-
-    // We need to check the status of applicants which aren't COMPLETED locally
-    // and are not stored as invalid (eg. wrong or no address)
-    let toCheckApplicants = oApplicants
-      .filter((app) => !completedApplicantIds.includes(app.id) && !invalidApplicantIds.includes(app.id));
-
-    if (toCheckApplicants.length < missingApplicants) {
-      console.warn(`> could not fetch enough missing applicants (${toCheckApplicants.length} / ${missingApplicants}). will fetch all of them...`);
-
-      oApplicants = await Onfido.getApplicants();
-      toCheckApplicants = oApplicants
-        .filter((app) => !completedApplicantIds.includes(app.id) && !invalidApplicantIds.includes(app.id));
-    }
-
-    console.warn(`> there are ${toCheckApplicants.length} applicants on Onfido that needs to be synced`);
-    // Get the checks from the incomplete applicants
-    const oChecks = {};
-
-    // Get the checks in serie
-    for (let applicant of toCheckApplicants) {
-      oChecks[applicant.id] = await Onfido.getChecks(applicant.id);
-    }
-
-    for (let applicant of toCheckApplicants) {
-      // The right check is the most recent one
-      const check = oChecks[applicant.id].sort(sorter)[0] || null;
-
-      if (!check) {
-        const creationDate = new Date(applicant.created_at);
-
-        // Created more than 12h ago, no checks => DELETE
-        if (Date.now() - creationDate > 1000 * 3600 * 12) {
-          console.warn(`> empty applicant created more than 12h ago (on ${creationDate}) ; deleting...`);
-
-          try {
-            await Onfido.deleteApplicant(applicant.id);
-          } catch (error) {
-            console.error(`> ${error.message.split('\n')[0]}`);
-          }
-
-          continue;
-        }
-
-        console.warn(`> empty applicant created at ${creationDate}`);
-        continue;
+    // Iterate through all applicants on Onfido
+    // until we got them all in DB
+    await Onfido.getApplicants(async (applicant) => {
+      // If already in DB, continue
+      if (await store.hasApplicant(applicant.id)) {
+        return true;
       }
 
+      // Otherwise, fetch the checks and sync the identity
+      await this.syncApplicant(null, applicant);
+
+      // Re-count the number of applicants in DB
+      const nextApplicantsCount = await store.countApplicants();
+
+      // continue the scan if not enough applicants
+      return nextApplicantsCount < oApplicantsCount;
+    });
+  }
+
+  async syncCheck (identity, applicant, _check) {
+    console.warn(`> syncing check for ${identity.address} ...`);
+
+    const { address } = identity;
+    const { id: applicantId } = applicant;
+    let check = _check;
+
+    // Get check from Onfido if not given
+    if (!check) {
+      const { checkId } = applicant;
+
+      check = await Onfido.getCheck(applicantId, checkId);
+    }
+
+    // Get the verification result from Onfido
+    const verification = await Onfido.verifyCheck({ applicantId, checkId: check.id }, address, check);
+
+    // Save in Redis
+    await identity.storeVerification(verification);
+  }
+
+  async syncApplicant (identity, applicant) {
+    // Add the applicant id in Redis
+    await store.addApplicant(applicant.id);
+
+    // Check is already in DB
+    if (identity && applicant.checkId) {
+      const storedCheck = await identity.checks.get(applicant.checkId);
+
+      // If completed, skip the applicant
+      if (storedCheck && storedCheck.status === Identity.STATUS.COMPLETED) {
+        return;
+      }
+
+      // Otherwise, fetch check status from Onfido
+      // and update DB value
+      return this.syncCheck(identity, applicant);
+    }
+
+    // No check in DB, get it, if any, from Onfido
+    const checks = await Onfido.getChecks(applicant.id);
+    // The right check is the most recent one
+    const check = checks.sort(sorter)[0] || null;
+
+    if (!check) {
+      const creationDate = new Date(applicant.created_at);
+
+      // Created more than 12h ago, no checks => DELETE
+      if (Date.now() - creationDate > 1000 * 3600 * 12) {
+        console.warn(`> empty applicant created more than 12h ago (on ${creationDate}) ; deleting...`);
+
+        try {
+          await Onfido.deleteApplicant(applicant.id);
+        } catch (error) {
+          console.error(`> ${error.message.split('\n')[0]}`);
+        }
+
+        return;
+      }
+
+      console.warn(`> empty applicant created at ${creationDate}`);
+      return;
+    }
+
+    // If no identity given, try to find the
+    // address in the check's tags
+    if (!identity) {
       const addresses = check.tags
         .filter((tag) => Onfido.ONFIDO_TAG_REGEX.test(tag))
         .map((tag) => {
@@ -137,29 +191,15 @@ class Synchronizer {
 
       if (addresses.length === 0 || addresses.length > 1) {
         console.error(`could not find an address for "/applicants/${applicant.id}/checks/${check.id}`);
-        store.addInvalidApplicantId(applicant.id);
-        continue;
+        return;
       }
 
       // There is actually only one address
-      const address = addresses[0];
-      const identity = new Identity(address);
-      const { pending } = Onfido.checkStatus(check);
-      const status = pending
-        ? ONFIDO_STATUS.PENDING
-        : ONFIDO_STATUS.COMPLETED;
-
-      await identity.applicants.store({ id: applicant.id, checkId: check.id });
-      await identity.checks.store({ id: check.id, applicantId: applicant.id, creationDate: check.created_at, status });
-
-      if (!pending) {
-        console.warn(`> add completed check to queue "/applicants/${applicant.id}/checks/${check.id}"`);
-        store.push(check.href);
-        continue;
-      }
-
-      console.warn(`> check is pending "/applicants/${applicant.id}/checks/${check.id}"`);
+      identity = new Identity(addresses[0]);
     }
+
+    await identity.applicants.store({ id: applicant.id, checkId: check.id });
+    return this.syncCheck(identity, applicant, check);
   }
 }
 
