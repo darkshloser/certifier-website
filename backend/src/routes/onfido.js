@@ -161,7 +161,7 @@ function get ({ certifier, feeRegistrar }) {
     applicant.status = Identity.STATUS.PENDING;
 
     await identity.applicants.store(applicant);
-    await identity.checks.store({ id: checkId, status: Identity.STATUS.PENDING });
+    await identity.checks.store({ id: checkId, status: Identity.STATUS.PENDING, creationDate: new Date().toISOString() });
 
     ctx.body = { result: 'ok' };
   });
