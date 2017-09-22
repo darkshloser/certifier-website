@@ -211,7 +211,11 @@ class Identity {
       documentHash
     } = verification;
 
-    const check = { id: checkId, applicantId, creationDate, documentHash };
+    const check = { id: checkId, applicantId, creationDate };
+
+    if (documentHash) {
+      check.documentHash = documentHash;
+    }
 
     await this.applicants.store({ id: applicantId, checkId });
 
@@ -227,7 +231,7 @@ class Identity {
   }
 }
 
-Identity.REDIS_PREFIX = REDIS_PREFIX;
+Identity.REDIS_KEY = REDIS_PREFIX;
 
 Identity.RESULT = RESULT;
 Identity.STATUS = STATUS;

@@ -60,6 +60,15 @@ class Synchronizer {
           await store.push(href);
         }
       }
+
+      // Mark all document as used
+      const documentHashes = checks
+        .map((check) => check.documentHash)
+        .filter((dh) => dh);
+
+      for (let documentHash of documentHashes) {
+        await store.markDocumentAsUsed(documentHash);
+      }
     });
   }
 

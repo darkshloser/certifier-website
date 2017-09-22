@@ -6,8 +6,10 @@
 const redis = require('./redis');
 const Identity = require('./identity');
 
-const ONFIDO_CHECKS_CHANNEL = 'onfido-checks-channel';
-const USED_DOCUMENTS = 'used-documents';
+const ONFIDO_CHECKS_CHANNEL = 'picops::onfido-checks-channel';
+
+const REDIS_APPLICANTS_KEY = 'picops::applicants';
+const REDIS_USED_DOCUMENTS_KEY = 'picops::used-documents';
 
 class Store {
   /**
@@ -16,7 +18,7 @@ class Store {
    * @param {String} applicantId
    */
   static async addApplicant (applicantId) {
-    return redis.sadd('picops::applicants', applicantId);
+    return redis.sadd(REDIS_APPLICANTS_KEY, applicantId);
   }
 
   /**
@@ -25,7 +27,7 @@ class Store {
    * @return {Promise<Number>}
    */
   static async countApplicants () {
-    return redis.scard('picops::applicants');
+    return redis.scard(REDIS_APPLICANTS_KEY);
   }
 
   /**
@@ -37,7 +39,7 @@ class Store {
    * @return {Promise<Boolean>}
    */
   static async hasApplicant (applicantId) {
-    return redis.sismember('picops::applicants', applicantId);
+    return redis.sismember(REDIS_APPLICANTS_KEY, applicantId);
   }
 
   /**
@@ -54,7 +56,7 @@ class Store {
 
     do {
       // Get a batch of responses
-      const [cursor, addresses] = await redis.sscan(Identity.REDIS_PREFIX, next);
+      const [cursor, addresses] = await redis.sscan(Identity.REDIS_KEY, next);
 
       next = Number(cursor);
 
@@ -75,7 +77,7 @@ class Store {
    * @return {Boolean}
    */
   static async hasDocumentBeenUsed (hash) {
-    return redis.sismember(USED_DOCUMENTS, hash);
+    return redis.sismember(REDIS_USED_DOCUMENTS_KEY, hash);
   }
 
   /**
@@ -84,7 +86,7 @@ class Store {
    * @param {String} hash keccak256 hash of the document_numbers JSON string
    */
   static async markDocumentAsUsed (hash) {
-    await redis.sadd(USED_DOCUMENTS, hash);
+    await redis.sadd(REDIS_USED_DOCUMENTS_KEY, hash);
   }
 
   /**
