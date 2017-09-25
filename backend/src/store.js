@@ -51,8 +51,7 @@ class Store {
    * @param {String} address
    */
   static async lock (address) {
-    await redis.set(`${REDIS_LOCKS_KEY}::${address}`, 'true');
-    await redis.pexpire(`${REDIS_LOCKS_KEY}::${address}`, 1000 * 60 * 5);
+    await redis.psetex(`${REDIS_LOCKS_KEY}::${address}`, 1000 * 60 * 5, 'true');
   }
 
   /**
