@@ -66,6 +66,7 @@
     "extract-text-webpack-plugin": "3.0.0",
     "file-loader": "0.11.2",
     "html-webpack-plugin": "2.30.1",
+    "progress": "2.0.0",
     "react-hot-loader": "3.0.0-beta.6",
     "react-markdown-loader": "1.1.12",
     "style-loader": "0.18.2",

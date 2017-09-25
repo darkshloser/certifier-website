@@ -22,8 +22,7 @@ export const STEPS = {
   'account-selection': Symbol('account selection'),
   'from-exchange': Symbol('from an exchange'),
   'from-personal': Symbol('from a personal wallet'),
-  'sending-payment': Symbol('sending payment'),
-  'already-paid': Symbol('already paid')
+  'sending-payment': Symbol('sending payment')
 };
 
 class FeeStore {

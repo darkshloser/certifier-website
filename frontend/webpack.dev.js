@@ -2,6 +2,7 @@
 
 const express = require('express');
 const path = require('path');
+const ProgressBar = require('progress');
 const webpack = require('webpack');
 const WebpackStats = require('webpack/lib/Stats');
 const webpackDevMiddleware = require('webpack-dev-middleware');
@@ -31,14 +32,18 @@ const webpackConfig = require('./webpack.config');
   webpackConfig.plugins.push(new webpack.NoEmitOnErrorsPlugin());
 
   webpackConfig.plugins.push(new webpack.ProgressPlugin(
-    (percentage) => progressBar.update(percentage)
+    (percentage, message) => {
+      progressBar.update(percentage, { message: message });
+    }
   ));
 })();
 
 const app = express();
+const progressBar = new ProgressBar('  [:bar] :percent :etas - :message', {
+  total: 100,
+  width: 20
+});
 const compiler = webpack(webpackConfig);
-
-let progressBar = { update: () => {} };
 
 app.use(webpackHotMiddleware(compiler, {
   log: console.log
@@ -57,6 +62,7 @@ app.use(webpackDevMiddleware(compiler, {
     // Accepted values: none, errors-only, minimal, normal, verbose
     const options = WebpackStats.presetToOptions('minimal');
 
+    options.colors = true;
     options.timings = true;
 
     const output = data.stats.toString(options);

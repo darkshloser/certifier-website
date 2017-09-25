@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import feeStore, { STEPS } from '../../stores/fee.store';
 
 import AccountType from './AccountType';
-import AlreadyPaid from './AlreadyPaid';
 import FromExchange from './FromExchange';
 import FromPersonal from './FromPersonal';
 import SendingPayment from './SendingPayment';
@@ -42,12 +41,6 @@ export default class Fee extends Component {
     if (step === STEPS['sending-payment']) {
       return (
         <SendingPayment />
-      );
-    }
-
-    if (step === STEPS['already-paid']) {
-      return (
-        <AlreadyPaid />
       );
     }
 

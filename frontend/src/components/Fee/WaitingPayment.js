@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Button, Header, Loader } from 'semantic-ui-react';
+import { Header, Loader } from 'semantic-ui-react';
 import QRCode from 'qrcode.react';
 
 import { fromWei } from '../../utils';
@@ -68,20 +68,8 @@ export default class WaitingPayment extends Component {
             <Loader active inline size='tiny' style={{ marginRight: '0.5em' }} />
             <span>Waiting for transaction...</span>
           </div>
-
-          <Button
-            basic
-            content='I already paid'
-            onClick={this.handleAlreadyPaid}
-            primary
-            size='big'
-          />
         </div>
       </div>
     );
   }
-
-  handleAlreadyPaid = () => {
-    feeStore.goto('already-paid');
-  };
 }
