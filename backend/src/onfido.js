@@ -182,7 +182,7 @@ function checkStatus (check) {
 async function createCheck (applicantId, address) {
   const check = await _call(`/applicants/${applicantId}/checks`, 'POST', {
     type: 'express',
-    report_type_groups: [ '4846' ],
+    report_type_groups: [ '4999' ],
     tags: [ `address:${address}` ]
   });
 

@@ -128,15 +128,19 @@ function get ({ certifier, feeRegistrar }) {
 
     await store.lock(address);
 
-    const { sdkToken, applicantId } = await Onfido.createApplicant({ firstName, lastName });
+    try {
+      const { sdkToken, applicantId } = await Onfido.createApplicant({ firstName, lastName });
 
-    // Store the applicant id in Redis
-    await store.addApplicant(applicantId);
-    await identity.applicants.store({ id: applicantId, status: Identity.STATUS.CREATED });
+      // Store the applicant id in Redis
+      await store.addApplicant(applicantId);
+      await identity.applicants.store({ id: applicantId, status: Identity.STATUS.CREATED });
 
-    await store.unlock(address);
-
-    ctx.body = { sdkToken };
+      ctx.body = { sdkToken };
+    } catch (error) {
+      throw error;
+    } finally {
+      await store.unlock(address);
+    }
   });
 
   router.post('/:address/check', async (ctx, next) => {
@@ -164,24 +168,28 @@ function get ({ certifier, feeRegistrar }) {
 
     await store.lock(address);
 
-    const checks = await Onfido.getChecks(applicant.id);
+    try {
+      const checks = await Onfido.getChecks(applicant.id);
 
-    if (checks.length > 0) {
-      return error(ctx, 400, 'Cannot create any more checks for this applicant');
+      if (checks.length > 0) {
+        return error(ctx, 400, 'Cannot create any more checks for this applicant');
+      }
+
+      const { checkId } = await Onfido.createCheck(applicant.id, address);
+
+      console.warn(`> created check ${checkId} for ${applicant.id}`);
+
+      // Store the applicant id in Redis
+      applicant.checkId = checkId;
+      applicant.status = Identity.STATUS.PENDING;
+
+      await identity.applicants.store(applicant);
+      await identity.checks.store({ id: checkId, status: Identity.STATUS.PENDING, creationDate: new Date().toISOString() });
+    } catch (error) {
+      throw error;
+    } finally {
+      await store.unlock(address);
     }
-
-    const { checkId } = await Onfido.createCheck(applicant.id, address);
-
-    console.warn(`> created check ${checkId} for ${applicant.id}`);
-
-    // Store the applicant id in Redis
-    applicant.checkId = checkId;
-    applicant.status = Identity.STATUS.PENDING;
-
-    await identity.applicants.store(applicant);
-    await identity.checks.store({ id: checkId, status: Identity.STATUS.PENDING, creationDate: new Date().toISOString() });
-
-    await store.unlock(address);
 
     ctx.body = { result: 'ok' };
   });
