@@ -104,6 +104,8 @@ class Synchronizer {
       return;
     }
 
+    console.warn(`> missing at least ${oApplicantsCount - sApplicantsCount} applicants`);
+
     // Iterate through all applicants on Onfido
     // until we got them all in DB
     await Onfido.getApplicants(async (applicant) => {

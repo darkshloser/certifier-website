@@ -51,7 +51,8 @@ class Store {
    * @param {String} address
    */
   static async lock (address) {
-    return redis.setex(REDIS_LOCKS_KEY, 5 * 60, address);
+    await redis.set(`${REDIS_LOCKS_KEY}::${address}`, 'true');
+    await redis.pexpire(`${REDIS_LOCKS_KEY}::${address}`, 1000 * 60 * 5);
   }
 
   /**
@@ -62,7 +63,7 @@ class Store {
    * @return {Promise<Boolean>}
    */
   static async locked (address) {
-    return redis.sismember(REDIS_LOCKS_KEY, address);
+    return (await redis.get(`${REDIS_LOCKS_KEY}::${address}`)) === 'true';
   }
 
   /**
@@ -71,7 +72,7 @@ class Store {
    * @param {String} address
    */
   static async unlock (address) {
-    return redis.srem(REDIS_LOCKS_KEY, address);
+    return redis.del(`${REDIS_LOCKS_KEY}::${address}`);
   }
 
   /**
