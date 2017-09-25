@@ -8,7 +8,8 @@ module.exports = {
   certifierContract: '0x06C4AF12D9E3501C173b5D1B9dd9cF6DCC095b98',
   onfido: {
     token: '',
-    webhookToken: ''
+    webhookToken: '',
+    maxChecks: 3
   },
   redis: {
     host: '127.0.0.1',

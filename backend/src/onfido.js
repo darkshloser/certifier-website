@@ -6,18 +6,12 @@
 const config = require('config');
 const qs = require('qs');
 const fetch = require('node-fetch');
+const parseLink = require('parse-link-header');
 
 const store = require('./store');
-const { keccak256 } = require('./utils');
+const { keccak256, sleep } = require('./utils');
 
 const { token } = config.get('onfido');
-
-const ONFIDO_STATUS = {
-  UNKNOWN: 'unknown',
-  CREATED: 'created',
-  PENDING: 'pending',
-  COMPLETED: 'completed'
-};
 
 const ONFIDO_URL_REGEX = /applicants\/([a-z0-9-]+)\/checks\/([a-z0-9-]+)$/i;
 const ONFIDO_TAG_REGEX = /^address:(0x[0-9abcdef]{40})$/i;
@@ -35,11 +29,7 @@ const SANDBOX_DOCUMENT_HASH = hashDocumentNumbers([{
  *
  * @return {Object|String} response from the API, JSON is automatically parsed
  */
-async function _call (endpoint, method = 'GET', data = {}) {
-  const body = method === 'POST'
-    ? qs.stringify(data, { arrayFormat: 'brackets', encode: false })
-    : '';
-
+async function _call (endpoint, method = 'GET', data = {}, attempts = 0) {
   const headers = {
     Authorization: `Token token=${token}`
   };
@@ -48,41 +38,83 @@ async function _call (endpoint, method = 'GET', data = {}) {
     headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
   }
 
-  return fetch(`https://api.onfido.com/v2${endpoint}`, {
-    method,
-    headers,
-    body
-  })
-    .then(async (r) => {
-      const rc = r.clone();
+  const url = endpoint.includes('api.onfido.com')
+    ? endpoint
+    : `https://api.onfido.com/v2${endpoint}`;
 
-      try {
-        const json = await r.json();
+  const options = { method, headers };
 
-        return json;
-      } catch (error) {
-        return rc.text();
-      }
-    })
-    .then((data) => {
-      if (data && data.error) {
-        console.warn('onfido error', data.error);
-        throw new Error(data.error.message);
-      }
+  if (method === 'POST') {
+    options.body = qs.stringify(data, { arrayFormat: 'brackets', encode: false });
+  }
 
-      return data;
-    });
+  const response = await fetch(url, options);
+
+  // Too many requests
+  if (response.status === 429) {
+    const timeout = Math.floor(Math.pow(2, attempts) * 1000);
+
+    console.warn(`[Too Many Request] will retry in ${Math.round(timeout / 1000)}s`);
+    await sleep(timeout);
+    return _call(endpoint, method, data, attempts + 1);
+  }
+
+  const link = response.headers.get('link');
+  const count = response.headers.get('x-total-count');
+
+  let result = await response.text();
+
+  try {
+    result = JSON.parse(result);
+  } catch (error) {
+  }
+
+  if (result && result.error) {
+    console.warn('onfido error', result.error);
+    throw new Error(result.error.message);
+  }
+
+  if (link) {
+    result._links = parseLink(link);
+  }
+
+  if (count) {
+    result._count = parseInt(count);
+  }
+
+  return result;
 }
 
 /**
  * Get applicants from Onfido
  *
- * @return {Array} list of all applicants
+ * @param {Function} callback  - Callback function called
+ *                             for each applicant. Returns wether
+ *                             we should fetch more applicants or
+ *                             not.
  */
-async function getApplicants () {
-  const result = await _call(`/applicants/`, 'GET');
+async function getApplicants (callback) {
+  let links = { next: { url: '/applicants/?per_page=40' } };
 
-  return result.applicants;
+  while (links && links.next) {
+    const result = await _call(links.next.url, 'GET');
+
+    for (let applicant of result.applicants) {
+      const continueFetch = await callback(applicant);
+
+      if (!continueFetch) {
+        return;
+      }
+    }
+
+    links = result._links;
+  }
+}
+
+async function getApplicantsCount () {
+  const result = await _call(`/applicants/?per_page=1`, 'GET');
+
+  return result._count || 0;
 }
 
 /**
@@ -177,6 +209,16 @@ async function createApplicant ({ firstName, lastName }) {
   return { applicantId: applicant.id, sdkToken };
 }
 
+/**
+ * Delete an applicant on Onfido (will
+ * work only for applicants with no checks)
+ *
+ * @param {String} applicantId
+ */
+async function deleteApplicant (applicantId) {
+  await _call(`/applicants/${applicantId}`, 'DELETE');
+}
+
 async function createToken (applicantId) {
   const sdk = await _call('/sdk_token', 'POST', {
     applicant_id: applicantId,
@@ -202,22 +244,25 @@ async function verify (href) {
   const [, applicantId, checkId] = ONFIDO_URL_REGEX.exec(href);
   const check = await getCheck(applicantId, checkId);
 
-  return verifyCheck({ applicantId, checkId }, check);
-}
-
-async function verifyCheck ({ applicantId, checkId }, check) {
-  const status = checkStatus(check);
   const addressTag = check.tags.find((tag) => ONFIDO_TAG_REGEX.test(tag));
 
   if (!addressTag) {
-    throw new Error(`Could not find an address for this applicant check (${applicantId}/${checkId})`);
+    throw new Error(`could not find an address for "/applicants/${applicantId}/checks/${checkId}"`);
   }
 
   const [, address] = ONFIDO_TAG_REGEX.exec(addressTag);
 
+  return verifyCheck({ applicantId, checkId }, address, check);
+}
+
+async function verifyCheck ({ applicantId, checkId }, address, check) {
+  const creationDate = check.created_at;
+  const status = checkStatus(check);
+  const result = { applicantId, checkId, address, creationDate };
+
   if (status.pending) {
-    // throw new Error(`onfido check is still pending (${applicantId}/${checkId})`);
-    return { applicantId, checkId, address, pending: true };
+    result.pending = true;
+    return result;
   }
 
   let reason = check.result;
@@ -227,10 +272,14 @@ async function verifyCheck ({ applicantId, checkId }, check) {
   const documentReport = reports.find((report) => report.name === 'document');
 
   if (valid && documentReport) {
-    const documentInvalidReason = await verifyDocument(documentReport);
+    const documentVerification = await verifyDocument(documentReport);
 
-    if (documentInvalidReason) {
-      reason = documentInvalidReason;
+    if (documentVerification.hash) {
+      result.documentHash = documentVerification.hash;
+    }
+
+    if (!documentVerification.valid) {
+      reason = documentVerification.reason;
       valid = false;
     }
   } else {
@@ -243,7 +292,9 @@ async function verifyCheck ({ applicantId, checkId }, check) {
     }
   }
 
-  return { applicantId, checkId, address, valid, reason };
+  result.valid = valid;
+  result.reason = reason;
+  return result;
 }
 
 /**
@@ -274,23 +325,22 @@ async function verifyDocument (documentReport) {
   const countryCode = properties['nationality'] || properties['issuing_country'];
 
   if (countryCode && countryCode.toUpperCase() === 'USA') {
-    return 'blocked-country';
+    return { valid: false, reason: 'blocked-country' };
   }
 
   const hash = hashDocumentNumbers(properties['document_numbers']);
 
   // Allow sandbox documents to go through
   if (hash === SANDBOX_DOCUMENT_HASH) {
-    return null;
+    return { valid: true, hash };
   }
 
   if (store.hasDocumentBeenUsed(hash)) {
-    return 'used-document';
+    return { valid: false, reason: 'used-document', hash };
   }
 
   store.markDocumentAsUsed(hash);
-
-  return null;
+  return { valid: true, hash };
 }
 
 module.exports = {
@@ -298,12 +348,13 @@ module.exports = {
   createApplicant,
   createCheck,
   createToken,
+  deleteApplicant,
   getApplicants,
+  getApplicantsCount,
   getCheck,
   getChecks,
   verify,
   verifyCheck,
 
-  ONFIDO_STATUS,
   ONFIDO_TAG_REGEX
 };

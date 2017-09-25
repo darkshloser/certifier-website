@@ -26,11 +26,13 @@ for (const func of [
   // Plain keys
   'keys', 'del', 'get', 'set', 'incr',
   // Hashes
-  'hget', 'hgetall', 'hset', 'hdel', 'hscan', 'hlen', 'hexists',
+  'hget', 'hgetall', 'hset', 'hdel', 'hscan', 'hlen', 'hexists', 'hvals',
   // Sets
-  'sadd', 'spop', 'smembers', 'sscan', 'srem', 'sismember',
+  'sadd', 'spop', 'smembers', 'sscan', 'srem', 'sismember', 'scard', 'psetex',
   // Pubsub
   'publish', 'subscribe',
+  // Keys
+  'exists',
   // Expires
   'pexpire'
 ]) {

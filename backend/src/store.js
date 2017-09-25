@@ -4,93 +4,101 @@
 'use strict';
 
 const redis = require('./redis');
+const Identity = require('./identity');
 
-const ONFIDO_CHECKS = 'onfido-checks';
-const ONFIDO_CHECKS_CHANNEL = 'onfido-checks-channel';
-const USED_DOCUMENTS = 'used-documents';
+const ONFIDO_CHECKS_CHANNEL = 'picops::onfido-checks-channel';
+
+const REDIS_APPLICANTS_KEY = 'picops::applicants';
+const REDIS_LOCKS_KEY = 'picops::locker';
+const REDIS_USED_DOCUMENTS_KEY = 'picops::used-documents';
 
 class Store {
   /**
-   * Get the data for the given address.
+   * Add an applicant id to a Redis set
    *
-   * @param  {String} address `0x` prefixed address
-   *
-   * @return {Promise<Object|null>}
+   * @param {String} applicantId
    */
-  static async get (address) {
-    const data = await redis.hget(ONFIDO_CHECKS, address.toLowerCase());
-
-    if (!data) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(data);
-    } catch (error) {
-      console.error(`could not parse JSON data: ${data}`);
-      return null;
-    }
+  static async addApplicant (applicantId) {
+    return redis.sadd(REDIS_APPLICANTS_KEY, applicantId);
   }
 
   /**
-   * Get all the results, keys are addresses, values
-   * are { status: String, applicantId: String, checkId: String }
+   * Count the number of stored applicants
    *
-   * @return {Promise<Object|null>}
+   * @return {Promise<Number>}
    */
-  static async getAll () {
-    const data = await redis.hgetall(ONFIDO_CHECKS);
-
-    if (!data) {
-      return null;
-    }
-
-    const addresses = Object.keys(data);
-
-    // Parse JSON for each entry, fiter out
-    // non-JSON entries
-    const stored = addresses
-      .map((address) => {
-        try {
-          return JSON.parse(data[address]);
-        } catch (error) {
-          return null;
-        }
-      })
-      .reduce((stored, datum, index) => {
-        if (datum) {
-          stored[addresses[index]] = datum;
-        }
-
-        return stored;
-      }, {});
-
-    return stored;
+  static async countApplicants () {
+    return redis.scard(REDIS_APPLICANTS_KEY);
   }
 
   /**
-   * Set the given data for the given address.
+   * Return whether the given applicant id
+   * is already known
    *
-   * @param  {String} address `0x` prefixed address
-   * @param  {Object} data    Javascript Object to set
+   * @param {String} applicantId
    *
-   * @return {Promise}
+   * @return {Promise<Boolean>}
    */
-  static async set (address, data) {
-    return redis.hset(ONFIDO_CHECKS, address.toLowerCase(), JSON.stringify(data));
+  static async hasApplicant (applicantId) {
+    return redis.sismember(REDIS_APPLICANTS_KEY, applicantId);
   }
 
   /**
-   * Increment check count for an address, return the current count
+   * Locks the given Eth address (eg. while
+   * doing operations on the address, creating a check, etc.)
+   * Expire in 5 minutes
    *
-   * @param {String} address `0x` prefixed address
-   *
-   * @return {Number} number of times this method has been called for this address
+   * @param {String} address
    */
-  static async checkCount (address) {
-    const countCheck = await redis.incr(`${address}:countCheck`);
+  static async lock (address) {
+    await redis.psetex(`${REDIS_LOCKS_KEY}::${address}`, 1000 * 60 * 5, 'true');
+  }
 
-    return Number(countCheck);
+  /**
+   * Whether the given Eth address is locked
+   *
+   * @param {String} address
+   *
+   * @return {Promise<Boolean>}
+   */
+  static async locked (address) {
+    return (await redis.get(`${REDIS_LOCKS_KEY}::${address}`)) === 'true';
+  }
+
+  /**
+   * Unlocks the given Eth address
+   *
+   * @param {String} address
+   */
+  static async unlock (address) {
+    return redis.del(`${REDIS_LOCKS_KEY}::${address}`);
+  }
+
+  /**
+   * Iterate over all identities
+   *
+   * @param  {Function} callback takes 1 argument:
+   *                             - address (`String`)
+   *                             will `await` for any returned `Promise`.
+   *
+   * @return {Promise} resolves after all identities have been processed
+   */
+  static async scanIdentities (callback) {
+    let next = 0;
+
+    do {
+      // Get a batch of responses
+      const [cursor, addresses] = await redis.sscan(Identity.REDIS_KEY, next);
+
+      next = Number(cursor);
+
+      for (let address of addresses) {
+        await callback(new Identity(address));
+      }
+
+    // `next` will be `0` at the end of iteration, explained here:
+    // https://redis.io/commands/scan
+    } while (next !== 0);
   }
 
   /**
@@ -101,7 +109,7 @@ class Store {
    * @return {Boolean}
    */
   static async hasDocumentBeenUsed (hash) {
-    return redis.sismember(USED_DOCUMENTS, hash);
+    return redis.sismember(REDIS_USED_DOCUMENTS_KEY, hash);
   }
 
   /**
@@ -110,7 +118,7 @@ class Store {
    * @param {String} hash keccak256 hash of the document_numbers JSON string
    */
   static async markDocumentAsUsed (hash) {
-    await redis.sadd(USED_DOCUMENTS, hash);
+    await redis.sadd(REDIS_USED_DOCUMENTS_KEY, hash);
   }
 
   /**
@@ -131,9 +139,9 @@ class Store {
 
       next = Number(cursor);
 
-      await Promise.all(
-        hrefs.map((href) => callback(href))
-      );
+      for (let href of hrefs) {
+        await callback(href);
+      }
 
     // `next` will be `0` at the end of iteration, explained here:
     // https://redis.io/commands/scan

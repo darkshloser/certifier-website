@@ -8,12 +8,13 @@ const Router = require('koa-router');
 const crypto = require('crypto');
 const config = require('config');
 
+const Identity = require('../identity');
 const Onfido = require('../onfido');
 const store = require('../store');
 const { error, rateLimiter } = require('./utils');
 const { buf2add } = require('../utils');
 
-const { ONFIDO_STATUS } = Onfido;
+const onfidoMaxChecks = config.get('onfido.maxChecks');
 
 function get ({ certifier, feeRegistrar }) {
   const webhookToken = config.get('onfido.webhookToken');
@@ -61,12 +62,14 @@ function get ({ certifier, feeRegistrar }) {
 
     await rateLimiter(address, ctx.remoteAddress);
 
-    const stored = await store.get(address) || {};
+    const identity = new Identity(address);
+
+    const checkCount = await identity.checks.count();
+    const { paymentCount } = await feeRegistrar.paymentStatus(address);
+    const { result, status, reason, error } = await identity.getData();
     const certified = await certifier.isCertified(address);
 
-    const { result, status = ONFIDO_STATUS.UNKNOWN, reason = 'unknown', error = '' } = stored;
-
-    ctx.body = { certified, status, result, reason, error };
+    ctx.body = { certified, status, result, reason, error, checkCount, paymentCount };
   });
 
   router.post('/:address/applicant', async (ctx, next) => {
@@ -113,16 +116,25 @@ function get ({ certifier, feeRegistrar }) {
       return error(ctx, 400, 'Signature / payment origin mismatch');
     }
 
-    const checkCount = await store.checkCount(address);
+    const identity = new Identity(address);
 
-    if (checkCount >= paymentCount * 3) {
-      return error(ctx, 400, 'Only 3 checks are allowed per single fee payment');
+    if (await identity.checks.count() >= paymentCount * onfidoMaxChecks) {
+      return error(ctx, 400, `Only ${onfidoMaxChecks} checks are allowed per single fee payment`);
     }
+
+    if (await store.locked(address)) {
+      return error(ctx, 400, 'Already an operation pending...');
+    }
+
+    await store.lock(address);
 
     const { sdkToken, applicantId } = await Onfido.createApplicant({ firstName, lastName });
 
     // Store the applicant id in Redis
-    await store.set(address, { status: ONFIDO_STATUS.CREATED, applicantId });
+    await store.addApplicant(applicantId);
+    await identity.applicants.store({ id: applicantId, status: Identity.STATUS.CREATED });
+
+    await store.unlock(address);
 
     ctx.body = { sdkToken };
   });
@@ -132,30 +144,44 @@ function get ({ certifier, feeRegistrar }) {
 
     await rateLimiter(address, ctx.remoteAddress);
 
-    const stored = await store.get(address);
     const certified = await certifier.isCertified(address);
 
     if (certified) {
       return error(ctx, 400, 'Already certified');
     }
 
-    if (!stored || stored.status !== ONFIDO_STATUS.CREATED || !stored.applicantId) {
+    const identity = new Identity(address);
+    const applicants = await identity.applicants.getAll();
+    const applicant = applicants.find((app) => app.status === Identity.STATUS.CREATED);
+
+    if (!applicant) {
       return error(ctx, 400, 'No application has been created for this address');
     }
 
-    const { applicantId } = stored;
-    const checks = await Onfido.getChecks(applicantId);
+    if (await store.locked(address)) {
+      return error(ctx, 400, 'Already an operation pending...');
+    }
+
+    await store.lock(address);
+
+    const checks = await Onfido.getChecks(applicant.id);
 
     if (checks.length > 0) {
       return error(ctx, 400, 'Cannot create any more checks for this applicant');
     }
 
-    const { checkId } = await Onfido.createCheck(applicantId, address);
+    const { checkId } = await Onfido.createCheck(applicant.id, address);
 
-    console.warn(`> created check ${checkId} for ${applicantId}`);
+    console.warn(`> created check ${checkId} for ${applicant.id}`);
 
     // Store the applicant id in Redis
-    await store.set(address, { status: ONFIDO_STATUS.PENDING, applicantId, checkId });
+    applicant.checkId = checkId;
+    applicant.status = Identity.STATUS.PENDING;
+
+    await identity.applicants.store(applicant);
+    await identity.checks.store({ id: checkId, status: Identity.STATUS.PENDING, creationDate: new Date().toISOString() });
+
+    await store.unlock(address);
 
     ctx.body = { result: 'ok' };
   });
