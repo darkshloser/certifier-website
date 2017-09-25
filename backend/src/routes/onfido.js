@@ -64,10 +64,12 @@ function get ({ certifier, feeRegistrar }) {
 
     const identity = new Identity(address);
 
+    const checkCount = await identity.checks.count();
+    const { paymentCount } = await feeRegistrar.paymentStatus(address);
     const { result, status, reason, error } = await identity.getData();
     const certified = await certifier.isCertified(address);
 
-    ctx.body = { certified, status, result, reason, error };
+    ctx.body = { certified, status, result, reason, error, checkCount, paymentCount };
   });
 
   router.post('/:address/applicant', async (ctx, next) => {
@@ -116,7 +118,7 @@ function get ({ certifier, feeRegistrar }) {
 
     const identity = new Identity(address);
 
-    if (await identity.checks.count() > paymentCount * onfidoMaxChecks) {
+    if (await identity.checks.count() >= paymentCount * onfidoMaxChecks) {
       return error(ctx, 400, `Only ${onfidoMaxChecks} checks are allowed per single fee payment`);
     }
 
