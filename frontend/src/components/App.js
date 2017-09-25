@@ -11,7 +11,7 @@ import Details from './Details';
 import Fee from './Fee';
 import Messages from './Messages';
 import Terms from './Terms';
-// import Stepper from './Stepper';
+import Stepper from './Stepper';
 
 import appStore, { STEPS } from '../stores/app.store';
 import feeStore from '../stores/fee.store';

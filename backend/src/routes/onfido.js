@@ -14,6 +14,8 @@ const store = require('../store');
 const { error, rateLimiter } = require('./utils');
 const { buf2add } = require('../utils');
 
+const onfidoMaxChecks = config.get('onfido.maxChecks');
+
 function get ({ certifier, feeRegistrar }) {
   const webhookToken = config.get('onfido.webhookToken');
 
@@ -114,15 +116,23 @@ function get ({ certifier, feeRegistrar }) {
 
     const identity = new Identity(address);
 
-    if (await identity.checks.count() >= paymentCount * 3) {
-      return error(ctx, 400, 'Only 3 checks are allowed per single fee payment');
+    if (await identity.checks.count() > paymentCount * onfidoMaxChecks) {
+      return error(ctx, 400, `Only ${onfidoMaxChecks} checks are allowed per single fee payment`);
     }
+
+    if (await store.locked(address)) {
+      return error(ctx, 400, 'Already an operation pending...');
+    }
+
+    await store.lock(address);
 
     const { sdkToken, applicantId } = await Onfido.createApplicant({ firstName, lastName });
 
     // Store the applicant id in Redis
     await store.addApplicant(applicantId);
     await identity.applicants.store({ id: applicantId, status: Identity.STATUS.CREATED });
+
+    await store.unlock(address);
 
     ctx.body = { sdkToken };
   });
@@ -146,6 +156,12 @@ function get ({ certifier, feeRegistrar }) {
       return error(ctx, 400, 'No application has been created for this address');
     }
 
+    if (await store.locked(address)) {
+      return error(ctx, 400, 'Already an operation pending...');
+    }
+
+    await store.lock(address);
+
     const checks = await Onfido.getChecks(applicant.id);
 
     if (checks.length > 0) {
@@ -162,6 +178,8 @@ function get ({ certifier, feeRegistrar }) {
 
     await identity.applicants.store(applicant);
     await identity.checks.store({ id: checkId, status: Identity.STATUS.PENDING, creationDate: new Date().toISOString() });
+
+    await store.unlock(address);
 
     ctx.body = { result: 'ok' };
   });

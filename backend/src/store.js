@@ -9,6 +9,7 @@ const Identity = require('./identity');
 const ONFIDO_CHECKS_CHANNEL = 'picops::onfido-checks-channel';
 
 const REDIS_APPLICANTS_KEY = 'picops::applicants';
+const REDIS_LOCKS_KEY = 'picops::locker';
 const REDIS_USED_DOCUMENTS_KEY = 'picops::used-documents';
 
 class Store {
@@ -40,6 +41,37 @@ class Store {
    */
   static async hasApplicant (applicantId) {
     return redis.sismember(REDIS_APPLICANTS_KEY, applicantId);
+  }
+
+  /**
+   * Locks the given Eth address (eg. while
+   * doing operations on the address, creating a check, etc.)
+   * Expire in 5 minutes
+   *
+   * @param {String} address
+   */
+  static async lock (address) {
+    return redis.setex(REDIS_LOCKS_KEY, 5 * 60, address);
+  }
+
+  /**
+   * Whether the given Eth address is locked
+   *
+   * @param {String} address
+   *
+   * @return {Promise<Boolean>}
+   */
+  static async locked (address) {
+    return redis.sismember(REDIS_LOCKS_KEY, address);
+  }
+
+  /**
+   * Unlocks the given Eth address
+   *
+   * @param {String} address
+   */
+  static async unlock (address) {
+    return redis.srem(REDIS_LOCKS_KEY, address);
   }
 
   /**
