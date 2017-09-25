@@ -146,8 +146,8 @@ class CertifierStore {
     const { payer } = feeStore;
 
     try {
-      this.setPending(true);
       await backend.createCheck(payer);
+      this.setPending(true);
     } catch (error) {
       appStore.addError(error);
     }
