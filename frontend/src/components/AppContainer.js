@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Container, Header, Segment } from 'semantic-ui-react';
 
 import appStore from '../stores/app.store';
-import Stepper from './Stepper';
 
 const baseContentStyle = {
   backgroundColor: 'white',
@@ -47,16 +46,6 @@ export default class AppContainer extends Component {
       <Container style={style}>
         {titleNode}
         {header || null}
-        <Stepper
-          step={1}
-          steps={[
-            'test',
-            'test',
-            'test',
-            'test',
-            'test'
-          ]}
-        />
         <Segment basic style={contentStyle}>
           {children}
         </Segment>
