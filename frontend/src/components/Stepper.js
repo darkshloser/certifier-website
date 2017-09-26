@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon, Progress } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 
 const containerStyle = {
   position: 'absolute',
@@ -11,11 +11,15 @@ const containerStyle = {
 
 const stepNameStyle = {
   position: 'absolute',
-  marginLeft: '-50px',
+  marginLeft: '-75px',
   left: '0.75em',
-  top: '-2em',
-  width: '100px',
-  textAlign: 'center'
+  top: '-4.5em',
+  width: '150px',
+  textAlign: 'center',
+  height: '4.5em',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center'
 };
 
 export default class Stepper extends Component {
@@ -25,21 +29,29 @@ export default class Stepper extends Component {
   };
 
   render () {
-    const { step, steps } = this.props;
+    const { steps } = this.props;
     const count = steps.length - 1;
-    const progress = Math.round(100 * step / count);
 
     return (
-      <div style={{ padding: '1em 50px' }}>
-        <Progress
-          color='green'
-          percent={progress}
-          size='tiny'
-        >
+      <div style={{
+        padding: '1em 50px',
+        height: '7em',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end'
+      }}>
+        <div style={{
+          width: '100%',
+          height: '1px',
+          position: 'relative',
+          backgroundColor: 'lightgray',
+          fontSize: '0.9em',
+          top: '-1em'
+        }}>
           <div style={containerStyle}>
             {steps.map((title, index) => this.renderStep(title, index, count))}
           </div>
-        </Progress>
+        </div>
       </div>
     );
   }
@@ -52,26 +64,31 @@ export default class Stepper extends Component {
       ? '#21ba45'
       : 'lightgray';
 
-    const icon = index < step
+    const icon = index <= step
       ? 'check'
-      : (index === step ? 'spinner' : undefined);
-
-    const loading = index === step;
+      : undefined;
 
     return (
       <div
         key={`${title}-${index}`}
-        style={{ position: 'absolute', left: `calc(${position}% - 0.75em)` }}
+        style={{ position: 'absolute', left: `calc(${position}% - 0.75em)`, top: '0.5em' }}
       >
         <Icon
           circular
-          loading={loading}
           name={icon}
           size='small'
-          style={{ backgroundColor: color, boxShadow: 'none', color: 'white' }}
+          style={{
+            backgroundColor: color,
+            boxShadow: 'none',
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 !important'
+          }}
         />
         <div style={stepNameStyle}>
-          {title}
+          <span>{title}</span>
         </div>
       </div>
     );

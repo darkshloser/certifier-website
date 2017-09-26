@@ -20,6 +20,9 @@ const SANDBOX_DOCUMENT_HASH = hashDocumentNumbers([{
   value: '9999999999'
 }]);
 
+/// Get the Report Types
+// _call('/report_type_groups').then((data) => console.log(JSON.stringify(data, null, 2)));
+
 /**
  * Make a call to the Onfido API (V2)
  *

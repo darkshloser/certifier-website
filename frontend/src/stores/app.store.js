@@ -42,6 +42,7 @@ class AppStore extends EventEmitter {
   @observable messages = {};
   @observable termsAccepted = false;
   @observable step;
+  @observable stepper = -1;
 
   constructor () {
     super();
@@ -190,6 +191,16 @@ class AppStore extends EventEmitter {
   }
 
   @action setStep (step) {
+    if (step === STEPS['terms'] || step === STEPS['country-selection']) {
+      this.stepper = 0;
+    } else if (step === STEPS['fee']) {
+      this.stepper = 1;
+    } else if (step === STEPS['certified'] || step === STEPS['certify']) {
+      this.stepper = 2;
+    } else {
+      this.stepper = -1;
+    }
+
     this.step = step;
   }
 
