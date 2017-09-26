@@ -52,6 +52,15 @@ class Resource {
   }
 
   /**
+   * Delete the resource from DB
+   *
+   * @param {String} id
+   */
+  async del (id) {
+    return redis.hdel(this.prefix, id);
+  }
+
+  /**
    * Return all resources stored in Redis
    * for this specific set.
    * The Promise resolves with an Array containing

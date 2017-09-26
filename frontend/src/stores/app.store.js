@@ -42,15 +42,19 @@ class AppStore extends EventEmitter {
   @observable messages = {};
   @observable termsAccepted = false;
   @observable step;
+  @observable stepper = -1;
 
   constructor () {
     super();
+    this.load();
+  }
 
-    this.load()
+  load = () => {
+    this._load()
       .catch((error) => this.addError(error));
   }
 
-  load = async () => {
+  _load = async () => {
     this.certifierAddress = await backend.certifierAddress();
 
     if (store.get(TERMS_LS_KEY) === true) {
@@ -149,12 +153,16 @@ class AppStore extends EventEmitter {
   }
 
   restart () {
+    this.skipTerms = false;
+    this.skipStart = false;
+
     store.remove(CITIZENSHIP_LS_KEY);
     store.remove(FEE_HOLDER_LS_KEY);
     store.remove(PAYER_LS_KEY);
     store.remove(TERMS_LS_KEY);
 
     this.termsAccepted = false;
+
     this.emit('restart');
     this.goto('start');
   }
@@ -190,6 +198,16 @@ class AppStore extends EventEmitter {
   }
 
   @action setStep (step) {
+    if (step === STEPS['terms'] || step === STEPS['country-selection']) {
+      this.stepper = 0;
+    } else if (step === STEPS['fee']) {
+      this.stepper = 1;
+    } else if (step === STEPS['certified'] || step === STEPS['certify']) {
+      this.stepper = 2;
+    } else {
+      this.stepper = -1;
+    }
+
     this.step = step;
   }
 

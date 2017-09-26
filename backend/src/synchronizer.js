@@ -165,9 +165,26 @@ class Synchronizer {
     }
 
     // No check in DB, get it, if any, from Onfido
-    const checks = await Onfido.getChecks(applicant.id);
+    let checks = [];
+
+    try {
+      checks = await Onfido.getChecks(applicant.id);
+    } catch (error) {
+      if (/could not find/i.test(error.message)) {
+        console.warn('> applicant not found on Onfido... ' + applicant.id);
+        return identity.applicants.del(applicant.id);
+      }
+
+      console.error(error.message);
+    }
+
     // The right check is the most recent one
     const check = checks.sort(sorter)[0] || null;
+
+    if (!check && !applicant.created_at) {
+      console.warn('> empty applicant... ' + applicant.id);
+      return identity.applicants.del(applicant.id);
+    }
 
     if (!check) {
       const creationDate = new Date(applicant.created_at);
