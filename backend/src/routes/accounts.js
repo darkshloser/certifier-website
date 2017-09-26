@@ -48,10 +48,17 @@ function get ({ connector, certifier, feeRegistrar }) {
 
     const identity = new Identity(address);
 
-    const balance = await connector.balance(address);
-    const checkCount = await identity.checks.count();
-    const { paymentCount } = await feeRegistrar.paymentStatus(address);
-    const certified = await certifier.isCertified(address);
+    const [
+      balance,
+      checkCount,
+      { paymentCount },
+      certified
+    ] = await Promise.all([
+      connector.balance(address),
+      identity.checks.count(),
+      feeRegistrar.paymentStatus(address),
+      certifier.isCertified(address)
+    ]);
 
     // If certified, means that the Address paid
     const paid = certified || (onfidoMaxChecks * paymentCount) > checkCount;

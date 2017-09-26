@@ -27,7 +27,7 @@ export default class Details extends Component {
         header={this.renderGoBack()}
         footer={this.renderGoBack()}
         style={{ paddingTop: '1em' }}
-        title='LEARN MORE ABOUT PARITY ICO PASSPORT SERVICE'
+        title='LEARN MORE ABOUT PICOPS'
       >
         <div>
           <Segment vertical>

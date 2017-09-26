@@ -6,7 +6,7 @@ Many transactional applications require up-front knowledge concerning certain as
 
 ICOs and token sales are a novel method of crowdfunding that have been facilitated by trust-free “blockchain” technology and in no small part the Ethereum blockchain. While many of the early token sales offered entirely unfettered access to the general international public, regulatory concerns have lead to a belief that some restrictions should be placed on who may take part.
 
-The Parity ICO Passporting Service (PICOPS) is a Parity-hosted service comprising a smart-contract and back-end server, to facilitate a specific identity verification striking a good balance between the privacy of those that become certified and ensuring maximum certainty of those that wish to utilise the certifications. It is provided to the community gratis, with no warranty, though with a non-binding pledge to operate the service as described in “IMPLEMENTATION”.
+The Parity ICO Passport Service (PICOPS) is a Parity-hosted service comprising a smart-contract and back-end server, to facilitate a specific identity verification striking a good balance between the privacy of those that become certified and ensuring maximum certainty of those that wish to utilise the certifications. It is provided to the community gratis, with no warranty, though with a non-binding pledge to operate the service as described in “IMPLEMENTATION”.
 
 ### INTENTION
 
