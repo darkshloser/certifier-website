@@ -68,12 +68,7 @@ const config = {
       'node_modules'
     ],
     extensions: ['.js', '.json', '.jsx'],
-    mainFields: ['jsnext:main', 'browser', 'module', 'main'],
-    alias: {
-      'node-fetch': path.join(__dirname, './src/node-fetch.js'),
-      'fs': path.join(__dirname, './src/empty.js')
-      // 'parity-reactive-ui': path.join(__dirname, 'empty')
-    }
+    mainFields: ['jsnext:main', 'browser', 'module', 'main']
   },
 
   plugins: [
