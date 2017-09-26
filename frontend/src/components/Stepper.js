@@ -29,7 +29,12 @@ export default class Stepper extends Component {
   };
 
   render () {
-    const { steps } = this.props;
+    const { step, steps } = this.props;
+
+    if (step < 0) {
+      return null;
+    }
+
     const count = steps.length - 1;
 
     return (
