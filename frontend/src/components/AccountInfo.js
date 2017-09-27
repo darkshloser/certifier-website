@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Segment } from 'semantic-ui-react';
 
 import backend from '../backend';
+import blockStore from '../stores/block.store';
 import { fromWei, toChecksumAddress } from '../utils';
 
 import AccountIcon from './AccountIcon.js';
@@ -27,10 +28,18 @@ export default class AccountInfo extends Component {
 
   componentWillMount () {
     this.fetchInfo();
+    blockStore.on('block', this.fetchInfo, this);
+  }
+
+  componentWillUnmount () {
+    blockStore.removeListener('block', this.fetchInfo, this);
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.address !== this.props.address) {
+      // Reset state
+      this.setState({ balance: null, certified: null });
+      // Fetch new info
       this.fetchInfo(nextProps);
     }
   }
@@ -46,7 +55,9 @@ export default class AccountInfo extends Component {
       nextState.balance = balance;
     }
 
-    if (showCertified) {
+    // If already certified, no need to update
+    // the value (won't change)
+    if (showCertified && !this.state.certified) {
       const { certified } = await backend.checkStatus(address);
 
       nextState.certified = certified;

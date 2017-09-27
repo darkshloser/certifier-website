@@ -8,8 +8,13 @@ import TermsMD from '../terms.md';
 
 @observer
 export default class Terms extends Component {
+  state = {
+    hitBottom: false
+  };
+
   render () {
     const { termsAccepted } = appStore;
+    const { hitBottom } = this.state;
 
     return (
       <Segment basic textAlign='center'>
@@ -18,14 +23,19 @@ export default class Terms extends Component {
         >
           TERMS & CONDITIONS
         </Header>
-        <Segment basic textAlign='left' style={{
-          maxHeight: 350,
-          marginBottom: '2em',
-          overflow: 'auto'
-        }}>
+        <div
+          style={{
+            maxHeight: 350,
+            marginBottom: '2em',
+            overflow: 'auto',
+            textAlign: 'left'
+          }}
+          ref={this.setTermsRef}
+        >
           <TermsMD />
-        </Segment>
+        </div>
         <Checkbox
+          disabled={!hitBottom}
           label={`I confirm that I have read and agreed to the Terms & Conditions`}
           checked={termsAccepted}
           onChange={this.handleTermsChecked}
@@ -46,9 +56,28 @@ export default class Terms extends Component {
     );
   }
 
+  setTermsRef = (element) => {
+    if (element) {
+      element.addEventListener('scroll', this.handleScroll);
+    }
+  };
+
   handleContinue = () => {
     appStore.storeTermsAccepted();
     appStore.goto('country-selection');
+  };
+
+  handleScroll = (event) => {
+    const { clientHeight, scrollHeight, scrollTop } = event.target;
+    const scroll = scrollTop + clientHeight;
+    const height = scrollHeight;
+    // Precise at +-1%
+    const atBottom = Math.abs(scroll - height) / height <= 0.01;
+
+    if (atBottom) {
+      this.setState({ hitBottom: true });
+      event.target.removeEventListener('scroll', this.handleScroll);
+    }
   };
 
   handleTermsChecked = (_, { checked }) => {

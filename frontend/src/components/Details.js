@@ -20,8 +20,6 @@ export default class Details extends Component {
   };
 
   render () {
-    const { understood } = this.state;
-
     return (
       <AppContainer
         header={this.renderGoBack()}
@@ -33,37 +31,52 @@ export default class Details extends Component {
           <Segment vertical>
             <DetailsMD />
           </Segment>
-
-          <Segment vertical>
-            <h2>
-              PARITY BACKGROUND - CHECK APPLICATION BINARY INTERFACE
-              <br />
-              TERMS OF USE
-            </h2>
-            <div style={{ height: 400, overflow: 'auto' }}>
-              <TermsOfUseMD />
-            </div>
-          </Segment>
-
-          <div style={{
-            alignItems: 'center',
-            display: 'flex',
-            justifyContent: 'center',
-            margin: '2em 0 1em'
-          }}>
-            <Checkbox
-              checked={understood}
-              label={(
-                <label style={{ marginLeft: '1em', fontSize: '1.3em' }}>
-                  I understand the above statement
-                </label>
-              )}
-              onChange={this.handleUnderstandChange}
-            />
-          </div>
-          {this.renderMore()}
+          {this.renderABI()}
         </div>
       </AppContainer>
+    );
+  }
+
+  renderABI () {
+    const { padding } = appStore;
+
+    if (!padding) {
+      return null;
+    }
+
+    const { understood } = this.state;
+
+    return (
+      <div>
+        <Segment vertical>
+          <h2>
+            PARITY BACKGROUND - CHECK APPLICATION BINARY INTERFACE
+            <br />
+            TERMS OF USE
+          </h2>
+          <div style={{ height: 400, overflow: 'auto' }}>
+            <TermsOfUseMD />
+          </div>
+        </Segment>
+
+        <div style={{
+          alignItems: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          margin: '2em 0 1em'
+        }}>
+          <Checkbox
+            checked={understood}
+            label={(
+              <label style={{ marginLeft: '1em', fontSize: '1.3em' }}>
+                I understand the above statement
+              </label>
+            )}
+            onChange={this.handleUnderstandChange}
+          />
+        </div>
+        {this.renderMore()}
+      </div>
     );
   }
 
