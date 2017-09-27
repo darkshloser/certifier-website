@@ -31,8 +31,13 @@ async function main () {
     try {
       await next();
     } catch (err) {
-      ctx.status = err.status || 500;
-      ctx.body = err.message;
+      if (err.status) {
+        ctx.status = err.status;
+        ctx.body = err.message;
+      } else {
+        ctx.status = 500;
+        ctx.body = 'Internal server error';
+      }
       ctx.app.emit('error', err, ctx);
     }
   });
