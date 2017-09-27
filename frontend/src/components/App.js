@@ -152,7 +152,7 @@ class MainApp extends Component {
             To use PICOPS as an end user, you will have to make a small upfront payment of Ether. If you do not currently own an Ethereum wallet to be certified and instead store Ether on an exchange, you will have the opportunity  to create a wallet file during the certification  process. Once the fee is paid, you will be asked to provide a scan of a <a href='https://onfido.com/an-applicant-guide.pdf'>document</a> to Onfido, an ID verification service, to verify your identity.
           </p>
           <p style={{ lineHeight: '1.5em' }}>
-            Processing the payment and verifying your identity document will take a few minutes. Please make sure to not close this window open during the verification process.
+            Processing the payment and verifying your identity document will take a few minutes. Please make sure to not close this window during the verification process.
           </p>
         </div>
 
