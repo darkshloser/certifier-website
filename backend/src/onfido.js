@@ -338,11 +338,11 @@ async function verifyDocument (documentReport) {
     return { valid: true, hash };
   }
 
-  if (store.hasDocumentBeenUsed(hash)) {
+  if (await store.hasDocumentBeenUsed(hash)) {
     return { valid: false, reason: 'used-document', hash };
   }
 
-  store.markDocumentAsUsed(hash);
+  await store.markDocumentAsUsed(hash);
   return { valid: true, hash };
 }
 
