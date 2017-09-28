@@ -61,7 +61,7 @@ contract FeeRegistrar {
   /// and the `fee` users have to pay
   /// @param _treasury The address to which the payments will be forwarded
   /// @param _fee The fee users have to pay, in wei
-  function FeeRegistrar (address _treasury, uint _fee) {
+  function FeeRegistrar (address _treasury, uint _fee) public {
     owner = msg.sender;
     treasury = _treasury;
     fee = _fee;
