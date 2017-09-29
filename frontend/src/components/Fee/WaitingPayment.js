@@ -55,7 +55,7 @@ export default class WaitingPayment extends Component {
             <QRCode
               level='M'
               size={192}
-              value={link}
+              value={wallet.address}
             />
           </a>
 

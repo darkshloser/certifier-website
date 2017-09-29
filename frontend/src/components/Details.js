@@ -40,9 +40,9 @@ export default class Details extends Component {
   }
 
   renderABI () {
-    const { padding } = appStore;
+    const { showAbi } = appStore;
 
-    if (!padding) {
+    if (!showAbi) {
       return null;
     }
 

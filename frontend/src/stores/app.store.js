@@ -38,11 +38,15 @@ class AppStore extends EventEmitter {
   queryCommands = {
     'no-padding': () => {
       this.padding = false;
+      this.showAbi = false;
 
       // Call the iframe resizer method so
       // parent embedding PICOPS can set
       // the iframe height automatically
       return console.warn(iframeResizerContentWindow);
+    },
+    'hide-abi': () => {
+      this.showAbi = false;
     },
     'no-stepper': () => {
       this.showStepper = false;
