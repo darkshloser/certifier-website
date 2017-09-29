@@ -16,6 +16,8 @@ export default class Details extends Component {
   state = {
     abiCopied: false,
     addressCopied: false,
+    agreed: false,
+    hitBottomTerms: false,
     understood: false
   };
 
@@ -38,27 +40,16 @@ export default class Details extends Component {
   }
 
   renderABI () {
-    const { padding } = appStore;
+    const { showAbi } = appStore;
 
-    if (!padding) {
+    if (!showAbi) {
       return null;
     }
 
-    const { understood } = this.state;
+    const { agreed, hitBottomTerms, understood } = this.state;
 
     return (
       <div>
-        <Segment vertical>
-          <h2>
-            PARITY BACKGROUND - CHECK APPLICATION BINARY INTERFACE
-            <br />
-            TERMS OF USE
-          </h2>
-          <div style={{ height: 400, overflow: 'auto' }}>
-            <TermsOfUseMD />
-          </div>
-        </Segment>
-
         <div style={{
           alignItems: 'center',
           display: 'flex',
@@ -75,7 +66,45 @@ export default class Details extends Component {
             onChange={this.handleUnderstandChange}
           />
         </div>
-        {this.renderMore()}
+
+        {
+          understood
+            ? (
+              <div>
+                <Segment vertical>
+                  <h2>
+                    PARITY BACKGROUND - CHECK APPLICATION BINARY INTERFACE
+                    <br />
+                    TERMS OF USE
+                  </h2>
+                  <div style={{ height: 400, overflow: 'auto' }} ref={this.setTermsRef}>
+                    <TermsOfUseMD />
+                  </div>
+                </Segment>
+
+                <div style={{
+                  alignItems: 'center',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  margin: '2em 0 1em'
+                }}>
+                  <Checkbox
+                    checked={agreed}
+                    disabled={!hitBottomTerms}
+                    label={(
+                      <label style={{ marginLeft: '1em', fontSize: '1.3em' }}>
+                        I agree with the terms of use
+                      </label>
+                    )}
+                    onChange={this.handleAgreedChange}
+                  />
+                </div>
+                {this.renderMore()}
+              </div>
+            )
+            : null
+        }
+
       </div>
     );
   }
@@ -94,10 +123,10 @@ export default class Details extends Component {
   }
 
   renderMore () {
-    const { addressCopied, abiCopied, understood } = this.state;
+    const { addressCopied, abiCopied, agreed } = this.state;
     const { certifierAddress } = appStore;
 
-    if (!understood) {
+    if (!agreed) {
       return null;
     }
 
@@ -180,7 +209,30 @@ export default class Details extends Component {
     }, 1500);
   };
 
+  handleAgreedChange = (_, { checked }) => {
+    this.setState({ agreed: checked });
+  };
+
   handleUnderstandChange = (_, { checked }) => {
     this.setState({ understood: checked });
+  };
+
+  handleScroll = (event) => {
+    const { clientHeight, scrollHeight, scrollTop } = event.target;
+    const scroll = scrollTop + clientHeight;
+    const height = scrollHeight;
+    // Precise at +-1%
+    const atBottom = Math.abs(scroll - height) / height <= 0.01;
+
+    if (atBottom) {
+      this.setState({ hitBottomTerms: true });
+      event.target.removeEventListener('scroll', this.handleScroll);
+    }
+  };
+
+  setTermsRef = (element) => {
+    if (element) {
+      element.addEventListener('scroll', this.handleScroll);
+    }
   };
 }

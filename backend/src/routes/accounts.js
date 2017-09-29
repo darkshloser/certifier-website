@@ -51,7 +51,7 @@ function get ({ connector, certifier, feeRegistrar }) {
     const [
       balance,
       checkCount,
-      { paymentCount },
+      { paymentCount, paymentOrigins },
       certified
     ] = await Promise.all([
       connector.balance(address),
@@ -62,10 +62,12 @@ function get ({ connector, certifier, feeRegistrar }) {
 
     // If certified, means that the Address paid
     const paid = certified || (onfidoMaxChecks * paymentCount) > checkCount;
+    const origins = paid ? paymentOrigins : [];
 
     ctx.body = {
       balance: '0x' + balance.toString(16),
-      paid
+      paid,
+      origins
     };
   });
 

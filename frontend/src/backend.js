@@ -22,11 +22,12 @@ class Backend {
   }
 
   async getAccountFeeInfo (address) {
-    const { balance, paid } = await get(this.url(`/accounts/${address}/fee`));
+    const { balance, paid, origins } = await get(this.url(`/accounts/${address}/fee`));
 
     return {
       balance: new BigNumber(balance),
-      paid
+      paid,
+      origins
     };
   }
 
@@ -92,6 +93,6 @@ class Backend {
 }
 
 const { protocol, hostname, port } = window.location;
-const frontendPort = port ? ':4000' : '';
+const frontendPort = port ? `:${port}` : '';
 
 export default new Backend(`${protocol}//${hostname}${frontendPort}`);

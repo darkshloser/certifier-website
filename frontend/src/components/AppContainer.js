@@ -66,7 +66,11 @@ export default class AppContainer extends Component {
   }
 
   renderStepper () {
-    const { stepper } = appStore;
+    const { stepper, showStepper } = appStore;
+
+    if (!showStepper) {
+      return null;
+    }
 
     return (
       <Stepper

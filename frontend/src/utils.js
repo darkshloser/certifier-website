@@ -156,3 +156,20 @@ export function buildABIData (fnId, ...args) {
 
   return result;
 }
+
+/**
+ * Sends a post message to parent window if one exists.
+ *
+ * @param {Object} payload
+ *
+ * @return {Boolean} `true` if a message has been sent
+ */
+export function parentMessage (payload) {
+  if (!window.parent) {
+    return false;
+  }
+
+  window.parent.postMessage(JSON.stringify(payload), '*');
+
+  return true;
+}

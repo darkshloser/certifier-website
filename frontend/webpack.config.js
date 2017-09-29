@@ -30,7 +30,7 @@ const config = {
   },
 
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist-build'),
     filename: '[name].[hash:10].js',
     publicPath: '/'
   },
