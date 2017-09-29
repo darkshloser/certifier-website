@@ -22,11 +22,12 @@ class Backend {
   }
 
   async getAccountFeeInfo (address) {
-    const { balance, paid } = await get(this.url(`/accounts/${address}/fee`));
+    const { balance, paid, origins } = await get(this.url(`/accounts/${address}/fee`));
 
     return {
       balance: new BigNumber(balance),
-      paid
+      paid,
+      origins
     };
   }
 

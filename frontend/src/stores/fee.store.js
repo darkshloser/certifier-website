@@ -46,6 +46,9 @@ class FeeStore {
   constructor () {
     appStore.register('fee', this.load);
     appStore.on('restart', this.init);
+    appStore.on('external-payer', (address) => {
+      this.setPayer(address);
+    });
 
     this.init();
   }
@@ -96,9 +99,10 @@ class FeeStore {
   async checkPayer () {
     try {
       const { payer } = this;
-      const { paid } = await backend.getAccountFeeInfo(payer);
+      const { origins } = await backend.getAccountFeeInfo(payer);
+      const feeAddress = await this.getFeeAddress().toLowerCase();
 
-      if (paid) {
+      if (origins.find((address) => address.toLowerCase() === feeAddress)) {
         store.set(PAYER_LS_KEY, payer);
         appStore.goto('certify');
         this.emptyWallet(payer);
@@ -177,6 +181,14 @@ class FeeStore {
     } catch (error) {
       appStore.addError(error);
     }
+  }
+
+  async getFeeAddress () {
+    if (!this.wallet) {
+      this.wallet = await this.getWallet();
+    }
+
+    return this.wallet.address;
   }
 
   async getWallet () {

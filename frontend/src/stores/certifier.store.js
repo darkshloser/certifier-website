@@ -6,6 +6,7 @@ import appStore from './app.store';
 import blockStore from './block.store';
 import feeStore from './fee.store';
 import backend from '../backend';
+import { parentMessage } from '../utils';
 
 export const ONFIDO_REASONS = {
   // If the report has returned information that needs to be evaluated
@@ -72,10 +73,14 @@ class CertifierStore {
 
   sdkToken;
   shouldMountOnfido;
+  fetchExternalSignature;
 
   constructor () {
     appStore.register('certify', this.load);
     appStore.on('restart', this.init);
+    appStore.on('external-payer', () => {
+      this.fetchExternalSignature = true;
+    });
 
     this.init();
   }
@@ -96,30 +101,83 @@ class CertifierStore {
 
     this.sdkToken = null;
     this.shouldMountOnfido = false;
+    this.fetchExternalSignature = false;
   }
 
   load = async () => {
     await this.checkCertification();
   };
 
-  async createApplicant () {
-    console.warn('certifier_store::createApplicant');
-    this.setLoading(true);
+  externalSignature (message) {
+    if (!parentMessage({ action: 'request-signature', message })) {
+      throw new Error('Expected to receive signature from external source, but failed to hook up to one');
+    }
+
+    return new Promise((resolve, reject) => {
+      const listener = (event) => {
+        let message;
+
+        try {
+          message = JSON.parse(event.data);
+        } catch (err) {
+          console.error('Failed to parse JSON from postMessage', event);
+          return;
+        }
+
+        const { action, signature } = message;
+
+        if (action === 'signature' && signature) {
+          window.removeEventListener('message', listener, false);
+
+          resolve(signature);
+        }
+      };
+
+      window.addEventListener('message', listener, false);
+
+      setTimeout(() => {
+        window.removeEventListener('message', listener, false);
+
+        reject(new Error('External signature timeout, check PICOPS integration'));
+      }, 30000);
+    });
+  }
+
+  async getSignature (message) {
+    if (this.fetchExternalSignature) {
+      return this.externalSignature(message);
+    }
 
     if (!feeStore.storedPhrase) {
       throw new Error('The account that sent the fee have not been found in local storage');
     }
 
-    const { payer } = feeStore;
-    const { firstName, lastName } = this;
-
     const wallet = await feeStore.getWallet();
     const privateKey = Buffer.from(wallet.secret.slice(2), 'hex');
-    const message = `PICOPS::create-applicant::${payer}::${firstName} ${lastName}`;
 
     const msgHash = EthJS.hashPersonalMessage(EthJS.toBuffer(message));
     const { v, r, s } = EthJS.ecsign(msgHash, privateKey);
-    const signature = EthJS.toRpcSig(v, r, s);
+
+    return EthJS.toRpcSig(v, r, s);
+  }
+
+  async createApplicant () {
+    console.warn('certifier_store::createApplicant');
+    this.setLoading(true);
+
+    const { payer } = feeStore;
+    const { firstName, lastName } = this;
+    const message = `PICOPS::create-applicant::${payer}::${firstName} ${lastName}`;
+
+    let signature;
+
+    try {
+      signature = await this.getSignature(message);
+    } catch (error) {
+      appStore.addError(error);
+      this.setLoading(false);
+      return;
+    }
 
     try {
       console.warn('certifier_store::createApplicant calling backend');

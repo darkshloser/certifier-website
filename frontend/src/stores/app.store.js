@@ -5,6 +5,7 @@ import { action, observable } from 'mobx';
 import store from 'store';
 
 import backend from '../backend';
+import { parentMessage } from '../utils';
 
 export const CITIZENSHIP_LS_KEY = '_parity-certifier::citizenship';
 export const FEE_HOLDER_LS_KEY = '_parity-certifier::fee-holder';
@@ -20,23 +21,37 @@ export const STEPS = {
   'certified': Symbol('certified')
 };
 
-const padding = window.location.search !== '?no-padding';
 let nextErrorId = 1;
-
-if (padding) {
-  document.querySelector('body').style.backgroundColor = '#f1f1f1';
-  document.querySelector('html').style.backgroundColor = '#f1f1f1';
-}
 
 class AppStore extends EventEmitter {
   blacklistedCountries = [];
   certifierAddress = null;
   loaders = {};
-  padding = padding;
+  padding = true;
+  showStepper = true;
 
   skipCountrySelection = false;
   skipStart = false;
   skipTerms = false;
+
+  queryCommands = {
+    'no-padding': () => {
+      this.padding = false;
+    },
+    'no-stepper': () => {
+      this.showStepper = false;
+    },
+    'terms-accepted': () => {
+      this.skipTerms = true;
+      this.termsAccepted = true;
+    },
+    'paid-for': (address) => {
+      this.once('load', () => {
+        this.emit('external-payer', address.toLowerCase());
+        this.goto('certify');
+      });
+    }
+  }
 
   @observable loading = true;
   @observable messages = {};
@@ -46,6 +61,24 @@ class AppStore extends EventEmitter {
 
   constructor () {
     super();
+
+    window
+      .location
+      .search
+      .substr(1) // skip '?'
+      .split('&')
+      .map((chunk) => chunk.split('='))
+      .forEach(([key, value]) => {
+        if (this.queryCommands[key]) {
+          this.queryCommands[key](value);
+        }
+      });
+
+    if (this.padding) {
+      document.querySelector('body').style.backgroundColor = '#f1f1f1';
+      document.querySelector('html').style.backgroundColor = '#f1f1f1';
+    }
+
     this.load();
   }
 
@@ -68,16 +101,16 @@ class AppStore extends EventEmitter {
     }
 
     this.goto('start');
+    this.emit('load');
   };
 
   async setCertified (address) {
-    if (window.parent) {
-      const action = 'certified';
+    parentMessage({
+      action: 'certified',
+      address
+    });
 
-      window.parent.postMessage(JSON.stringify({ address, action }), '*');
-    }
-
-    this.goto('certified');
+    await this.goto('certified');
   }
 
   async goto (name) {
@@ -195,6 +228,10 @@ class AppStore extends EventEmitter {
 
   @action setTermsAccepted (termsAccepted) {
     this.termsAccepted = termsAccepted;
+
+    parentMessage({
+      action: 'terms-accepted'
+    });
   }
 
   @action setStep (step) {

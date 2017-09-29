@@ -11,10 +11,10 @@ import Details from './Details';
 import Fee from './Fee';
 import Messages from './Messages';
 import Terms from './Terms';
-// import Stepper from './Stepper';
 
 import appStore, { STEPS } from '../stores/app.store';
 import feeStore from '../stores/fee.store';
+import { parentMessage } from '../utils';
 
 @observer
 export default class App extends Component {
@@ -87,6 +87,20 @@ class MainApp extends Component {
     }
 
     if (step === STEPS['certified']) {
+      const buttons = appStore.padding
+        ? (
+          <Button.Group size='big'>
+            <Button onClick={this.handleRestart}>Certify a new identity</Button>
+          </Button.Group>
+        )
+        : (
+          <Button.Group size='big'>
+            <Button onClick={this.handleRestart}>Certify a new identity</Button>
+            <Button.Or text='or' />
+            <Button positive onClick={this.handleReturn}>Return to main website</Button>
+          </Button.Group>
+        );
+
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Header as='h2'>
@@ -99,11 +113,7 @@ class MainApp extends Component {
 
           <br />
 
-          <Button.Group size='big'>
-            <Button onClick={this.handleRestart}>Certify a new identity</Button>
-            <Button.Or text='or' />
-            <Button positive onClick={this.handleReturn}>Return to main website</Button>
-          </Button.Group>
+          { buttons }
         </div>
       );
     }
@@ -168,12 +178,10 @@ class MainApp extends Component {
   };
 
   handleReturn = () => {
-    if (window.parent) {
-      const address = feeStore.payer;
-      const action = 'close';
-
-      window.parent.postMessage(JSON.stringify({ address, action }), '*');
-    }
+    parentMessage({
+      action: 'close',
+      address: feeStore.payer
+    });
   };
 
   handleStart = () => {
