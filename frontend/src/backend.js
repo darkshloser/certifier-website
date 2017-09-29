@@ -93,6 +93,6 @@ class Backend {
 }
 
 const { protocol, hostname, port } = window.location;
-const frontendPort = port ? ':4000' : '';
+const frontendPort = port ? `:${port}` : '';
 
 export default new Backend(`${protocol}//${hostname}${frontendPort}`);

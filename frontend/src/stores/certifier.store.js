@@ -101,7 +101,6 @@ class CertifierStore {
 
     this.sdkToken = null;
     this.shouldMountOnfido = false;
-    this.fetchExternalSignature = false;
   }
 
   load = async () => {

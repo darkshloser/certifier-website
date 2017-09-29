@@ -1,5 +1,6 @@
 import { countries } from 'country-data';
 import EventEmitter from 'eventemitter3';
+import { iframeResizerContentWindow } from 'iframe-resizer';
 import { difference, uniq } from 'lodash';
 import { action, observable } from 'mobx';
 import store from 'store';
@@ -37,6 +38,11 @@ class AppStore extends EventEmitter {
   queryCommands = {
     'no-padding': () => {
       this.padding = false;
+
+      // Call the iframe resizer method so
+      // parent embedding PICOPS can set
+      // the iframe height automatically
+      return console.warn(iframeResizerContentWindow);
     },
     'no-stepper': () => {
       this.showStepper = false;
