@@ -43,7 +43,7 @@ export default class AppContainer extends Component {
 
     if (padding) {
       style.paddingBottom = '2em';
-      style.paddingTop = '5em';
+      style.paddingTop = '3em';
     }
 
     const contentStyle = Object.assign({}, baseContentStyle, this.props.style);

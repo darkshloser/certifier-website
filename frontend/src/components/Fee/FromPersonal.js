@@ -2,6 +2,8 @@ import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Button, Header } from 'semantic-ui-react';
 
+import EthAccounts from '../../eth_accounts.json';
+
 import feeStore from '../../stores/fee.store';
 import { isValidAddress } from '../../utils';
 
@@ -12,18 +14,39 @@ import AddressInput from '../AddressInput';
 export default class FromPersonal extends Component {
   render () {
     const { payer, incomingChoices = [] } = feeStore;
-    const valid = isValidAddress(payer);
+    const knownAccount = EthAccounts[payer];
+    const valid = isValidAddress(payer) && !knownAccount;
 
     return (
       <div>
         <Header as='h3'>
-          YOU SENT ETHER FROM A PERSONAL WALLET
+          CERTIFY MY OWN EXISTING WALLET
         </Header>
         {this.renderPersonalIncomingChoices(incomingChoices)}
-        <p><b>
+        <p>
           Enter the Ethereum address you would like
-          to certify
+          to certify.
+        </p>
+        <p><b>
+          Don't enter an address from an exchange, such as Kraken,
+          Coinbase, etc.
         </b></p>
+        {
+          knownAccount
+            ? (
+              <div>
+                <div style={{ color: 'red' }}>
+                  The account you have entered has been detected
+                  as: <code style={{ marginLeft: '0.25em', fontSize: '0.95em' }}>{knownAccount}</code>.
+                </div>
+                <div>
+                  Please enter the address of an Ethereum account
+                  you own.
+                </div>
+              </div>
+            )
+            : null
+        }
         <AddressInput
           onChange={this.handleWhoChange}
           onEnter={this.handleSendPayment}
@@ -48,11 +71,18 @@ export default class FromPersonal extends Component {
       return null;
     }
 
+    const singular = addresses.length === 1;
+
     return (
       <div>
         <p>
           <b>
-            We have detected incoming transactions from these addresses.
+            We have detected incoming transactions from
+            {
+              singular
+                ? ' this address.'
+                : ' these addresses'
+            }
           </b>
           <br />
           If you wish you can use one of those.

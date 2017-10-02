@@ -11,12 +11,14 @@ import AccountIcon from './AccountIcon.js';
 export default class AccountInfo extends Component {
   static propTypes = {
     address: PropTypes.string.isRequired,
+    fullAddress: PropTypes.bool,
     showBalance: PropTypes.bool,
     showCertified: PropTypes.bool,
     onClick: PropTypes.func
   };
 
   static defaultProps = {
+    fullAddress: false,
     showBalance: true,
     showCertified: true
   };
@@ -67,7 +69,7 @@ export default class AccountInfo extends Component {
   }
 
   render () {
-    const { address: _address, onClick, showBalance, showCertified } = this.props;
+    const { address: _address, fullAddress, onClick, showBalance, showCertified } = this.props;
     const { certified } = this.state;
 
     const address = toChecksumAddress(_address);
@@ -115,7 +117,9 @@ export default class AccountInfo extends Component {
               fontFamily: 'monospace',
               fontSize: '1.0em',
               overflow: 'hidden',
-              textOverflow: 'ellipsis'
+              textOverflow: 'ellipsis',
+              lineHeight: fullAddress ? '1.5em' : '1em',
+              wordWrap: fullAddress ? 'break-word' : ''
             }}>
               {address}
             </span>

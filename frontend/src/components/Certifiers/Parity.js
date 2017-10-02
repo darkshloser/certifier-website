@@ -29,6 +29,7 @@ export default class ParityCertifier extends Component {
           <div>
             <AccountInfo
               address={payer}
+              fullAddress
               showBalance={false}
               showCertified={false}
             />
@@ -45,7 +46,7 @@ export default class ParityCertifier extends Component {
             </strong></p>
           </div>
         )}
-        title='CERTIFYING YOUR IDENTITY'
+        title='PROVIDE YOUR IDENTITY TO CERTIFY THIS ADDRESS'
       >
         {this.renderContent()}
       </Step>

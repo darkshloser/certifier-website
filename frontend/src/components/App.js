@@ -36,7 +36,7 @@ class MainApp extends Component {
   render () {
     return (
       <AppContainer
-        footer={this.renderFooter()}
+        header={this.renderFooter()}
         title='PARITY ICO PASSPORT SERVICE'
       >
         {this.renderContent()}
@@ -90,12 +90,12 @@ class MainApp extends Component {
       const buttons = appStore.padding
         ? (
           <Button.Group size='big'>
-            <Button onClick={this.handleRestart}>Certify a new identity</Button>
+            <Button onClick={this.handleRestart}>Return to start page</Button>
           </Button.Group>
         )
         : (
           <Button.Group size='big'>
-            <Button onClick={this.handleRestart}>Certify a new identity</Button>
+            <Button onClick={this.handleRestart}>Return to start page</Button>
             <Button.Or text='or' />
             <Button positive onClick={this.handleReturn}>Return to main website</Button>
           </Button.Group>

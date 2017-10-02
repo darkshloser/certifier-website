@@ -8,6 +8,7 @@ import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
 import appStore from '../stores/app.store';
 import { createWallet } from '../utils';
+import Step from './Step';
 
 import AccountInfo from './AccountInfo';
 
@@ -124,13 +125,18 @@ export default class AccountCreator extends Component {
           </Header>
           <div style={{ lineHeight: '2em' }}>
             <p>
-              As you sent the fee for certification from an Exchange,
-              we will help you create a new Ethereum Wallet.
+              You have now created a new Ethereum wallet - it will
+              download automatically.
+            </p>
+            <p>
+              This file contains the key to your newly created Ethereum
+              account that you will certify.
+              Store it somewhere safe, and <b>DO NOT LOSE IT</b>.
             </p>
           </div>
         </Grid.Column>
         <Grid.Column width={10}>
-          <Header as='h4'>
+          <Header as='h4' style={{ marginBottom: '0' }}>
             Your ethereum address
           </Header>
 
@@ -140,7 +146,7 @@ export default class AccountCreator extends Component {
             showBalance={false}
           />
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1em' }}>
             <Button onClick={this.handleDownload}>
               Download the Wallet
             </Button>
@@ -165,12 +171,12 @@ export default class AccountCreator extends Component {
       <Grid>
         <Grid.Column width={6}>
           <Header as='h3'>
-            CHOOSE YOUR PASSWORD
+            CHOOSE YOUR WALLET PASSWORD
           </Header>
           <div style={{ lineHeight: '2em' }}>
             <p>
-              As you sent the fee for certification from an Exchange,
-              we will help you create a new Ethereum Wallet.
+              Choose a unique and secure password. Write it down and
+              keep it safe. You will need it to unlock access to your wallet.
             </p>
           </div>
         </Grid.Column>
@@ -224,8 +230,17 @@ export default class AccountCreator extends Component {
           </Header>
           <div style={{ lineHeight: '2em' }}>
             <p>
-              As you sent the fee for certification from an Exchange,
-              we will help you create a new Ethereum Wallet.
+              You will need this for the next step.
+            </p>
+            <p>
+              <b>WRITE IT DOWN</b> and keep it secret and safe.
+              Everyone who has access to this phrase will be able
+              to access your account, without any password.
+            </p>
+            <p>
+              Should you lose your password and/or
+              JSON wallet file, your recovery phrase will restore access to
+              your wallet.
             </p>
           </div>
         </Grid.Column>
@@ -279,8 +294,9 @@ export default class AccountCreator extends Component {
           </Header>
           <div style={{ lineHeight: '2em' }}>
             <p>
-              As you sent the fee for certification from an Exchange,
-              we will help you create a new Ethereum Wallet.
+              We were serious when we reminded you to write down your
+              recovery phrase. Please repeat your recovery phrase
+              in the box to the right.
             </p>
           </div>
         </Grid.Column>
@@ -316,38 +332,35 @@ export default class AccountCreator extends Component {
 
   renderStart () {
     return (
-      <Grid>
-        <Grid.Column width={8}>
-          <Header as='h3'>
-            YOU SENT ETHER FROM AN EXCHANGE
-          </Header>
-          <div style={{ lineHeight: '2em' }}>
+      <Step
+        centered
+        description={(
+          <div>
             <p>
-              As you sent the fee for certification from an Exchange,
-              we will help you create a new Ethereum Wallet.
+              We will generate a new wallet file for you.
             </p>
             <p>
-              At the end of the process, the downloaded file must
-              be saved and kept in a safe place, etc.
+              This is a password-encrypted key to your new Ethereum
+              account that you will certify through PICOPS.
             </p>
           </div>
-        </Grid.Column>
-        <Grid.Column width={8}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-            <Button.Group size='huge'>
-              <Button onClick={this.handleBack}>Back</Button>
-              <Button.Or />
-              <Button
-                color='green'
-                onClick={this.handleNext}
-                // style={{ padding: '0.75em 4em' }}
-              >
-                Continue
-              </Button>
-            </Button.Group>
-          </div>
-        </Grid.Column>
-      </Grid>
+        )}
+        title='GENERATE A NEW WALLET FILE'
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <Button.Group size='huge'>
+            <Button onClick={this.handleBack}>Back</Button>
+            <Button.Or />
+            <Button
+              color='green'
+              onClick={this.handleNext}
+              // style={{ padding: '0.75em 4em' }}
+            >
+              Continue
+            </Button>
+          </Button.Group>
+        </div>
+      </Step>
     );
   }
 
