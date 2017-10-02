@@ -34,6 +34,7 @@ class AppStore extends EventEmitter {
   skipCountrySelection = false;
   skipStart = false;
   skipTerms = false;
+  showAbi = true;
 
   queryCommands = {
     'no-padding': () => {
@@ -45,7 +46,7 @@ class AppStore extends EventEmitter {
       // the iframe height automatically
       return console.warn(iframeResizerContentWindow);
     },
-    'hide-abi': () => {
+    'extraneous': () => {
       this.showAbi = false;
     },
     'no-stepper': () => {
