@@ -14,8 +14,6 @@ export default class FromPersonal extends Component {
     const { payer, incomingChoices = [] } = feeStore;
     const valid = isValidAddress(payer);
 
-    console.log(payer);
-
     return (
       <div>
         <Header as='h3'>

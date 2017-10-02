@@ -8,7 +8,7 @@ const analyze = !!process.env.ANALYZE_ENV;
 const ENV = process.env.NODE_ENV || 'development';
 const isProd = ENV === 'production';
 
-const config = {
+const webpackConfig = {
   cache: !isProd,
   devtool: isProd ? '#eval' : '#source-map',
 
@@ -91,13 +91,13 @@ const config = {
 };
 
 if (analyze) {
-  config.plugins.push(
+  webpackConfig.plugins.push(
     new BundleAnalyzerPlugin()
   );
 }
 
 if (isProd) {
-  config.plugins.push(
+  webpackConfig.plugins.push(
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       debug: false
@@ -115,4 +115,4 @@ if (isProd) {
   );
 }
 
-module.exports = config;
+module.exports = webpackConfig;

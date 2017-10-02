@@ -34,7 +34,9 @@ const cardStyle = {
 
 const cardContentStyle = {
   display: 'flex',
-  alignItems: 'center'
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'column'
 };
 
 const imageContainerStyle = {
@@ -61,7 +63,12 @@ export default class AccountType extends Component {
         <p style={{ fontSize: '1.15em' }}>
           If you do not currently own an Ethereum wallet (JSON file) to be
           certified and instead store Ether on an exchange, you will have the
-          opportunity to create a JSON wallet file during the certification process
+          opportunity to create a JSON wallet file during the certification process.
+        </p>
+
+        <p style={{ fontSize: '1.15em', fontWeight: 'bold' }}>
+          Please be sure not to certify an Ethereum address
+          from an exchange!
         </p>
 
         <div style={rowStyle}>
@@ -72,8 +79,11 @@ export default class AccountType extends Component {
               </div>
               <Card.Content style={cardContentStyle}>
                 <Card.Header>
-                  Create a new wallet file to be certified
+                  Create a new wallet to be certified
                 </Card.Header>
+                <Card.Description>
+                  [This will be your personal wallet]
+                </Card.Description>
               </Card.Content>
             </Card>
           </div>
@@ -85,8 +95,11 @@ export default class AccountType extends Component {
               </div>
               <Card.Content style={cardContentStyle}>
                 <Card.Header>
-                  Certify my own existing wallet file
+                  My own existing wallet will be certified
                 </Card.Header>
+                <Card.Description>
+                  [I own the private key]
+                </Card.Description>
               </Card.Content>
             </Card>
           </div>

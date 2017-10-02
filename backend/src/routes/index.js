@@ -4,12 +4,14 @@
 'use strict';
 
 const Accounts = require('./accounts');
+const Config = require('./config');
 const Chain = require('./chain');
 const Onfido = require('./onfido');
 
 module.exports = function set (app, { connector, certifier, feeRegistrar }) {
   [
     Accounts,
+    Config,
     Chain,
     Onfido
   ].forEach((Route) => {

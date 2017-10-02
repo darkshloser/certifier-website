@@ -7,7 +7,7 @@
     "build": "npm run clean && NODE_ENV=production webpack --progress && rm -rf dist && mv dist-build dist",
     "clean": "rm -f dist-build/*",
     "lint": "eslint src",
-    "start": "NODE_CONFIG_DIR=../backend/config node webpack.dev.js"
+    "start": "NODE_CONFIG_DIR=../config node webpack.dev.js"
   },
   "dependencies": {
     "@parity/ethkey.js": "0.2.2",
