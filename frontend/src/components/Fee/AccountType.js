@@ -1,10 +1,47 @@
 import React, { Component } from 'react';
 import { Card, Header, Image } from 'semantic-ui-react';
 
-import ExchangeImg from '../../images/exchange.png';
+import EthereumBlankImg from '../../images/ethereum_blank.png';
 import EthereumImg from '../../images/ethereum.png';
 
 import feeStore from '../../stores/fee.store';
+
+const rowStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  // alignItems: 'center',
+  flexWrap: 'wrap'
+};
+
+const itemStyle = {
+  flex: '1',
+  textAlign: 'center',
+  display: 'flex',
+  justifyContent: 'center',
+  padding: '1em'
+};
+
+const imageStyle = {
+  width: '125px',
+  margin: '0 auto'
+};
+
+const cardStyle = {
+  width: '300px',
+  maxWidth: '100%',
+  textAlign: 'center'
+};
+
+const cardContentStyle = {
+  display: 'flex',
+  alignItems: 'center'
+};
+
+const imageContainerStyle = {
+  background: 'rgba(0,0,0,.05)',
+  padding: '1.5em 0',
+  width: '100%'
+};
 
 export default class AccountType extends Component {
   render () {
@@ -13,37 +50,47 @@ export default class AccountType extends Component {
         <Header as='h2' style={{ color: 'green', textAlign: 'center' }}>
           Payment received successfully!
         </Header>
-        <Header as='h3'>
-          HOW DID YOU SEND ETHER?
+        <Header as='h3' style={{ marginBottom: '1.5em' }}>
+          HOW DO YOU WANT TO PROCEED?
         </Header>
-        <Card.Group itemsPerRow={2}>
-          <Card onClick={this.handleFromExchange}>
-            <Image src={ExchangeImg} />
-            <Card.Content>
-              <Card.Header>
-                From an exchange
-              </Card.Header>
-              <Card.Description>
-                You sent some ETH from an exchange
-                as Kraken, Coinbase, etc.
-              </Card.Description>
-            </Card.Content>
-          </Card>
 
-          <Card onClick={this.handleFromPersonal}>
-            <Image src={EthereumImg} />
-            <Card.Content>
-              <Card.Header>
-                From a personal Wallet
-              </Card.Header>
-              <Card.Description>
-                You sent some ETH from a Wallet you
-                have full access too, using Parity Wallet,
-                MyEtherWallet, etc.
-              </Card.Description>
-            </Card.Content>
-          </Card>
-        </Card.Group>
+        <p style={{ fontSize: '1.15em' }}>
+          Thank you for the payment.
+        </p>
+
+        <p style={{ fontSize: '1.15em' }}>
+          If you do not currently own an Ethereum wallet (JSON file) to be
+          certified and instead store Ether on an exchange, you will have the
+          opportunity to create a JSON wallet file during the certification process
+        </p>
+
+        <div style={rowStyle}>
+          <div style={itemStyle}>
+            <Card onClick={this.handleFromExchange} style={cardStyle}>
+              <div style={imageContainerStyle}>
+                <Image src={EthereumBlankImg} style={imageStyle} />
+              </div>
+              <Card.Content style={cardContentStyle}>
+                <Card.Header>
+                  Create a new wallet file to be certified
+                </Card.Header>
+              </Card.Content>
+            </Card>
+          </div>
+
+          <div style={itemStyle}>
+            <Card onClick={this.handleFromPersonal} style={cardStyle}>
+              <div style={imageContainerStyle}>
+                <Image src={EthereumImg} style={imageStyle} />
+              </div>
+              <Card.Content style={cardContentStyle}>
+                <Card.Header>
+                  Certify my own existing wallet file
+                </Card.Header>
+              </Card.Content>
+            </Card>
+          </div>
+        </div>
       </div>
     );
   }

@@ -100,9 +100,12 @@ class FeeStore {
     try {
       const { payer } = this;
       const { origins } = await backend.getAccountFeeInfo(payer);
-      const feeAddress = await this.getFeeAddress().toLowerCase();
+      const feeAddress = await this.getFeeAddress();
+      const lcFeeAddress = feeAddress
+        ? feeAddress.toLowerCase()
+        : feeAddress;
 
-      if (origins.find((address) => address.toLowerCase() === feeAddress)) {
+      if (origins.find((address) => address.toLowerCase() === lcFeeAddress)) {
         store.set(PAYER_LS_KEY, payer);
         appStore.goto('certify');
         this.emptyWallet(payer);
