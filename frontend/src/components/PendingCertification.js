@@ -48,6 +48,11 @@ export default class PendingCertification extends Component {
             Please wait until your documents are processed and the
             result is saved on the blockchain.
           </p>
+
+          <p>
+            This can take several minutes or longer depending on the
+            volume of transactions on the Ethereum network.
+          </p>
         </div>
       </Step>
     );

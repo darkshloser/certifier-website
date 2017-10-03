@@ -186,7 +186,9 @@ function get ({ certifier, feeRegistrar }) {
       await identity.applicants.store(applicant);
       await identity.checks.store({ id: checkId, status: Identity.STATUS.PENDING, creationDate: new Date().toISOString() });
     } catch (error) {
-      throw error;
+      console.error(error);
+
+      return error(ctx, 400, 'Unable to process the document, please try again');
     } finally {
       await store.unlock(address);
     }

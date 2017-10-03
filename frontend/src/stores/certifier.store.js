@@ -207,6 +207,9 @@ class CertifierStore {
       this.setPending(true);
     } catch (error) {
       appStore.addError(error);
+      this.unmountOnfido();
+      this.setLoading(false);
+      this.setOnfido(false);
     }
   }
 

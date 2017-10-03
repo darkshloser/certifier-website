@@ -50,20 +50,19 @@ export default class AccountType extends Component {
     return (
       <div>
         <Header as='h2' style={{ color: 'green', textAlign: 'center' }}>
-          Payment received successfully!
+          Certification fee successfully received!
         </Header>
+        <p style={{ textAlign: 'center' }}>
+          Thank you for your payment.
+        </p>
         <Header as='h3' style={{ marginBottom: '1.5em' }}>
           HOW DO YOU WANT TO PROCEED?
         </Header>
 
         <p style={{ fontSize: '1.15em' }}>
-          Thank you for the payment.
-        </p>
-
-        <p style={{ fontSize: '1.15em' }}>
           If you do not currently own an Ethereum wallet (JSON file) to be
-          certified and instead store Ether on an exchange, you will have the
-          opportunity to create a JSON wallet file during the certification process.
+          certified and instead store Ether on an exchange, you can now create
+          a new Ethereum wallet (JSON file) during the certification process.
         </p>
 
         <p style={{ fontSize: '1.15em', fontWeight: 'bold' }}>
@@ -95,7 +94,7 @@ export default class AccountType extends Component {
               </div>
               <Card.Content style={cardContentStyle}>
                 <Card.Header>
-                  My own existing wallet will be certified
+                  My own (existing) wallet will be certified
                 </Card.Header>
                 <Card.Description>
                   [I own the private key]
