@@ -188,7 +188,7 @@ function get ({ certifier, feeRegistrar }) {
     } catch (error) {
       console.error(error);
 
-      return error(ctx, 400, 'Unable to process documents, try again');
+      return error(ctx, 400, 'Unable to process the document, please try again');
     } finally {
       await store.unlock(address);
     }
