@@ -29,7 +29,8 @@ export default class SendingPayment extends Component {
         </p>
 
         <p>
-          This can take several minutes or longer depending on the volume of transactions on the Ethereum network.
+          This can take several minutes or longer depending on the
+          volume of transactions on the Ethereum network.
         </p>
 
         {
