@@ -23,10 +23,10 @@ export default class FromPersonal extends Component {
           CERTIFY MY OWN EXISTING WALLET
         </Header>
         {this.renderPersonalIncomingChoices(incomingChoices)}
-        <p>
+        <p><b>
           Enter the Ethereum address you would like
           to certify.
-        </p>
+        </b></p>
         <p><b>
           Don't enter an address from an exchange, such as Kraken,
           Coinbase, etc.
@@ -77,15 +77,11 @@ export default class FromPersonal extends Component {
       <div>
         <p>
           <b>
-            We have detected incoming transactions from
-            {
-              singular
-                ? ' this address.'
-                : ' these addresses'
-            }
+            We have detected incoming transactions from the following
+            { singular ? ' address:' : ' addresses:' }
           </b>
           <br />
-          If you wish you can use one of those.
+          (If you wish you can use { singular ? ' it.' : ' one of them.' })
         </p>
 
         {addresses.map((address) => {

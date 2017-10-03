@@ -253,8 +253,10 @@ class AppStore extends EventEmitter {
       this.stepper = 0;
     } else if (step === STEPS['fee']) {
       this.stepper = 1;
-    } else if (step === STEPS['certified'] || step === STEPS['certify']) {
+    } else if (step === STEPS['certify']) {
       this.stepper = 2;
+    } else if (step === STEPS['certified']) {
+      this.stepper = 3;
     } else {
       this.stepper = -1;
     }
