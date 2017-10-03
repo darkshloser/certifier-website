@@ -27,6 +27,11 @@ export default class WaitingPayment extends Component {
     }
 
     const link = `web+ethereum:${wallet.address}?value=${requiredEth.toNumber()}&gas=21000`;
+    const feeStyle = {
+      padding: '0.1em 0.25em',
+      background: '#fff8dd',
+      borderRadius: '0.25em'
+    };
 
     return (
       <div>
@@ -34,8 +39,7 @@ export default class WaitingPayment extends Component {
           as='h3'
           textAlign='center'
         >
-          PAY NOW BY SENDING <big>{ fromWei(requiredEth).toFormat() }</big> ETH TO THE
-          ADDRESS BELOW
+          PAY THE CERTIFICATION FEE BY SENDING <big style={feeStyle}>{ fromWei(requiredEth).toFormat() } ETH</big> TO:
         </Header>
 
         <div style={{
