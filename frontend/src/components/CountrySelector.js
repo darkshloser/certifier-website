@@ -11,16 +11,8 @@ const BACKGROUND_COLOR = '#f2f2f2';
 
 const mapStyle = {
   backgroundColor: BACKGROUND_COLOR,
-  // height: 150,
-  // margin: '0 2em 1em',
   padding: '1.5em 1em',
   borderRadius: '1em'
-};
-
-const panelStyle = {
-  // flex: 1,
-  // margin: '0 2em',
-  // marginBottom: '2em'
 };
 
 export default class CountrySelector extends Component {
@@ -55,7 +47,7 @@ export default class CountrySelector extends Component {
         {this.renderModal()}
 
         <Grid style={{ marginTop: '4em' }}>
-          <Grid.Column tablet={16} computer={8} style={panelStyle}>
+          <Grid.Column tablet={16} computer={8}>
             <Card fluid link style={mapStyle} onClick={this.handleInvalid}>
               <div ref={this.setInvalidRef} style={{ height: '150px' }} />
             </Card>
@@ -71,7 +63,7 @@ export default class CountrySelector extends Component {
             </div>
           </Grid.Column>
 
-          <Grid.Column tablet={16} computer={8} style={panelStyle}>
+          <Grid.Column tablet={16} computer={8}>
             <Card fluid link style={mapStyle} onClick={this.handleValid}>
               <div ref={this.setValidRef} style={{ height: '150px' }} />
             </Card>
@@ -142,12 +134,6 @@ export default class CountrySelector extends Component {
     const g = svg.querySelector('g');
 
     const prevWidth = svg.getAttribute('data-width');
-    // const prevTransform = g.getAttribute('transform');
-    // const prevScale = /scale\((.+)\)/.test(prevTransform)
-    //   ? parseFloat(/scale\((.+)\)/.exec(prevTransform)[1])
-    //   : 1;
-
-    // console.warn('prevScale', prevScale);
 
     // Get container new width
     const nextWidth = container.clientWidth;
