@@ -166,7 +166,7 @@ async function getReports (checkId) {
  * @return {Object} contains booleans: `pending` and `valid`
  */
 function checkStatus (check) {
-  const { status, result } = check;
+  const { status } = check;
 
   const pending = status === 'in_progress';
   const complete = status === 'complete';
