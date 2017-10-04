@@ -26,10 +26,12 @@ export default class AppContainer extends Component {
 
     footer: PropTypes.node,
     header: PropTypes.node,
+    hideStepper: PropTypes.bool,
     style: PropTypes.object
   };
 
   static defaultProps = {
+    hideStepper: false,
     style: {}
   };
 
@@ -66,6 +68,12 @@ export default class AppContainer extends Component {
   }
 
   renderStepper () {
+    const { hideStepper } = this.props;
+
+    if (hideStepper) {
+      return null;
+    }
+
     const { stepper, showStepper } = appStore;
 
     if (!showStepper) {

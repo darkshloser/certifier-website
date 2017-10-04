@@ -45,7 +45,6 @@ export default class AddressInput extends Component {
 
           <div style={{ flex: 1 }}>
             <Input
-              action={{ icon: 'camera' }}
               fluid
               onChange={this.handleChange}
               onKeyUp={this.handleKeyUp}
