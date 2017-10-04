@@ -17,7 +17,7 @@ export default class Terms extends Component {
     const { hitBottom } = this.state;
 
     return (
-      <Segment basic textAlign='center'>
+      <Segment basic textAlign='center' style={{ backgroundColor: 'white' }}>
         <Header
           as='h2'
         >

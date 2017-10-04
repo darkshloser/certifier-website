@@ -274,7 +274,15 @@ class AppStore extends EventEmitter {
   }
 
   storeTermsAccepted () {
-    store.set(TERMS_LS_KEY, this.termsAccepted);
+    const { termsAccepted } = this;
+
+    // Send message to iframe
+    parentMessage({
+      action: 'terms-accepted',
+      termsAccepted
+    });
+
+    store.set(TERMS_LS_KEY, termsAccepted);
   }
 }
 

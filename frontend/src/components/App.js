@@ -24,6 +24,7 @@ export default class App extends Component {
         <div data-iframe-height='true'>
           <Route exact path='/' component={MainApp} />
           <Route path='/details' component={Details} />
+          <Route path='/tc' component={Terms} />
           <Messages />
         </div>
       </Router>
