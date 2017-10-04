@@ -186,6 +186,15 @@ function get ({ certifier, feeRegistrar }) {
       await identity.applicants.store(applicant);
       await identity.checks.store({ id: checkId, status: Identity.STATUS.PENDING, creationDate: new Date().toISOString() });
     } catch (error) {
+      console.log(`got an error for applicant ${applicant.id} at address ${address}`);
+
+      try {
+        const documents = await Onfido.getDocuments(applicant.id);
+
+        console.log('documents', documents);
+      } catch (e) {
+      }
+
       console.error(error);
 
       return errorHandler(ctx, 400, 'Unable to process the document, please try again');
