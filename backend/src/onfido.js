@@ -169,9 +169,9 @@ function checkStatus (check) {
   const { status, result } = check;
 
   const pending = status === 'in_progress';
-  const valid = status === 'complete' && result === 'clear';
+  const complete = status === 'complete';
 
-  return { pending, valid };
+  return { pending, complete };
 }
 
 /**
@@ -268,13 +268,23 @@ async function verifyCheck ({ applicantId, checkId }, address, check) {
     return result;
   }
 
-  let reason = check.result;
-  let { valid } = status;
+  const { complete } = status;
 
   const reports = await getReports(checkId);
   const documentReport = reports.find((report) => report.name === 'document');
+  const watchlistReport = reports.find((report) => report.name === 'watchlist');
 
-  if (valid && documentReport) {
+  let valid = complete && documentReport && watchlistReport;
+
+  if (valid) {
+    const watchlistVerification = verifyWatchlist(watchlistReport);
+
+    if (!watchlistVerification.valid) {
+      result.reason = watchlistVerification.reason;
+      result.valid = false;
+      return result;
+    }
+
     const documentVerification = await verifyDocument(documentReport);
 
     if (documentVerification.hash) {
@@ -282,21 +292,14 @@ async function verifyCheck ({ applicantId, checkId }, address, check) {
     }
 
     if (!documentVerification.valid) {
-      reason = documentVerification.reason;
-      valid = false;
-    }
-  } else {
-    const unclearReport = reports.find((report) => report.result !== 'clear');
-
-    valid = false;
-
-    if (unclearReport) {
-      reason = unclearReport.sub_result || unclearReport.result;
+      result.reason = documentVerification.reason;
+      result.valid = false;
+      return result;
     }
   }
 
   result.valid = valid;
-  result.reason = reason;
+  result.reason = 'clear';
   return result;
 }
 
@@ -316,6 +319,16 @@ function hashDocumentNumbers (documentNumbers) {
   return keccak256(string);
 }
 
+function verifyWatchlist (watchlistReport) {
+  const { result } = watchlistReport.breakdown.sanction;
+
+  if (result !== 'clear') {
+    return { valid: false, reason: result };
+  }
+
+  return { valid: true };
+}
+
 /**
  * Check that the document isn't from US and hasn't been used before
  *
@@ -324,6 +337,12 @@ function hashDocumentNumbers (documentNumbers) {
  * @return {String|null} string reason for rejection, or null if okay
  */
 async function verifyDocument (documentReport) {
+  if (documentReport.result !== 'clear') {
+    const reason = documentReport.sub_result || documentReport.result;
+
+    return { valid: false, reason };
+  }
+
   const { properties } = documentReport;
   const countryCode = properties['nationality'] || properties['issuing_country'];
 
