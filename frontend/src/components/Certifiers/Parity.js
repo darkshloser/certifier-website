@@ -57,8 +57,8 @@ export default class ParityCertifier extends Component {
   renderContent () {
     const { firstName, lastName, loading } = certifierStore;
 
-    const valid = firstName && firstName.length >= 2 &&
-      lastName && lastName.length >= 2;
+    const valid = firstName && firstName.length >= 1 &&
+      lastName && lastName.length >= 1;
 
     return (
       <div>
