@@ -25,7 +25,7 @@ export default class ErrorCertification extends Component {
           showBalance={false}
         />
 
-        <Header as='h3' style={{ whiteSpace: 'pre-line' }}>
+        <Header as='h4' style={{ whiteSpace: 'pre-line' }}>
           {reason.message}
         </Header>
 
@@ -41,6 +41,24 @@ export default class ErrorCertification extends Component {
 
     return (
       <div>
+        <Header as='h4' style={{ whiteSpace: 'pre-line', marginBottom: 0 }}>
+          Please try again and make sure you avoid some common mistakes:
+        </Header>
+
+        <div style={{ textAlign: 'left', display: 'inline-block' }}>
+          <ul>
+            <li>
+              Ensure your first name and last name are entered exactly as in your document
+            </li>
+            <li>
+              Ensure your documents are valid, i.e., not expired
+            </li>
+            <li>
+              Ensure the document you provide is either a passport, a national ID or a driver’s license
+            </li>
+          </ul>
+        </div>
+        <br />
         <br />
         <Button onClick={this.handleTryAgain} basic size='big' color='green'>
           Try again

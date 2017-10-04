@@ -40,7 +40,7 @@ export const ONFIDO_REASONS = {
   // If the document that is analysed is suspected to be fraudulent.
   suspected: {
     message: 'Something went wrong with your Identity Check.',
-    retry: false
+    retry: true
   },
 
   // If the country is USA
@@ -51,7 +51,7 @@ export const ONFIDO_REASONS = {
 
   // If the document has been used before
   'used-document': {
-    message: 'This document has been used before to certify an address',
+    message: 'This document has been used before to certify an Ethereum address.',
     retry: false
   }
 };

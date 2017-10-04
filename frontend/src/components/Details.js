@@ -25,6 +25,7 @@ export default class Details extends Component {
     return (
       <AppContainer
         header={this.renderGoBack()}
+        hideStepper
         footer={this.renderGoBack()}
         style={{ paddingTop: '1em' }}
         title='LEARN MORE ABOUT PICOPS'
