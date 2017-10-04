@@ -133,7 +133,7 @@ function get ({ certifier, feeRegistrar }) {
 
       // Store the applicant id in Redis
       await store.addApplicant(applicantId);
-      await identity.applicants.store({ id: applicantId, status: Identity.STATUS.CREATED });
+      await identity.applicants.store({ id: applicantId, status: Identity.STATUS.CREATED, sdkToken });
 
       ctx.body = { sdkToken };
     } catch (error) {
@@ -145,6 +145,7 @@ function get ({ certifier, feeRegistrar }) {
 
   router.post('/:address/check', async (ctx, next) => {
     const { address } = ctx.params;
+    const { sdkToken } = ctx.request.body;
 
     await rateLimiter(address, ctx.remoteAddress);
 
@@ -156,7 +157,8 @@ function get ({ certifier, feeRegistrar }) {
 
     const identity = new Identity(address);
     const applicants = await identity.applicants.getAll();
-    const applicant = applicants.find((app) => app.status === Identity.STATUS.CREATED);
+    const applicant = applicants
+      .find((app) => app.status === Identity.STATUS.CREATED && app.sdkToken === sdkToken);
 
     if (!applicant) {
       return errorHandler(ctx, 400, 'No application has been created for this address');
