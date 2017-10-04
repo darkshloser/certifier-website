@@ -47,11 +47,11 @@ async function rateLimiter (_address, ip) {
     return;
   }
 
-  const error = new Error('you exceeded the number of addresses your IP can use');
+  const err = new Error('you exceeded the number of addresses your IP can use');
 
   // Too Many Requests
-  error.status = 429;
-  throw error;
+  err.status = 429;
+  throw err;
 }
 
 module.exports = {
