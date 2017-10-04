@@ -29,15 +29,17 @@ export default class ParityCertifier extends Component {
           <div>
             <AccountInfo
               address={payer}
+              fullAddress
               showBalance={false}
               showCertified={false}
             />
 
             <p>
-              Prepare a document proving your identity (Passport, Driver's Licence or ID).
+              Prepare a document proving your identity (Passport, Driver's Licence or National ID).
             </p>
             <p><strong>
-              You will have to upload scans or high quality pictures of said document on the next step.
+              You will have to upload scan or high quality picture of said document on the next step.
+              Separate images for back and front of the document if applicable.
             </strong></p>
             <p><strong>
               If you can't provide scans of your document and wish for your fee to be refunded,
@@ -45,7 +47,7 @@ export default class ParityCertifier extends Component {
             </strong></p>
           </div>
         )}
-        title='CERTIFYING YOUR IDENTITY'
+        title='PROVIDE YOUR IDENTITY TO CERTIFY THIS ADDRESS'
       >
         {this.renderContent()}
       </Step>

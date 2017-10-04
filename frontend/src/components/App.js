@@ -36,7 +36,7 @@ class MainApp extends Component {
   render () {
     return (
       <AppContainer
-        footer={this.renderFooter()}
+        header={this.renderFooter()}
         title='PARITY ICO PASSPORT SERVICE'
       >
         {this.renderContent()}
@@ -90,12 +90,12 @@ class MainApp extends Component {
       const buttons = appStore.padding
         ? (
           <Button.Group size='big'>
-            <Button onClick={this.handleRestart}>Certify a new identity</Button>
+            <Button onClick={this.handleRestart}>Return to start page</Button>
           </Button.Group>
         )
         : (
           <Button.Group size='big'>
-            <Button onClick={this.handleRestart}>Certify a new identity</Button>
+            <Button onClick={this.handleRestart}>Return to start page</Button>
             <Button.Or text='or' />
             <Button positive onClick={this.handleReturn}>Return to main website</Button>
           </Button.Group>
@@ -154,27 +154,38 @@ class MainApp extends Component {
         }}>
           <p style={{ lineHeight: '1.5em' }}>
             Welcome to the <b>P</b>arity <b>ICO</b> <b>P</b>assport <b>S</b>ervice (PICOPS).
-            PICOPS is a two sided service to Ethereum end users that want to support projects
-            that offer what has come to be known by the name initial coin offerings (ICOs).
+            PICOPS is a service for users of the Ethereum network that want to support projects
+            offering what has come to be known by the name <em>Initial Coin Offerings (ICOs)</em>.
           </p>
           <p style={{ lineHeight: '1.5em' }}>
             PICOPS offers a means to validate that the owner of an Ethereum wallet has passed
             an ID background check stating that they are not part of a restricted set of users
             (e.g. US citizen or individuals on official watchlists). The background check is run
-            via a third party, namely Onfido. Parity has set up a smart contract system to record the outcome of the background check on the public Ethereum blockchain, i.e. whitelist a Ethereum addresses that are owned by non-restricted users.
+            via a third party, namely <a href='https://onfido.com/' target='_blank'>Onfido</a>.
+            Parity Technologies has set up a smart contract system to record the outcome of the
+            background check on the public Ethereum blockchain, i.e. whitelist Ethereum addresses
+            that are owned by non-restricted users.
           </p>
-          <p style={{ lineHeight: '1.5em' }}>
-            To use PICOPS as an end user, you will have to make a small upfront payment of Ether.
-            If you do not currently own an Ethereum wallet to be certified and instead store Ether
-            on an exchange, you will have the opportunity  to create a wallet file during the
-            certification  process. Once the fee is paid, you will be asked to provide a scan
-            of a document to <a href='https://onfido.com/'>Onfido</a>,
-            an ID verification service, to verify your identity.
-          </p>
-          <p style={{ lineHeight: '1.5em' }}>
-            Processing the payment and verifying your identity document will take a few minutes.
-            Please make sure to not close this window during the verification process.
-          </p>
+          <h3>PROCESS</h3>
+          <ul>
+            <li>
+              To use PICOPS as a user, you will have to agree to the Terms of Use and make a small
+              upfront payment in Ether.
+            </li>
+            <li>
+              You need to provide your own personal Ethereum wallet address that you wish to 'whitelist'.
+              If you don’t have an own personal Ethereum wallet and instead store Ether on an exchange,
+              we will help you to create a personal wallet file during the certification process.
+            </li>
+            <li>
+              Once the fee is paid, you will be asked to provide a scan of an identification document
+              (passport, drivers license, ID) to Onfido’s ID verification service to verify your identity.
+            </li>
+            <li>
+              Processing the payment and verifying your identity document will take a few minutes. Please
+              make sure to keep this window open during the verification process.
+            </li>
+          </ul>
         </div>
 
         <Button primary size='big' onClick={this.handleStart}>

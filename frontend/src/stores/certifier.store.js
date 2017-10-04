@@ -40,7 +40,7 @@ export const ONFIDO_REASONS = {
   // If the document that is analysed is suspected to be fraudulent.
   suspected: {
     message: 'Something went wrong with your Identity Check.',
-    retry: false
+    retry: true
   },
 
   // If the country is USA
@@ -51,7 +51,7 @@ export const ONFIDO_REASONS = {
 
   // If the document has been used before
   'used-document': {
-    message: 'This document has been used before to certify an address',
+    message: 'This document has been used before to certify an Ethereum address.',
     retry: false
   }
 };
@@ -107,8 +107,8 @@ class CertifierStore {
     await this.checkCertification();
   };
 
-  externalSignature (message) {
-    if (!parentMessage({ action: 'request-signature', message })) {
+  externalSignature (data) {
+    if (!parentMessage({ action: 'request-signature', data })) {
       throw new Error('Expected to receive signature from external source, but failed to hook up to one');
     }
 
@@ -123,9 +123,9 @@ class CertifierStore {
           return;
         }
 
-        const { action, signature } = message;
+        const { action: msgAction, signature } = message;
 
-        if (action === 'signature' && signature) {
+        if (msgAction === 'signature' && signature) {
           window.removeEventListener('message', listener, false);
 
           resolve(signature);
@@ -207,6 +207,9 @@ class CertifierStore {
       this.setPending(true);
     } catch (error) {
       appStore.addError(error);
+      this.unmountOnfido();
+      this.setLoading(false);
+      this.setOnfido(false);
     }
   }
 

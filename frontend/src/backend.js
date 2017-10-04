@@ -7,12 +7,20 @@ class Backend {
     this._url = url;
   }
 
-  url (path) {
-    return `${this._url}/api${path}`;
-  }
-
   blockHash () {
     return get(this.url('/block/hash'));
+  }
+
+  async config () {
+    const { gasPrice } = await get(this.url('/config'));
+
+    return {
+      gasPrice: new BigNumber(gasPrice)
+    };
+  }
+
+  url (path) {
+    return `${this._url}/api${path}`;
   }
 
   async getAccountIncomingTxs (address) {

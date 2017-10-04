@@ -65,13 +65,18 @@ export default class Stepper extends Component {
     const { step } = this.props;
     const position = Math.round(100 * index / count);
 
-    const color = index <= step
-      ? '#21ba45'
-      : 'lightgray';
+    let color;
+    let icon;
 
-    const icon = index <= step
-      ? 'check'
-      : undefined;
+    if (index < step) {
+      icon = 'check';
+      color = '#21ba45';
+    } else if (index === step) {
+      icon = 'point';
+      color = '#2185d0';
+    } else {
+      color = 'lightgray';
+    }
 
     return (
       <div

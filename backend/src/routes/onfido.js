@@ -11,7 +11,7 @@ const config = require('config');
 const Identity = require('../identity');
 const Onfido = require('../onfido');
 const store = require('../store');
-const { error, rateLimiter } = require('./utils');
+const { error: errorHandler, rateLimiter } = require('./utils');
 const { buf2add } = require('../utils');
 
 const onfidoMaxChecks = config.get('onfido.maxChecks');
@@ -32,13 +32,13 @@ function get ({ certifier, feeRegistrar }) {
     hmac.update(ctx.request.rawBody);
 
     if (!payload || signature !== hmac.digest('hex')) {
-      return error(ctx);
+      return errorHandler(ctx);
     }
 
     const { resource_type: type, action, object } = payload;
 
     if (!type || !action || !object || !object.href) {
-      return error(ctx);
+      return errorHandler(ctx);
     }
 
     if (action === 'check.completed') {
@@ -80,15 +80,15 @@ function get ({ certifier, feeRegistrar }) {
     const { firstName, lastName, signature, message } = ctx.request.body;
 
     if (!firstName || !lastName || firstName.length < 2 || lastName.length < 2) {
-      return error(ctx, 400, 'First name and last name should be at least 2 characters long');
+      return errorHandler(ctx, 400, 'First name and last name should be at least 2 characters long');
     }
 
     if (!signature) {
-      return error(ctx, 400, 'Missing signature');
+      return errorHandler(ctx, 400, 'Missing signature');
     }
 
     if (!message) {
-      return error(ctx, 400, 'Missing signature\'s message');
+      return errorHandler(ctx, 400, 'Missing signature\'s message');
     }
 
     const [certified, paid] = await Promise.all([
@@ -97,11 +97,11 @@ function get ({ certifier, feeRegistrar }) {
     ]);
 
     if (certified) {
-      return error(ctx, 400, 'Already certified');
+      return errorHandler(ctx, 400, 'Already certified');
     }
 
     if (!paid) {
-      return error(ctx, 400, 'Missing fee payment');
+      return errorHandler(ctx, 400, 'Missing fee payment');
     }
 
     const msgHash = EthJS.hashPersonalMessage(EthJS.toBuffer(message));
@@ -113,17 +113,17 @@ function get ({ certifier, feeRegistrar }) {
 
     if (!paymentOrigins.includes(signAddress)) {
       console.error('signature / payment origin mismatch', { paymentOrigins, signAddress });
-      return error(ctx, 400, 'Signature / payment origin mismatch');
+      return errorHandler(ctx, 400, 'Signature / payment origin mismatch');
     }
 
     const identity = new Identity(address);
 
     if (await identity.checks.count() >= paymentCount * onfidoMaxChecks) {
-      return error(ctx, 400, `Only ${onfidoMaxChecks} checks are allowed per single fee payment`);
+      return errorHandler(ctx, 400, `Only ${onfidoMaxChecks} checks are allowed per single fee payment`);
     }
 
     if (await store.locked(address)) {
-      return error(ctx, 400, 'Already an operation pending...');
+      return errorHandler(ctx, 400, 'Already an operation pending...');
     }
 
     await store.lock(address);
@@ -151,7 +151,7 @@ function get ({ certifier, feeRegistrar }) {
     const certified = await certifier.isCertified(address);
 
     if (certified) {
-      return error(ctx, 400, 'Already certified');
+      return errorHandler(ctx, 400, 'Already certified');
     }
 
     const identity = new Identity(address);
@@ -159,11 +159,11 @@ function get ({ certifier, feeRegistrar }) {
     const applicant = applicants.find((app) => app.status === Identity.STATUS.CREATED);
 
     if (!applicant) {
-      return error(ctx, 400, 'No application has been created for this address');
+      return errorHandler(ctx, 400, 'No application has been created for this address');
     }
 
     if (await store.locked(address)) {
-      return error(ctx, 400, 'Already an operation pending...');
+      return errorHandler(ctx, 400, 'Already an operation pending...');
     }
 
     await store.lock(address);
@@ -172,7 +172,7 @@ function get ({ certifier, feeRegistrar }) {
       const checks = await Onfido.getChecks(applicant.id);
 
       if (checks.length > 0) {
-        return error(ctx, 400, 'Cannot create any more checks for this applicant');
+        return errorHandler(ctx, 400, 'Cannot create any more checks for this applicant');
       }
 
       const { checkId } = await Onfido.createCheck(applicant.id, address);
@@ -186,7 +186,9 @@ function get ({ certifier, feeRegistrar }) {
       await identity.applicants.store(applicant);
       await identity.checks.store({ id: checkId, status: Identity.STATUS.PENDING, creationDate: new Date().toISOString() });
     } catch (error) {
-      throw error;
+      console.error(error);
+
+      return errorHandler(ctx, 400, 'Unable to process the document, please try again');
     } finally {
       await store.unlock(address);
     }

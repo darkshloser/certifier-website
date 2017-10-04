@@ -6,14 +6,13 @@ import { randomPhrase } from '@parity/wordlist';
 import store from 'store';
 
 import backend from '../backend';
+import config from './config.store';
 import appStore, { FEE_HOLDER_LS_KEY, PAYER_LS_KEY } from './app.store';
 import blockStore from './block.store';
 import { isValidAddress } from '../utils';
 
 // Gas Limit of 200k gas
 const FEE_REGISTRAR_GAS_LIMIT = new BigNumber('0x30d40');
-// Gas Price of 5Gwei
-const FEE_REGISTRAR_GAS_PRICE = new BigNumber('0x12a05f200');
 // Signature of `pay(address)`
 const FEE_REGISTRAR_PAY_SIGNATURE = '0x0c11dedd';
 
@@ -83,7 +82,7 @@ class FeeStore {
 
       this.fee = fee;
       this.feeRegistrar = feeRegistrar;
-      this.totalFee = fee.plus(FEE_REGISTRAR_GAS_PRICE.mul(FEE_REGISTRAR_GAS_LIMIT));
+      this.totalFee = fee.plus(config.get('gasPrice').mul(FEE_REGISTRAR_GAS_LIMIT));
 
       // Get the throw-away wallet
       const wallet = await this.getWallet();
@@ -100,9 +99,12 @@ class FeeStore {
     try {
       const { payer } = this;
       const { origins } = await backend.getAccountFeeInfo(payer);
-      const feeAddress = await this.getFeeAddress().toLowerCase();
+      const feeAddress = await this.getFeeAddress();
+      const lcFeeAddress = feeAddress
+        ? feeAddress.toLowerCase()
+        : feeAddress;
 
-      if (origins.find((address) => address.toLowerCase() === feeAddress)) {
+      if (origins.find((address) => address.toLowerCase() === lcFeeAddress)) {
         store.set(PAYER_LS_KEY, payer);
         appStore.goto('certify');
         this.emptyWallet(payer);
@@ -153,9 +155,7 @@ class FeeStore {
 
       // Gas Limit of 21000k for a standard TX
       const gasLimit = new BigNumber(21000);
-      // Gas Price of 1Gwei
-      const gasPrice = new BigNumber(1000000000);
-      const value = balance.sub(gasLimit.mul(gasPrice));
+      const value = balance.sub(gasLimit.mul(config.get('gasPrice')));
 
       if (value.lte(0)) {
         console.warn('could not empty account', wallet.address);
@@ -167,7 +167,7 @@ class FeeStore {
       const tx = new EthereumTx({
         to: payer,
         gasLimit: '0x' + gasLimit.toString(16),
-        gasPrice: '0x' + gasPrice.toString(16),
+        gasPrice: '0x' + config.get('gasPrice').toString(16),
         value: '0x' + value.toString(16),
         nonce
       });
@@ -231,7 +231,7 @@ class FeeStore {
       const tx = new EthereumTx({
         to: this.feeRegistrar,
         gasLimit: '0x' + FEE_REGISTRAR_GAS_LIMIT.toString(16),
-        gasPrice: '0x' + FEE_REGISTRAR_GAS_PRICE.toString(16),
+        gasPrice: '0x' + config.get('gasPrice').toString(16),
         data: calldata,
         value: '0x' + this.fee.toString(16),
         nonce
@@ -242,7 +242,7 @@ class FeeStore {
       const serializedTx = `0x${tx.serialize().toString('hex')}`;
       const { hash } = await backend.sendFeeTx(serializedTx);
 
-      console.warn('sent FeeRegistrar tx', { transaction: hash, payer });
+      console.warn('sent FeeRegistrar tx', hash);
       this.setTransaction(hash);
     } catch (error) {
       appStore.addError(error);

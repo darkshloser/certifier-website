@@ -6,6 +6,7 @@ import { action, observable } from 'mobx';
 import store from 'store';
 
 import backend from '../backend';
+import config from './config.store';
 import { parentMessage } from '../utils';
 
 export const CITIZENSHIP_LS_KEY = '_parity-certifier::citizenship';
@@ -34,6 +35,7 @@ class AppStore extends EventEmitter {
   skipCountrySelection = false;
   skipStart = false;
   skipTerms = false;
+  showAbi = true;
 
   queryCommands = {
     'no-padding': () => {
@@ -45,7 +47,7 @@ class AppStore extends EventEmitter {
       // the iframe height automatically
       return console.warn(iframeResizerContentWindow);
     },
-    'hide-abi': () => {
+    'extraneous': () => {
       this.showAbi = false;
     },
     'no-stepper': () => {
@@ -98,6 +100,8 @@ class AppStore extends EventEmitter {
   }
 
   _load = async () => {
+    await config.load();
+
     this.certifierAddress = await backend.certifierAddress();
 
     if (store.get(TERMS_LS_KEY) === true) {
@@ -249,8 +253,10 @@ class AppStore extends EventEmitter {
       this.stepper = 0;
     } else if (step === STEPS['fee']) {
       this.stepper = 1;
-    } else if (step === STEPS['certified'] || step === STEPS['certify']) {
+    } else if (step === STEPS['certify']) {
       this.stepper = 2;
+    } else if (step === STEPS['certified']) {
+      this.stepper = 3;
     } else {
       this.stepper = -1;
     }

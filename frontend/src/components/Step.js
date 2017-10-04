@@ -6,11 +6,17 @@ export default class AlreadyPaid extends Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     description: PropTypes.node.isRequired,
-    title: PropTypes.string.isRequired
+    title: PropTypes.string.isRequired,
+
+    centered: PropTypes.bool
+  };
+
+  static defaultProps = {
+    centered: false
   };
 
   render () {
-    const { children, description: _desc, title } = this.props;
+    const { centered, children, description: _desc, title } = this.props;
 
     const description = (typeof _desc === 'string')
       ? (<p>{_desc}</p>)
@@ -18,7 +24,7 @@ export default class AlreadyPaid extends Component {
 
     return (
       <Grid>
-        <Grid.Column tablet={16} computer={6}>
+        <Grid.Column tablet={16} computer={centered ? 16 : 6}>
           <Segment basic>
             <Header as='h3'>
               { title }
@@ -28,7 +34,7 @@ export default class AlreadyPaid extends Component {
             </div>
           </Segment>
         </Grid.Column>
-        <Grid.Column tablet={16} computer={10}>
+        <Grid.Column tablet={16} computer={centered ? 16 : 10}>
           { children }
         </Grid.Column>
       </Grid>
