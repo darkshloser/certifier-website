@@ -40,7 +40,7 @@ export const ONFIDO_REASONS = {
   // If the document that is analysed is suspected to be fraudulent.
   suspected: {
     message: 'Something went wrong with your Identity Check.',
-    retry: false
+    retry: true
   },
 
   // If the country is USA
