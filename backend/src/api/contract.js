@@ -322,8 +322,8 @@ class Contract {
         data,
         gasPrice: '0x0'
       })
-      .then((data) => {
-        return method.decode(data);
+      .then((result) => {
+        return method.decode(result);
       });
   }
 

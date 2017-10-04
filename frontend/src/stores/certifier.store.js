@@ -107,8 +107,8 @@ class CertifierStore {
     await this.checkCertification();
   };
 
-  externalSignature (message) {
-    if (!parentMessage({ action: 'request-signature', message })) {
+  externalSignature (data) {
+    if (!parentMessage({ action: 'request-signature', data })) {
       throw new Error('Expected to receive signature from external source, but failed to hook up to one');
     }
 
@@ -123,9 +123,9 @@ class CertifierStore {
           return;
         }
 
-        const { action, signature } = message;
+        const { action: msgAction, signature } = message;
 
-        if (action === 'signature' && signature) {
+        if (msgAction === 'signature' && signature) {
           window.removeEventListener('message', listener, false);
 
           resolve(signature);

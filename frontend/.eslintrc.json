@@ -26,6 +26,7 @@
       "blocks": "never",
       "classes": "never",
       "switches": "never"
-    }]
+    }],
+    "no-shadow": "error"
   }
 }
