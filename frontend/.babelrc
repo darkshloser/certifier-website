@@ -9,7 +9,7 @@
     "transform-decorators-legacy",
     "transform-object-rest-spread",
     "transform-class-properties",
-    ["lodash", { "id": ["lodash", "semantic-ui-react"] }]
+    ["lodash", { "id": ["lodash", "semantic-ui-react", "d3"] }]
   ],
   "env": {
     "production": {
