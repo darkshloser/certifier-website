@@ -1,7 +1,7 @@
 import { countries } from 'country-data';
 import Datamap from 'datamaps';
 import React, { Component } from 'react';
-import { Button, Card, Header, Icon, Modal } from 'semantic-ui-react';
+import { Button, Card, Grid, Header, Icon, Modal } from 'semantic-ui-react';
 
 import appStore from '../stores/app.store';
 
@@ -11,15 +11,16 @@ const BACKGROUND_COLOR = '#f2f2f2';
 
 const mapStyle = {
   backgroundColor: BACKGROUND_COLOR,
-  // height: 400,
+  // height: 150,
   // margin: '0 2em 1em',
   padding: '1.5em 1em',
   borderRadius: '1em'
 };
 
 const panelStyle = {
-  flex: 1,
-  margin: '0 2em'
+  // flex: 1,
+  // margin: '0 2em',
+  // marginBottom: '2em'
 };
 
 export default class CountrySelector extends Component {
@@ -53,10 +54,10 @@ export default class CountrySelector extends Component {
 
         {this.renderModal()}
 
-        <div style={{ display: 'flex', width: '100%', marginTop: '4em' }}>
-          <div style={panelStyle}>
+        <Grid style={{ marginTop: '4em' }}>
+          <Grid.Column tablet={16} computer={8} style={panelStyle}>
             <Card fluid link style={mapStyle} onClick={this.handleInvalid}>
-              <div ref={this.setInvalidRef} />
+              <div ref={this.setInvalidRef} style={{ height: '150px' }} />
             </Card>
 
             <div style={{ textAlign: 'center' }}>
@@ -68,18 +69,18 @@ export default class CountrySelector extends Component {
                 ( US Citizen )
               </p>
             </div>
-          </div>
+          </Grid.Column>
 
-          <div style={panelStyle}>
+          <Grid.Column tablet={16} computer={8} style={panelStyle}>
             <Card fluid link style={mapStyle} onClick={this.handleValid}>
-              <div ref={this.setValidRef} />
+              <div ref={this.setValidRef} style={{ height: '150px' }} />
             </Card>
 
             <div style={{ textAlign: 'center' }}>
               <p>Non-US citizen – Rest of the world</p>
             </div>
-          </div>
-        </div>
+          </Grid.Column>
+        </Grid>
       </div>
     );
   }
@@ -127,13 +128,47 @@ export default class CountrySelector extends Component {
   }
 
   resize = () => {
-    if (!this.invalidMap || !this.validMap) {
+    this.resizeMap(this.invalidMap);
+    this.resizeMap(this.validMap);
+  }
+
+  resizeMap (map) {
+    if (!map) {
       return;
     }
 
-    this.invalidMap.resize();
-    this.validMap.resize();
-  };
+    const container = map.options.element;
+    const svg = container.querySelector('svg');
+    const g = svg.querySelector('g');
+
+    const prevWidth = svg.getAttribute('data-width');
+    // const prevTransform = g.getAttribute('transform');
+    // const prevScale = /scale\((.+)\)/.test(prevTransform)
+    //   ? parseFloat(/scale\((.+)\)/.exec(prevTransform)[1])
+    //   : 1;
+
+    // console.warn('prevScale', prevScale);
+
+    // Get container new width
+    const nextWidth = container.clientWidth;
+    const nextHeight = 9 / 16 * nextWidth;
+
+    // Update container and map SVG
+    svg.setAttribute('height', nextHeight);
+    svg.setAttribute('width', nextWidth);
+    container.style.height = `${nextHeight}px`;
+
+    const scale = nextWidth / prevWidth;
+
+    g.setAttribute('transform', `scale(${scale})`);
+
+    const gMeasures = g.getBoundingClientRect();
+    const svgMeasures = svg.getBoundingClientRect();
+    const tY = (svgMeasures.top - gMeasures.top) + (svgMeasures.height - gMeasures.height) / 2;
+
+    // Update map width
+    g.setAttribute('transform', `scale(${scale}) translate(0, ${tY / scale})`);
+  }
 
   createMap = (element, invalid = false) => {
     return new Datamap({
@@ -146,7 +181,7 @@ export default class CountrySelector extends Component {
         defaultFill: invalid ? INVALID_COLOR : VALID_COLOR,
         DISABLED: invalid ? VALID_COLOR : INVALID_COLOR
       },
-      responsive: true,
+      // responsive: true,
       data: this.mapData,
       element
     });
@@ -170,7 +205,9 @@ export default class CountrySelector extends Component {
       return;
     }
 
+    this.invalidMapElement = element;
     this.invalidMap = this.createMap(element, true);
+    this.resize();
   };
 
   setValidRef = (element) => {
@@ -178,6 +215,8 @@ export default class CountrySelector extends Component {
       return;
     }
 
+    this.validMapElement = element;
     this.validMap = this.createMap(element, false);
+    this.resize();
   };
 }
