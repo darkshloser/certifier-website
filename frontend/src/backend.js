@@ -55,8 +55,8 @@ class Backend {
     });
   }
 
-  async createCheck (address) {
-    return post(this.url(`/onfido/${address}/check`));
+  async createCheck (address, { sdkToken }) {
+    return post(this.url(`/onfido/${address}/check`), { sdkToken });
   }
 
   async certifierAddress () {
