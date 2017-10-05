@@ -71,16 +71,6 @@ class Backend {
     return { fee: new BigNumber(fee), feeRegistrar };
   }
 
-  async getAddressInfo (address) {
-    const { eth, accounted, certified } = await get(this.url(`/accounts/${address}`));
-
-    return {
-      eth: new BigNumber(eth),
-      accounted: new BigNumber(accounted),
-      certified
-    };
-  }
-
   async nonce (address) {
     const { nonce } = await get(this.url(`/accounts/${address}/nonce`));
 
