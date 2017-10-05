@@ -26,7 +26,7 @@ export default class Check extends Component {
           <div style={{ marginBottom: '1.5em' }}>
             <Header as='h4' style={{ textTransform: 'uppercase' }}>
               Enter an Ethereum address bellow to check
-              it's certification status
+              its certification status
             </Header>
             <AddressInput
               onChange={this.handleAddressChange}
