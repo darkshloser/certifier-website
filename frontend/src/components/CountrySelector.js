@@ -115,7 +115,7 @@ export default class CountrySelector extends Component {
         <Header icon='world' content='Unfortunately, you cannot continue...' />
         <Modal.Content>
           <p>
-            PICOPS is not offered to citizens of United States, Islamic Republic Of Iran, Syrian Arab Republic or Cuba at this stage.
+            PICOPS is not offered to citizens of United States, Islamic Republic Of Iran, Syrian Arab Republic, Cuba or Cuba and Democratic People's Republic Of Korea at this stage.
           </p>
         </Modal.Content>
         <Modal.Actions>
