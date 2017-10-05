@@ -34,18 +34,20 @@ async function main (address) {
 
   const applicants = await identity.applicants.getAll();
   const checks = await identity.checks.getAll();
-  const documentHashes = checks.map((chk) => chk.documentHash);
+  const documentHashes = checks.map((chk) => chk.documentHash).filter((dh) => dh);
   const linkedIdentities = [];
 
-  await store.scanIdentities(async (idt) => {
-    const iChecks = await idt.checks.getAll();
-    const iDocHashse = iChecks.map((chk) => chk.documentHash);
-    const intersect = intersection(iDocHashse, documentHashes);
+  if (documentHashes.length > 0) {
+    await store.scanIdentities(async (idt) => {
+      const iChecks = await idt.checks.getAll();
+      const iDocHashse = iChecks.map((chk) => chk.documentHash).filter((dh) => dh);
+      const intersect = intersection(iDocHashse, documentHashes);
 
-    if (intersect.length > 0) {
-      linkedIdentities.push(idt.address);
-    }
-  });
+      if (intersect.length > 0) {
+        linkedIdentities.push(idt.address);
+      }
+    });
+  }
 
   console.log('> Applicants:');
 
