@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Icon } from 'semantic-ui-react';
+import { Button, Header, Icon } from 'semantic-ui-react';
 
 import backend from '../backend';
 import { isValidAddress } from '../utils';
@@ -19,20 +19,28 @@ export default class Check extends Component {
     return (
       <AppContainer
         hideStepper
-        style={{ textAlign: 'center', padding: '2.5em 1em 2em', maxWidth: '60em', margin: '0 auto' }}
+        style={{ textAlign: 'center', padding: '2.5em 1em 1em', maxWidth: '60em', margin: '0 auto' }}
         title=''
       >
         <div>
-          <Header as='h4' style={{ textTransform: 'uppercase' }}>
-            Enter an Ethereum address bellow to check
-            it's certification status
-          </Header>
-          <AddressInput
-            onChange={this.handleAddressChange}
-            value={address}
-          />
+          <div style={{ marginBottom: '1.5em' }}>
+            <Header as='h4' style={{ textTransform: 'uppercase' }}>
+              Enter an Ethereum address bellow to check
+              it's certification status
+            </Header>
+            <AddressInput
+              onChange={this.handleAddressChange}
+              value={address}
+            />
+          </div>
 
           {this.renderCertified()}
+
+          <div>
+            <Button secondary as='a' href='/#/'>
+              Go Back
+            </Button>
+          </div>
         </div>
       </AppContainer>
     );
@@ -47,7 +55,7 @@ export default class Check extends Component {
 
     if (certified) {
       return (
-        <div style={{ fontSize: '2em', color: 'green', marginTop: '1.25em', fontWeight: '200' }}>
+        <div style={{ fontSize: '2em', color: 'green', margin: '1em 0 0.75em', fontWeight: '200' }}>
           <Icon name='check' color='green' />
           <span style={{ marginLeft: '0.25em' }}>
             This address is certified!
@@ -57,7 +65,7 @@ export default class Check extends Component {
     }
 
     return (
-      <div style={{ fontSize: '2em', color: 'red', marginTop: '1.25em', fontWeight: '200' }}>
+      <div style={{ fontSize: '2em', color: 'red', margin: '1em 0 0.75em', fontWeight: '200' }}>
         <Icon name='remove' color='red' />
         <span style={{ marginLeft: '0.25em' }}>
           This address is not certified yet

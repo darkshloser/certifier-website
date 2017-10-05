@@ -191,9 +191,15 @@ class MainApp extends Component {
           </ul>
         </div>
 
-        <Button primary size='big' onClick={this.handleStart}>
-          Start Certification
-        </Button>
+        <div>
+          <Button secondary size='big' as='a' href='/#/check'>
+            Check Certification
+          </Button>
+
+          <Button primary size='big' onClick={this.handleStart}>
+            Start Certification
+          </Button>
+        </div>
       </div>
     );
   }
