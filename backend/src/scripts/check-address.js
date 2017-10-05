@@ -38,7 +38,7 @@ async function main (address) {
   const linkedIdentities = [];
 
   await store.scanIdentities(async (idt) => {
-    const iChecks = await identity.checks.getAll();
+    const iChecks = await idt.checks.getAll();
     const iDocHashse = iChecks.map((chk) => chk.documentHash);
     const intersect = intersection(iDocHashse, documentHashes);
 
