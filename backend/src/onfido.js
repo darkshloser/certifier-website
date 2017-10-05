@@ -20,6 +20,8 @@ const SANDBOX_DOCUMENT_HASH = hashDocumentNumbers([{
   value: '9999999999'
 }]);
 
+const BLOCKED_COUNTRIES = new Set([ 'USA', 'IRN', 'SYR', 'CUB', 'PKR' ]);
+
 /// Get the Report Types
 // _call('/report_type_groups').then((data) => console.log(JSON.stringify(data, null, 2)));
 
@@ -359,7 +361,7 @@ async function verifyDocument (documentReport) {
   const { properties } = documentReport;
   const countryCode = properties['nationality'] || properties['issuing_country'];
 
-  if (countryCode && countryCode.toUpperCase() === 'USA') {
+  if (countryCode && BLOCKED_COUNTRIES.has(countryCode.toUpperCase())) {
     return { valid: false, reason: 'blocked-country' };
   }
 
