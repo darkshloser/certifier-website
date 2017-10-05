@@ -53,9 +53,9 @@ async function main (address) {
     const check = checks.find((chck) => chck.id === applicant.checkId);
 
     delete applicant.checkId;
-    delete check.applicantId;
 
     if (check) {
+      delete check.applicantId;
       applicant.check = check;
     }
   });
