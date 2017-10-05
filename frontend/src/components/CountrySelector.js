@@ -22,7 +22,15 @@ export default class CountrySelector extends Component {
 
   componentWillMount () {
     this.blacklistedCountriesNames = appStore.blacklistedCountries
-      .map((countryKey) => countries[countryKey].name);
+      .map((countryKey) => {
+        let name = countries[countryKey].name.split(',');
+
+        if (name.length === 2) {
+          return name[1] + ' ' + name[0];
+        }
+
+        return name[0];
+      });
 
     this.mapData = appStore.blacklistedCountries
       .reduce((data, countryKey) => {
@@ -58,7 +66,7 @@ export default class CountrySelector extends Component {
                 color: 'red',
                 fontWeight: 'bold'
               }}>
-                ( US Citizen )
+                ( Citizen of )
               </p>
             </div>
           </Grid.Column>
@@ -69,7 +77,7 @@ export default class CountrySelector extends Component {
             </Card>
 
             <div style={{ textAlign: 'center' }}>
-              <p>Non-US citizen – Rest of the world</p>
+              <p>Other citizen – Rest of the world</p>
             </div>
           </Grid.Column>
         </Grid>
@@ -107,7 +115,7 @@ export default class CountrySelector extends Component {
         <Header icon='world' content='Unfortunately, you cannot continue...' />
         <Modal.Content>
           <p>
-            PICOPS is not offered to US citizens at this stage.
+            PICOPS is not offered to citizens of United States, Islamic Republic Of Iran, Syrian Arab Republic or Cuba at this stage.
           </p>
         </Modal.Content>
         <Modal.Actions>

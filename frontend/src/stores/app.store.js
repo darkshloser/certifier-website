@@ -166,7 +166,7 @@ class AppStore extends EventEmitter {
   }
 
   async fetchBlacklistedCountries () {
-    return Promise.resolve(['USA']);
+    return Promise.resolve([ 'USA', 'IRN', 'SYR', 'CUB', 'PKR' ]);
   }
 
   async loadCountries () {
