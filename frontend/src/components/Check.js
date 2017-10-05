@@ -1,0 +1,78 @@
+import React, { Component } from 'react';
+import { Header, Icon } from 'semantic-ui-react';
+
+import backend from '../backend';
+import { isValidAddress } from '../utils';
+
+import AppContainer from './AppContainer';
+import AddressInput from './AddressInput';
+
+export default class Check extends Component {
+  state = {
+    address: '',
+    certified: null
+  };
+
+  render () {
+    const { address } = this.state;
+
+    return (
+      <AppContainer
+        hideStepper
+        style={{ textAlign: 'center', padding: '2.5em 1em 2em', maxWidth: '60em', margin: '0 auto' }}
+        title=''
+      >
+        <div>
+          <Header as='h4' style={{ textTransform: 'uppercase' }}>
+            Enter an Ethereum address bellow to check
+            it's certification status
+          </Header>
+          <AddressInput
+            onChange={this.handleAddressChange}
+            value={address}
+          />
+
+          {this.renderCertified()}
+        </div>
+      </AppContainer>
+    );
+  }
+
+  renderCertified () {
+    const { certified } = this.state;
+
+    if (certified === null) {
+      return null;
+    }
+
+    if (certified) {
+      return (
+        <div style={{ fontSize: '2em', color: 'green', marginTop: '1.25em', fontWeight: '200' }}>
+          <Icon name='check' color='green' />
+          <span style={{ marginLeft: '0.25em' }}>
+            This address is certified!
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ fontSize: '2em', color: 'red', marginTop: '1.25em', fontWeight: '200' }}>
+        <Icon name='remove' color='red' />
+        <span style={{ marginLeft: '0.25em' }}>
+          This address is not certified yet
+        </span>
+      </div>
+    );
+  }
+
+  handleAddressChange = async (_, { value }) => {
+    this.setState({ address: value, certified: null });
+
+    if (isValidAddress(value)) {
+      const { certified } = await backend.checkStatus(value);
+
+      this.setState({ certified });
+    }
+  };
+}

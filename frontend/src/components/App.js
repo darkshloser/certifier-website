@@ -6,6 +6,7 @@ import { Button, Header, Loader } from 'semantic-ui-react';
 import AccountInfo from './AccountInfo';
 import AppContainer from './AppContainer';
 import Certifier from './Certifier';
+import Check from './Check';
 import CountrySelector from './CountrySelector';
 import Details from './Details';
 import Fee from './Fee';
@@ -25,6 +26,7 @@ export default class App extends Component {
           <Route exact path='/' component={MainApp} />
           <Route path='/details' component={Details} />
           <Route path='/tc' component={Terms} />
+          <Route path='/check' component={Check} />
           <Messages />
         </div>
       </Router>
