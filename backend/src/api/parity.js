@@ -6,6 +6,7 @@
 const EventEmitter = require('events');
 
 const { hex2big, hex2date } = require('../utils');
+const { CachingTransport } = require('./transport');
 
 class ParityConnector extends EventEmitter {
   /**
@@ -24,11 +25,13 @@ class ParityConnector extends EventEmitter {
       .forEach((block) => {
         block.timestamp = hex2date(block.timestamp);
 
-        this._transport.invalidateCache();
-
         this.block = block;
         this.emit('block', block);
       });
+
+    if (transport instanceof CachingTransport) {
+      this.on('block', () => transport.invalidateCache());
+    }
   }
 
   estimateGas (options) {
