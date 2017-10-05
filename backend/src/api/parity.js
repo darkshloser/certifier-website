@@ -5,19 +5,18 @@
 
 const EventEmitter = require('events');
 
-const { CachingTransport } = require('./transport');
 const { hex2big, hex2date } = require('../utils');
 
 class ParityConnector extends EventEmitter {
   /**
    * Abstraction over a connection to the Parity node.
    *
-   * @param {String} url to the WebSocket JSON-RPC API
+   * @param {RpcTransport} transport to the WebSocket JSON-RPC API
    */
-  constructor (url) {
+  constructor (transport) {
     super();
 
-    this._transport = new CachingTransport(url);
+    this._transport = transport;
 
     this
       .transport

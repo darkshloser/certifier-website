@@ -5,6 +5,7 @@
 
 const config = require('config');
 
+const { RpcTransport } = require('./api/transport');
 const Certifier = require('./contracts/certifier');
 const Identity = require('./identity');
 const Onfido = require('./onfido');
@@ -17,10 +18,11 @@ class AccountCertifier {
   }
 
   constructor (wsUrl, contractAddress) {
+    const transport = new RpcTransport(wsUrl);
+
     this._updateLock = false;
     this._verifyLock = false;
-
-    this._connector = new ParityConnector(wsUrl);
+    this._connector = new ParityConnector(transport);
     this._certifier = new Certifier(this._connector, contractAddress);
 
     this.init();
