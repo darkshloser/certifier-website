@@ -25,7 +25,7 @@ export default class Check extends Component {
         <div>
           <div style={{ marginBottom: '1.5em' }}>
             <Header as='h4' style={{ textTransform: 'uppercase' }}>
-              Enter an Ethereum address bellow to check
+              Enter an Ethereum address below to check
               its certification status
             </Header>
             <AddressInput
