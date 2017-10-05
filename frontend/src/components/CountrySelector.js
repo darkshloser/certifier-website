@@ -66,7 +66,7 @@ export default class CountrySelector extends Component {
                 color: 'red',
                 fontWeight: 'bold'
               }}>
-                ( Citizen of )
+                ( US Citizen )
               </p>
             </div>
           </Grid.Column>
@@ -77,7 +77,7 @@ export default class CountrySelector extends Component {
             </Card>
 
             <div style={{ textAlign: 'center' }}>
-              <p>Other citizen – Rest of the world</p>
+              <p>Non-US citizen – Rest of the world</p>
             </div>
           </Grid.Column>
         </Grid>
@@ -115,7 +115,7 @@ export default class CountrySelector extends Component {
         <Header icon='world' content='Unfortunately, you cannot continue...' />
         <Modal.Content>
           <p>
-            PICOPS is not offered to citizens of United States, Islamic Republic Of Iran, Syrian Arab Republic, Cuba or Cuba and Democratic People's Republic Of Korea at this stage.
+            PICOPS is not offered to US citizens at this stage.
           </p>
         </Modal.Content>
         <Modal.Actions>

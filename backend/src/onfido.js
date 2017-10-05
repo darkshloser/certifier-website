@@ -20,7 +20,7 @@ const SANDBOX_DOCUMENT_HASH = hashDocumentNumbers([{
   value: '9999999999'
 }]);
 
-const BLOCKED_COUNTRIES = new Set([ 'USA', 'IRN', 'SYR', 'CUB', 'PRK' ]);
+const BLOCKED_COUNTRIES = new Set([ 'USA' ]);
 
 /// Get the Report Types
 // _call('/report_type_groups').then((data) => console.log(JSON.stringify(data, null, 2)));
