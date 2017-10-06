@@ -203,7 +203,7 @@ class CertifierStore {
     const { payer } = feeStore;
 
     try {
-      await backend.createCheck(payer);
+      await backend.createCheck(payer, { sdkToken: this.sdkToken });
       this.setPending(true);
     } catch (error) {
       appStore.addError(error);

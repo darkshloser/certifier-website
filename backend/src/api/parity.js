@@ -5,19 +5,19 @@
 
 const EventEmitter = require('events');
 
-const { CachingTransport } = require('./transport');
 const { hex2big, hex2date } = require('../utils');
+const { CachingTransport } = require('./transport');
 
 class ParityConnector extends EventEmitter {
   /**
    * Abstraction over a connection to the Parity node.
    *
-   * @param {String} url to the WebSocket JSON-RPC API
+   * @param {RpcTransport} transport to the WebSocket JSON-RPC API
    */
-  constructor (url) {
+  constructor (transport) {
     super();
 
-    this._transport = new CachingTransport(url);
+    this._transport = transport;
 
     this
       .transport
@@ -25,11 +25,13 @@ class ParityConnector extends EventEmitter {
       .forEach((block) => {
         block.timestamp = hex2date(block.timestamp);
 
-        this._transport.invalidateCache();
-
         this.block = block;
         this.emit('block', block);
       });
+
+    if (transport instanceof CachingTransport) {
+      this.on('block', () => transport.invalidateCache());
+    }
   }
 
   estimateGas (options) {

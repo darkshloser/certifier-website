@@ -64,24 +64,24 @@ export default class ParityCertifier extends Component {
       <div>
         <Segment basic>
           <Header as='h4'>
-            Please enter the following information
+            PLEASE ENTER THE FOLLOWING INFORMATION <em style={{ color: 'red' }}>AS IT APPEARS IN YOUR DOCUMENT</em>:
           </Header>
 
           <Form>
             <Form.Field>
               <Form.Input
-                label='First Name'
-                onChange={this.handleFirstNameChange}
-                placeholder='First Name'
-                value={firstName}
+                label='Surname'
+                onChange={this.handleLastNameChange}
+                placeholder='Surname'
+                value={lastName}
               />
             </Form.Field>
             <Form.Field>
               <Form.Input
-                label='Last Name'
-                onChange={this.handleLastNameChange}
-                placeholder='Last Name'
-                value={lastName}
+                label='Given Names'
+                onChange={this.handleFirstNameChange}
+                placeholder='Given Names'
+                value={firstName}
               />
             </Form.Field>
           </Form>

@@ -86,10 +86,12 @@ class AppStore extends EventEmitter {
         }
       });
 
-    if (this.padding) {
-      document.querySelector('body').style.backgroundColor = '#f1f1f1';
-      document.querySelector('html').style.backgroundColor = '#f1f1f1';
-    }
+    const bg = this.padding
+      ? '#f1f1f1'
+      : 'transparent';
+
+    document.querySelector('body').style.backgroundColor = bg;
+    document.querySelector('html').style.backgroundColor = bg;
 
     this.load();
   }
@@ -164,7 +166,7 @@ class AppStore extends EventEmitter {
   }
 
   async fetchBlacklistedCountries () {
-    return Promise.resolve(['USA']);
+    return Promise.resolve([ 'USA' ]);
   }
 
   async loadCountries () {
@@ -272,7 +274,15 @@ class AppStore extends EventEmitter {
   }
 
   storeTermsAccepted () {
-    store.set(TERMS_LS_KEY, this.termsAccepted);
+    const { termsAccepted } = this;
+
+    // Send message to iframe
+    parentMessage({
+      action: 'terms-accepted',
+      termsAccepted
+    });
+
+    store.set(TERMS_LS_KEY, termsAccepted);
   }
 }
 

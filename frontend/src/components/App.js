@@ -6,10 +6,13 @@ import { Button, Header, Loader } from 'semantic-ui-react';
 import AccountInfo from './AccountInfo';
 import AppContainer from './AppContainer';
 import Certifier from './Certifier';
+import Check from './Check';
+import CheckRefund from './CheckRefund';
 import CountrySelector from './CountrySelector';
 import Details from './Details';
 import Fee from './Fee';
 import Messages from './Messages';
+import Refund from './Refund';
 import Terms from './Terms';
 
 import appStore, { STEPS } from '../stores/app.store';
@@ -24,6 +27,10 @@ export default class App extends Component {
         <div data-iframe-height='true'>
           <Route exact path='/' component={MainApp} />
           <Route path='/details' component={Details} />
+          <Route path='/tc' component={Terms} />
+          <Route path='/check' component={Check} />
+          <Route path='/refund' component={Refund} />
+          <Route path='/check-refund' component={CheckRefund} />
           <Messages />
         </div>
       </Router>
@@ -188,9 +195,15 @@ class MainApp extends Component {
           </ul>
         </div>
 
-        <Button primary size='big' onClick={this.handleStart}>
-          Start Certification
-        </Button>
+        <div>
+          <Button secondary size='big' as='a' href='/#/check'>
+            Check Certification
+          </Button>
+
+          <Button primary size='big' onClick={this.handleStart}>
+            Start Certification
+          </Button>
+        </div>
       </div>
     );
   }

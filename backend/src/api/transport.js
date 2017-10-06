@@ -200,7 +200,7 @@ class RpcTransport {
       console.error('Invalid JSON');
     }
 
-    if (typeof message.id === 'number' && (message.result || message.error)) {
+    if (typeof message.id === 'number' && (message.result !== undefined || message.error !== undefined)) {
       const { id, result, error } = message;
 
       if (!requests.has(id)) {

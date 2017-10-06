@@ -1,8 +1,10 @@
+import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Button, Header, Loader } from 'semantic-ui-react';
 
 import feeStore from '../../stores/fee.store';
 
+@observer
 export default class SendingPayment extends Component {
   componentWillMount () {
     feeStore.watchPayer();

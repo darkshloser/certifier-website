@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { Card, Header, Image } from 'semantic-ui-react';
+import { Card, Header, Image, Button } from 'semantic-ui-react';
 
 import EthereumBlankImg from '../../images/ethereum_blank.png';
 import EthereumImg from '../../images/ethereum.png';
+import HardwareImg from '../../images/hardware.svg';
+import Step from '../Step';
 
 import feeStore from '../../stores/fee.store';
 
@@ -22,8 +24,8 @@ const itemStyle = {
 };
 
 const imageStyle = {
-  width: '125px',
-  margin: '0 auto'
+  height: '160px',
+  margin: '20px auto'
 };
 
 const cardStyle = {
@@ -46,7 +48,17 @@ const imageContainerStyle = {
 };
 
 export default class AccountType extends Component {
+  constructor (props) {
+    super(props);
+
+    this.state = { hardware: false };
+  }
+
   render () {
+    if (this.state.hardware) {
+      return this.renderHardware();
+    }
+
     return (
       <div>
         <Header as='h2' style={{ color: 'green', textAlign: 'center' }}>
@@ -78,10 +90,26 @@ export default class AccountType extends Component {
               </div>
               <Card.Content style={cardContentStyle}>
                 <Card.Header>
-                  Create a new wallet to be certified
+                  I wish to create a new wallet to be certified
                 </Card.Header>
                 <Card.Description>
-                  [This will be your personal wallet]
+                  [I understand this will be my personal wallet]
+                </Card.Description>
+              </Card.Content>
+            </Card>
+          </div>
+
+          <div style={itemStyle}>
+            <Card onClick={this.handleFromHardwareWallet} style={cardStyle}>
+              <div style={imageContainerStyle}>
+                <Image src={HardwareImg} style={imageStyle} />
+              </div>
+              <Card.Content style={cardContentStyle}>
+                <Card.Header>
+                  I wish to certify my hardware or multisig wallet
+                </Card.Header>
+                <Card.Description>
+                  [I don't have access to the private key]
                 </Card.Description>
               </Card.Content>
             </Card>
@@ -94,10 +122,10 @@ export default class AccountType extends Component {
               </div>
               <Card.Content style={cardContentStyle}>
                 <Card.Header>
-                  My own (existing) wallet will be certified
+                  I wish to certify my own (existing) wallet
                 </Card.Header>
                 <Card.Description>
-                  [I own the private key]
+                  [I have access to the private key]
                 </Card.Description>
               </Card.Content>
             </Card>
@@ -105,6 +133,56 @@ export default class AccountType extends Component {
         </div>
       </div>
     );
+  }
+
+  renderHardware () {
+    return (
+      <Step
+        centered
+        description={(
+          <div>
+            <Header as='h4' style={{ marginTop: '1.5em' }}>
+              WARNING:
+            </Header>
+            <p>
+              Do not certify a hardware or multisig wallet wallet address if you want to participate in
+              an ICO for a NON-ERC20 token.
+            </p>
+            <p>
+              Some ICOs are not compatible with hardware and multisig wallet addresses!
+              Please check the compatibility before using a hardware or multisig wallet, or just use a
+              JSON wallet file.
+            </p>
+          </div>
+        )}
+        title='HARDWARE OR MULTISIG WALLET'
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <Button.Group size='huge'>
+            <Button onClick={this.handleBack}>
+              Back
+            </Button>
+            <Button.Or />
+            <Button color='green' onClick={this.handleFromExchange}>
+              Create a new JSON wallet file
+            </Button>
+          </Button.Group>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <Button color='red' onClick={this.handleFromPersonal}>
+            ADVANCED: Proceed with certifying my hardware or multisig wallet
+          </Button>
+        </div>
+      </Step>
+    );
+  }
+
+  handleBack = () => {
+    this.setState({ hardware: false });
+  }
+
+  handleFromHardwareWallet = () => {
+    this.setState({ hardware: true });
   }
 
   handleFromExchange = () => {

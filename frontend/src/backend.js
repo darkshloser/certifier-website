@@ -55,8 +55,8 @@ class Backend {
     });
   }
 
-  async createCheck (address) {
-    return post(this.url(`/onfido/${address}/check`));
+  async createCheck (address, { sdkToken }) {
+    return post(this.url(`/onfido/${address}/check`), { sdkToken });
   }
 
   async certifierAddress () {
@@ -69,16 +69,6 @@ class Backend {
     const { fee, feeRegistrar } = await get(this.url(`/fee`));
 
     return { fee: new BigNumber(fee), feeRegistrar };
-  }
-
-  async getAddressInfo (address) {
-    const { eth, accounted, certified } = await get(this.url(`/accounts/${address}`));
-
-    return {
-      eth: new BigNumber(eth),
-      accounted: new BigNumber(accounted),
-      certified
-    };
   }
 
   async nonce (address) {

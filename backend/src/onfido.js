@@ -19,6 +19,11 @@ const SANDBOX_DOCUMENT_HASH = hashDocumentNumbers([{
   type: 'passport',
   value: '9999999999'
 }]);
+const BLOCKED_COUNTRIES = new Set([ 'USA' ]);
+const REQUIRED_WATCHLIST_CATEGORIES = [
+  'sanction',
+  'legal_and_regulatory_warnings'
+];
 
 /// Get the Report Types
 // _call('/report_type_groups').then((data) => console.log(JSON.stringify(data, null, 2)));
@@ -146,6 +151,19 @@ async function getChecks (applicantId) {
 }
 
 /**
+ * Get all documents from one applicant from Onfido
+ *
+ * @param {String} applicantId
+ *
+ * @return {Array} list of all applicant's documents
+ */
+async function getDocuments (applicantId) {
+  const result = await _call(`/applicants/${applicantId}/documents`, 'GET');
+
+  return result.documents;
+}
+
+/**
  * Fetches reports for a given checkId
  *
  * @param {String} checkId
@@ -166,12 +184,12 @@ async function getReports (checkId) {
  * @return {Object} contains booleans: `pending` and `valid`
  */
 function checkStatus (check) {
-  const { status, result } = check;
+  const { status } = check;
 
   const pending = status === 'in_progress';
-  const valid = status === 'complete' && result === 'clear';
+  const complete = status === 'complete';
 
-  return { pending, valid };
+  return { pending, complete };
 }
 
 /**
@@ -268,13 +286,23 @@ async function verifyCheck ({ applicantId, checkId }, address, check) {
     return result;
   }
 
-  let reason = check.result;
-  let { valid } = status;
+  const { complete } = status;
 
   const reports = await getReports(checkId);
   const documentReport = reports.find((report) => report.name === 'document');
+  const watchlistReport = reports.find((report) => report.name === 'watchlist');
 
-  if (valid && documentReport) {
+  let valid = complete && documentReport && watchlistReport;
+
+  if (valid) {
+    const watchlistVerification = verifyWatchlist(watchlistReport);
+
+    if (!watchlistVerification.valid) {
+      result.reason = watchlistVerification.reason;
+      result.valid = false;
+      return result;
+    }
+
     const documentVerification = await verifyDocument(documentReport);
 
     if (documentVerification.hash) {
@@ -282,21 +310,14 @@ async function verifyCheck ({ applicantId, checkId }, address, check) {
     }
 
     if (!documentVerification.valid) {
-      reason = documentVerification.reason;
-      valid = false;
-    }
-  } else {
-    const unclearReport = reports.find((report) => report.result !== 'clear');
-
-    valid = false;
-
-    if (unclearReport) {
-      reason = unclearReport.sub_result || unclearReport.result;
+      result.reason = documentVerification.reason;
+      result.valid = false;
+      return result;
     }
   }
 
   result.valid = valid;
-  result.reason = reason;
+  result.reason = 'clear';
   return result;
 }
 
@@ -317,17 +338,44 @@ function hashDocumentNumbers (documentNumbers) {
 }
 
 /**
+ * Verify that the watchlist report is valid
+ *
+ * @param {Object} watchlistReport as sent from Onfido
+ *
+ * @return {Object}
+ */
+function verifyWatchlist (watchlistReport) {
+  const { breakdown } = watchlistReport;
+
+  for (const category of REQUIRED_WATCHLIST_CATEGORIES) {
+    const { result } = breakdown[category];
+
+    if (result !== 'clear') {
+      return { valid: false, reason: result };
+    }
+  }
+
+  return { valid: true };
+}
+
+/**
  * Check that the document isn't from US and hasn't been used before
  *
  * @param {Object} documentReport as sent from Onfido
  *
- * @return {String|null} string reason for rejection, or null if okay
+ * @return {Object} string reason for rejection, or null if okay
  */
 async function verifyDocument (documentReport) {
+  if (documentReport.result !== 'clear') {
+    const reason = documentReport.sub_result || documentReport.result;
+
+    return { valid: false, reason };
+  }
+
   const { properties } = documentReport;
   const countryCode = properties['nationality'] || properties['issuing_country'];
 
-  if (countryCode && countryCode.toUpperCase() === 'USA') {
+  if (countryCode && BLOCKED_COUNTRIES.has(countryCode.toUpperCase())) {
     return { valid: false, reason: 'blocked-country' };
   }
 
@@ -356,6 +404,7 @@ module.exports = {
   getApplicantsCount,
   getCheck,
   getChecks,
+  getDocuments,
   verify,
   verifyCheck,
 

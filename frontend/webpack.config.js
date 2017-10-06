@@ -3,6 +3,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const path = require('path');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 const analyze = !!process.env.ANALYZE_ENV;
 const ENV = process.env.NODE_ENV || 'development';
@@ -72,6 +73,8 @@ const webpackConfig = {
   },
 
   plugins: [
+    new FaviconsWebpackPlugin(path.resolve(__dirname, './src/images/logo.png')),
+
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       minChunks: Infinity

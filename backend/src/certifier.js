@@ -5,6 +5,7 @@
 
 const config = require('config');
 
+const { RpcTransport } = require('./api/transport');
 const Certifier = require('./contracts/certifier');
 const Identity = require('./identity');
 const Onfido = require('./onfido');
@@ -17,10 +18,11 @@ class AccountCertifier {
   }
 
   constructor (wsUrl, contractAddress) {
+    const transport = new RpcTransport(wsUrl);
+
     this._updateLock = false;
     this._verifyLock = false;
-
-    this._connector = new ParityConnector(wsUrl);
+    this._connector = new ParityConnector(transport);
     this._certifier = new Certifier(this._connector, contractAddress);
 
     this.init();
@@ -50,17 +52,22 @@ class AccountCertifier {
   async verifyOnfido (href) {
     console.warn(`> verifying ${href}...`);
 
-    try {
-      const verification = await Onfido.verify(href);
+    let verification;
 
-      await this.storeVerification(verification);
+    try {
+      verification = await Onfido.verify(href);
     } catch (error) {
       console.error(error);
-    } finally {
-      await store.remove(href);
+      return store.remove(href);
     }
 
-    console.warn(`> verified!\n`);
+    try {
+      await this.storeVerification(verification);
+      await store.remove(href);
+      console.warn('> verified!\n');
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async storeVerification (verification) {
@@ -75,6 +82,7 @@ class AccountCertifier {
 
     const check = { id: checkId, applicantId, creationDate, documentHash };
     const identity = new Identity(address);
+    let shouldCertify = false;
 
     try {
       await store.addApplicant(applicantId);
@@ -82,10 +90,7 @@ class AccountCertifier {
 
       const certified = await this._certifier.isCertified(address);
 
-      if (valid && !certified) {
-        console.warn(`> certifying ${address}...`);
-        await this._certifier.certify(address);
-      }
+      shouldCertify = valid && !certified;
     } catch (error) {
       console.error(error);
 
@@ -95,6 +100,11 @@ class AccountCertifier {
         reason: 'error',
         error: error.message
       }));
+    }
+
+    if (shouldCertify) {
+      console.warn(`> certifying ${address}...`);
+      await this._certifier.certify(address);
     }
   }
 }
