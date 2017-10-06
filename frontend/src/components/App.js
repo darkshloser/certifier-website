@@ -7,10 +7,12 @@ import AccountInfo from './AccountInfo';
 import AppContainer from './AppContainer';
 import Certifier from './Certifier';
 import Check from './Check';
+import CheckRefund from './CheckRefund';
 import CountrySelector from './CountrySelector';
 import Details from './Details';
 import Fee from './Fee';
 import Messages from './Messages';
+import Refund from './Refund';
 import Terms from './Terms';
 
 import appStore, { STEPS } from '../stores/app.store';
@@ -27,6 +29,8 @@ export default class App extends Component {
           <Route path='/details' component={Details} />
           <Route path='/tc' component={Terms} />
           <Route path='/check' component={Check} />
+          <Route path='/refund' component={Refund} />
+          <Route path='/check-refund' component={CheckRefund} />
           <Messages />
         </div>
       </Router>
