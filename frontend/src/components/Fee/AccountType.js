@@ -24,8 +24,8 @@ const itemStyle = {
 };
 
 const imageStyle = {
-  height: '200px',
-  margin: '0 auto'
+  height: '160px',
+  margin: '20px auto'
 };
 
 const cardStyle = {
@@ -90,10 +90,10 @@ export default class AccountType extends Component {
               </div>
               <Card.Content style={cardContentStyle}>
                 <Card.Header>
-                  Create a new wallet to be certified
+                  I wish to create a new wallet to be certified
                 </Card.Header>
                 <Card.Description>
-                  [This will be your personal wallet]
+                  [I understand this will be my personal wallet]
                 </Card.Description>
               </Card.Content>
             </Card>
@@ -106,10 +106,10 @@ export default class AccountType extends Component {
               </div>
               <Card.Content style={cardContentStyle}>
                 <Card.Header>
-                  Hardware wallet
+                  I wish to certify my hardware or multisig wallet
                 </Card.Header>
                 <Card.Description>
-                  [You've sent Ether from a Hardware wallet]
+                  [I don't have access to the private key]
                 </Card.Description>
               </Card.Content>
             </Card>
@@ -122,10 +122,10 @@ export default class AccountType extends Component {
               </div>
               <Card.Content style={cardContentStyle}>
                 <Card.Header>
-                  My own (existing) wallet will be certified
+                  I wish to certify my own (existing) wallet
                 </Card.Header>
                 <Card.Description>
-                  [You own the private key]
+                  [I have access to the private key]
                 </Card.Description>
               </Card.Content>
             </Card>
@@ -145,17 +145,17 @@ export default class AccountType extends Component {
               WARNING:
             </Header>
             <p>
-              Do not certify a hardware wallet address if you want to participate in an ICO
-              for a NON-ERC20 token.
+              Do not certify a hardware or multisig wallet wallet address if you want to participate in
+              an ICO for a NON-ERC20 token.
             </p>
             <p>
-              Some ICOs are not compatible with hardware wallet addresses!
-              Please check the compatibility before using a hardware wallet, or just use a
+              Some ICOs are not compatible with hardware and multisig wallet addresses!
+              Please check the compatibility before using a hardware or multisig wallet, or just use a
               JSON wallet file.
             </p>
           </div>
         )}
-        title='HARDWARE WALLET'
+        title='HARDWARE OR MULTISIG WALLET'
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
           <Button.Group size='huge'>
@@ -167,6 +167,11 @@ export default class AccountType extends Component {
               Create a new JSON wallet file
             </Button>
           </Button.Group>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <Button color='red' onClick={this.handleFromPersonal}>
+            ADVANCED: Proceed with certifying my hardware or multisig wallet
+          </Button>
         </div>
       </Step>
     );
