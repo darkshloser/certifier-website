@@ -19,8 +19,11 @@ const SANDBOX_DOCUMENT_HASH = hashDocumentNumbers([{
   type: 'passport',
   value: '9999999999'
 }]);
-
 const BLOCKED_COUNTRIES = new Set([ 'USA' ]);
+const REQUIRED_WATCHLIST_CATEGORIES = [
+  'sanction',
+  'legal_and_regulatory_warnings'
+];
 
 /// Get the Report Types
 // _call('/report_type_groups').then((data) => console.log(JSON.stringify(data, null, 2)));
@@ -334,11 +337,22 @@ function hashDocumentNumbers (documentNumbers) {
   return keccak256(string);
 }
 
+/**
+ * Verify that the watchlist report is valid
+ *
+ * @param {Object} watchlistReport as sent from Onfido
+ *
+ * @return {Object}
+ */
 function verifyWatchlist (watchlistReport) {
-  const { result } = watchlistReport.breakdown.sanction;
+  const { breakdown } = watchlistReport;
 
-  if (result !== 'clear') {
-    return { valid: false, reason: result };
+  for (const category of REQUIRED_WATCHLIST_CATEGORIES) {
+    const { result } = breakdown[category];
+
+    if (result !== 'clear') {
+      return { valid: false, reason: result };
+    }
   }
 
   return { valid: true };
@@ -349,7 +363,7 @@ function verifyWatchlist (watchlistReport) {
  *
  * @param {Object} documentReport as sent from Onfido
  *
- * @return {String|null} string reason for rejection, or null if okay
+ * @return {Object} string reason for rejection, or null if okay
  */
 async function verifyDocument (documentReport) {
   if (documentReport.result !== 'clear') {
