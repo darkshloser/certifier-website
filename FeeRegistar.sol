@@ -30,6 +30,9 @@ contract Delegated is Owned {
   /// MODIFIERS
   modifier only_delegate { require (msg.sender == owner || delegates[msg.sender]); _; }
 
+  /// PUBLIC METHODS
+  function delegate(address who) public constant returns (bool) { return who == owner || delegates[who]; }
+
   /// RESTRICTED PUBLIC METHODS
   function addDelegate(address _new) public only_owner { delegates[_new] = true; }
   function removeDelegate(address _old) public only_owner { delete delegates[_old]; }
@@ -51,8 +54,6 @@ contract Delegated is Owned {
 /// the payer of the fee.
 contract FeeRegistrar is Delegated {
   /// STORAGE
-
-  address public owner;
   address public treasury;
   uint public fee;
 
@@ -61,17 +62,7 @@ contract FeeRegistrar is Delegated {
 
 
   /// EVENTS
-
   event Paid (address who, address payer);
-
-
-  /// MODIFIERS
-
-  // Only the owner of the contract restriction
-  modifier only_owner {
-    require(msg.sender == owner);
-    _;
-  }
 
 
   /// CONSTRUCTOR
@@ -142,7 +133,7 @@ contract FeeRegistrar is Delegated {
   }
 
 
-  /// RESTRICTED (owner only) METHODS
+  /// RESTRICTED (owner or delegate only) PUBLIC METHODS
 
   /// @notice This method can be called by authorized persons only,
   /// and can issue a refund of the fee to the `origin` address who

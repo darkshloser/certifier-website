@@ -29,6 +29,25 @@
   },
   {
     "constant": true,
+    "inputs": [
+      {
+        "name": "who",
+        "type": "address"
+      }
+    ],
+    "name": "delegate",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
     "inputs": [],
     "name": "treasury",
     "outputs": [
