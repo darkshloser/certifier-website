@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { Card, Header, Image } from 'semantic-ui-react';
+import { Card, Header, Image, Button } from 'semantic-ui-react';
 
 import EthereumBlankImg from '../../images/ethereum_blank.png';
 import EthereumImg from '../../images/ethereum.png';
+import HardwareImg from '../../images/hardware.svg';
+import Step from '../Step';
 
 import feeStore from '../../stores/fee.store';
 
@@ -22,7 +24,7 @@ const itemStyle = {
 };
 
 const imageStyle = {
-  width: '125px',
+  height: '200px',
   margin: '0 auto'
 };
 
@@ -46,7 +48,17 @@ const imageContainerStyle = {
 };
 
 export default class AccountType extends Component {
+  constructor (props) {
+    super(props);
+
+    this.state = { hardware: false };
+  }
+
   render () {
+    if (this.state.hardware) {
+      return this.renderHardware();
+    }
+
     return (
       <div>
         <Header as='h2' style={{ color: 'green', textAlign: 'center' }}>
@@ -88,6 +100,22 @@ export default class AccountType extends Component {
           </div>
 
           <div style={itemStyle}>
+            <Card onClick={this.handleFromHardwareWallet} style={cardStyle}>
+              <div style={imageContainerStyle}>
+                <Image src={HardwareImg} style={imageStyle} />
+              </div>
+              <Card.Content style={cardContentStyle}>
+                <Card.Header>
+                  Hardware wallet
+                </Card.Header>
+                <Card.Description>
+                  [You've sent Ether from a Hardware wallet]
+                </Card.Description>
+              </Card.Content>
+            </Card>
+          </div>
+
+          <div style={itemStyle}>
             <Card onClick={this.handleFromPersonal} style={cardStyle}>
               <div style={imageContainerStyle}>
                 <Image src={EthereumImg} style={imageStyle} />
@@ -97,7 +125,7 @@ export default class AccountType extends Component {
                   My own (existing) wallet will be certified
                 </Card.Header>
                 <Card.Description>
-                  [I own the private key]
+                  [You own the private key]
                 </Card.Description>
               </Card.Content>
             </Card>
@@ -105,6 +133,51 @@ export default class AccountType extends Component {
         </div>
       </div>
     );
+  }
+
+  renderHardware () {
+    return (
+      <Step
+        centered
+        description={(
+          <div>
+            <Header as='h4' style={{ marginTop: '1.5em' }}>
+              WARNING:
+            </Header>
+            <p>
+              Do not certify a hardware wallet address if you want to participate in an ICO
+              for a NON-ERC20 token.
+            </p>
+            <p>
+              Some ICOs are not compatible with hardware wallet addresses!
+              Please check the compatibility before using a hardware wallet, or just use a
+              JSON wallet file.
+            </p>
+          </div>
+        )}
+        title='HARDWARE WALLET'
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <Button.Group size='huge'>
+            <Button onClick={this.handleBack}>
+              Back
+            </Button>
+            <Button.Or />
+            <Button color='green' onClick={this.handleFromExchange}>
+              Create a new JSON wallet file
+            </Button>
+          </Button.Group>
+        </div>
+      </Step>
+    );
+  }
+
+  handleBack = () => {
+    this.setState({ hardware: false });
+  }
+
+  handleFromHardwareWallet = () => {
+    this.setState({ hardware: true });
   }
 
   handleFromExchange = () => {
