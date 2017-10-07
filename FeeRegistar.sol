@@ -41,7 +41,7 @@ contract Delegated is Owned {
 /// @title Fee Registrar
 /// @author Nicolas Gotchac <nicolas@parity.io>
 /// @notice This contract records fee payments. The address who deploys the contract
-/// is set as the `owner` of the contract (which can be latter modified). The `fee`
+/// is set as the `owner` of the contract (which can be later modified). The `fee`
 /// which users will have to pay must be specified, as well as the address of the treasury
 /// to which the fee will be forwarded to.
 /// A payment is a transaction with the value set as the `fee` value, and an address is
@@ -135,13 +135,25 @@ contract FeeRegistrar is Delegated {
 
   /// RESTRICTED (owner or delegate only) PUBLIC METHODS
 
+  /// @notice This method can only be called by the contract
+  /// owner, and can be used to virtually create a new payment,
+  /// by `origin` for `who`.
+  /// @param who The address that `origin` paid for
+  /// @param origin The virtual sender of the payment
+  function inject (address who, address origin) external only_owner {
+    // Add the origin address to the list of payers
+    s_paid[who].push(origin);
+    // Emit the `Paid` event
+    Paid(who, origin);
+  }
+
   /// @notice This method can be called by authorized persons only,
   /// and can issue a refund of the fee to the `origin` address who
   /// paid the fee for `who`.
   /// @param who The address that `origin` paid for
   /// @param origin The sender of the payment, to which we shall
   /// send the refund
-  function revokeFee (address who, address origin) payable external only_delegate {
+  function revoke (address who, address origin) payable external only_delegate {
     // The value must match the current fee, so we can refund
     // the payer, since the contract doesn't hold anything.
     require(msg.value == fee);
