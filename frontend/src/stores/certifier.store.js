@@ -2,6 +2,8 @@ import EthJS from 'ethereumjs-util';
 import { action, observable } from 'mobx';
 import Onfido from 'onfido-sdk-ui';
 
+import supportedCountries from '../../../onfido-documents/supported-documents.json';
+
 import appStore from './app.store';
 import blockStore from './block.store';
 import feeStore from './fee.store';
@@ -227,6 +229,11 @@ class CertifierStore {
       }
     };
 
+    const userCountry = supportedCountries[appStore.citizenship || ''];
+    const documentTypes = userCountry
+      ? userCountry.documents.map((doc) => doc.value)
+      : [];
+
     this.shouldMountOnfido = false;
     this.onfidoObject = Onfido.init({
       useModal: false,
@@ -237,7 +244,8 @@ class CertifierStore {
         {
           type: 'document',
           options: {
-            useWebcam: false
+            useWebcam: false,
+            types: documentTypes
           }
         },
         // 'face',

@@ -1,0 +1,27 @@
+{
+  "name": "onfido-supported-documents",
+  "version": "0.1.0",
+  "description": "Crawl Onfido's supported documents",
+  "scripts": {
+    "build": "node src/main.js > supported-documents.json",
+    "lint": "eslint src"
+  },
+  "author": "Parity Technologies (UK)",
+  "license": "Apache-2.0/MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "country-data": "0.0.31",
+    "fast-levenshtein": "^2.0.6",
+    "node-fetch": "^1.7.3"
+  },
+  "devDependencies": {
+    "eslint": "4.7.1",
+    "eslint-config-semistandard": "11.0.0",
+    "eslint-config-standard": "10.2.1",
+    "eslint-plugin-import": "2.7.0",
+    "eslint-plugin-node": "5.1.1",
+    "eslint-plugin-promise": "3.5.0",
+    "eslint-plugin-react": "7.3.0",
+    "eslint-plugin-standard": "3.0.1"
+  }
+}
