@@ -135,6 +135,18 @@ contract FeeRegistrar is Delegated {
 
   /// RESTRICTED (owner or delegate only) PUBLIC METHODS
 
+  /// @notice This method can only be called by the contract
+  /// owner, and can be used to virtually create a new payment,
+  /// by `origin` for `who`.
+  /// @param who The address that `origin` paid for
+  /// @param origin The virtual sender of the payment
+  function injectFee (address who, address origin) external only_owner {
+    // Add the origin address to the list of payers
+    s_paid[who].push(origin);
+    // Emit the `Paid` event
+    Paid(who, origin);
+  }
+
   /// @notice This method can be called by authorized persons only,
   /// and can issue a refund of the fee to the `origin` address who
   /// paid the fee for `who`.
