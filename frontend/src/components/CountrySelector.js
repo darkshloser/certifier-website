@@ -391,7 +391,7 @@ export default class CountrySelector extends Component {
   };
 
   handleCloseValid = () => {
-    this.setState({ showValidModal: false, country: null });
+    this.setState({ showValidModal: false, country: null, confirmPossession: false, confirmValidity: false });
   }
 
   handleInvalid = () => {
@@ -403,7 +403,7 @@ export default class CountrySelector extends Component {
   }
 
   handleContinue = () => {
-    appStore.storeValidCitizenship();
+    appStore.storeValidCitizenship(this.state.country.iso3);
     appStore.goto('fee');
   };
 
