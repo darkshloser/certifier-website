@@ -23,7 +23,7 @@ main();
 async function main () {
   const transport = new CachingTransport(config.get('nodeWs'));
   const connector = new ParityConnector(transport);
-  const feeRegistrar = new Fee(connector, config.get('feeContract'));
+  const feeRegistrar = new Fee(connector, config.get('feeContract'), config.get('oldFeeContract'));
 
   const certifier = new Certifier(connector, config.get('certifierContract'));
 

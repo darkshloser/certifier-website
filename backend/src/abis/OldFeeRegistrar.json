@@ -1,5 +1,19 @@
 [
   {
+    "constant": true,
+    "inputs": [],
+    "name": "count",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "constant": false,
     "inputs": [
       {
@@ -17,7 +31,7 @@
     "constant": false,
     "inputs": [
       {
-        "name": "_new",
+        "name": "_owner",
         "type": "address"
       }
     ],
@@ -25,25 +39,6 @@
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "who",
-        "type": "address"
-      }
-    ],
-    "name": "delegate",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -61,35 +56,26 @@
     "type": "function"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [
       {
-        "name": "_old",
-        "type": "address"
-      }
-    ],
-    "name": "removeDelegate",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "who",
-        "type": "address"
+        "name": "start",
+        "type": "uint256"
       },
       {
-        "name": "origin",
-        "type": "address"
+        "name": "limit",
+        "type": "uint256"
       }
     ],
-    "name": "inject",
-    "outputs": [],
+    "name": "payers",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address[]"
+      }
+    ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -126,24 +112,6 @@
     "type": "function"
   },
   {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "who",
-        "type": "address"
-      },
-      {
-        "name": "origin",
-        "type": "address"
-      }
-    ],
-    "name": "revoke",
-    "outputs": [],
-    "payable": true,
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
     "constant": true,
     "inputs": [],
     "name": "fee",
@@ -168,30 +136,16 @@
     "name": "payer",
     "outputs": [
       {
-        "name": "count",
+        "name": "_count",
         "type": "uint256"
       },
       {
-        "name": "origins",
+        "name": "_origins",
         "type": "address[]"
       }
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_new",
-        "type": "address"
-      }
-    ],
-    "name": "addDelegate",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -230,31 +184,9 @@
         "indexed": false,
         "name": "who",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "payer",
-        "type": "address"
       }
     ],
     "name": "Paid",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "name": "old",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "current",
-        "type": "address"
-      }
-    ],
-    "name": "NewOwner",
     "type": "event"
   }
 ]
