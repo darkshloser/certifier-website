@@ -70,9 +70,9 @@ export default class ParityCertifier extends Component {
           <Form>
             <Form.Field>
               <Form.Input
-                label='Surname'
+                label='Surname (Family name)'
                 onChange={this.handleLastNameChange}
-                placeholder='Surname'
+                placeholder='Surname (Family name)'
                 value={lastName}
               />
             </Form.Field>
