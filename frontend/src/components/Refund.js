@@ -23,7 +23,8 @@ const preStyle = {
 export default class Refund extends Component {
   state = {
     address: '',
-    loaded: false
+    loaded: false,
+    loading: false
   };
 
   render () {
@@ -138,20 +139,18 @@ export default class Refund extends Component {
       );
     }
 
-    const { message, signature } = this.state;
+    const { loading } = this.state;
 
     return (
       <div style={contentStyle}>
         <div>
           It seems that you are eligible for a refund, congratulations!
         </div>
-        <div>
-          Please send us information
-          at <a href='mailto:picops@parity.io'>picops@parity.io</a> so
-          we can process the refund.
+        <div style={{ margin: '1.5em 0' }}>
+          <Button primary size='big' onClick={this.handleGetRefund} loading={loading}>
+            Get a refund
+          </Button>
         </div>
-        <pre style={preStyle}>{message}</pre>
-        <pre style={preStyle}>{signature}</pre>
       </div>
     );
   }
@@ -188,8 +187,6 @@ export default class Refund extends Component {
 
     data.storedAddress = storedAddress.toLowerCase();
 
-    console.warn(storedAddress, origins)
-
     if (!data.origins.includes(data.storedAddress)) {
       return data;
     }
@@ -216,5 +213,13 @@ export default class Refund extends Component {
 
       this.setState(Object.assign({ loaded: true }, nextState));
     }
+  };
+
+  handleGetRefund = async () => {
+    const { message, signature, address } = this.state;
+
+    this.setState({ loading: true });
+
+    await backend.getRefund({ message, signature, address });
   };
 }

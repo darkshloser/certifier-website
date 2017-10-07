@@ -29,6 +29,12 @@ class Backend {
     return { incomingTxs };
   }
 
+  async getRefund ({ address, message, signature }) {
+    const { result } = await post(this.url(`/accounts/${address}/refund`), { message, signature });
+
+    return result;
+  }
+
   async getAccountFeeInfo (address) {
     const { balance, paid, origins } = await get(this.url(`/accounts/${address}/fee`));
 

@@ -81,6 +81,15 @@ function get ({ connector, certifier, feeRegistrar }) {
     ctx.body = { nonce };
   });
 
+  router.post('/:address/refund', async (ctx, next) => {
+    const { address} = ctx.params;
+
+    await rateLimiter(address, ctx.remoteAddress);
+
+    const { message, signature } = ctx.request.body;
+    const [ , paymentOrigins ] = await feeRegistrar.paymentStatus(address);
+  });
+
   return router;
 }
 
