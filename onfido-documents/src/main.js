@@ -71,7 +71,8 @@ async function main () {
     res[country.alpha3] = {
       name,
       documents: parseDocs(docs),
-      code: country.alpha3
+      iso2: country.alpha2,
+      iso3: country.alpha3
     };
 
     return res;
