@@ -3,12 +3,14 @@
 
 'use strict';
 
-const Router = require('koa-router');
 const config = require('config');
+const EthJS = require('ethereumjs-util');
+const Router = require('koa-router');
 
+const store = require('../store');
 const Identity = require('../identity');
-const { rateLimiter } = require('./utils');
-const { hex2big, big2hex } = require('../utils');
+const { error: errorHandler, rateLimiter } = require('./utils');
+const { buf2add, hex2big, big2hex, isValidAddress } = require('../utils');
 
 const onfidoMaxChecks = config.get('onfido.maxChecks');
 
@@ -82,12 +84,51 @@ function get ({ connector, certifier, feeRegistrar }) {
   });
 
   router.post('/:address/refund', async (ctx, next) => {
-    const { address} = ctx.params;
+    const { address } = ctx.params;
+
+    if (!address || !isValidAddress(address)) {
+      return errorHandler(ctx, 400, 'Missing address');
+    }
 
     await rateLimiter(address, ctx.remoteAddress);
 
     const { message, signature } = ctx.request.body;
-    const [ , paymentOrigins ] = await feeRegistrar.paymentStatus(address);
+
+    if (!message) {
+      return errorHandler(ctx, 400, 'Missing message');
+    }
+
+    if (!signature) {
+      return errorHandler(ctx, 400, 'Missing signature');
+    }
+
+    if (await store.isRefunding(address)) {
+      return errorHandler(ctx, 400, 'Already refunding this address. Please be patient.');
+    }
+
+    const identity = new Identity(address);
+    const checkCount = await identity.checks.count();
+    const { paymentCount, paymentOrigins } = await feeRegistrar.paymentStatus(address, { fallback: false });
+
+    if (paymentCount === 0) {
+      return errorHandler(ctx, 400, 'No payment have been recorded for this address');
+    }
+
+    if (checkCount > (paymentCount - 1) * onfidoMaxChecks) {
+      return errorHandler(ctx, 400, `${checkCount} checks have already been issued, for ${paymentCount} payment.`);
+    }
+
+    const msgHash = EthJS.hashPersonalMessage(EthJS.toBuffer(message));
+    const { v, r, s } = EthJS.fromRpcSig(signature);
+    const signPubKey = EthJS.ecrecover(msgHash, v, r, s);
+    const signAddress = buf2add(EthJS.pubToAddress(signPubKey));
+
+    if (!signAddress || !paymentOrigins.includes(signAddress)) {
+      return errorHandler(ctx, 400, 'Payer not found in payment origins.');
+    }
+
+    await store.addRefund(address);
+    ctx.body = { result: 'pending' };
   });
 
   return router;

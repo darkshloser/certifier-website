@@ -56,14 +56,18 @@ class Fee extends Contract {
    * Get the payment origins (addresses) and count
    *
    * @param {String} address `0x` prefixed
+   * @param {Object} options Options Object, fallback can be
+   *                         set to `false` if we don't want to
+   *                         fallback to the old fee contract (@see refund)
    *
    * @return {Promise<Object>} contains `paymentCount` and `paymentOrigins`
    */
-  async paymentStatus (address) {
+  async paymentStatus (address, options = { fallback: true }) {
     const [ paymentCount, paymentOrigins ] = await this.methods.payer(address).get();
 
     // Return the new-contract value if any
-    if (paymentCount.gt(0)) {
+    // or if no fallback option set
+    if (paymentCount.gt(0) || !options.fallback) {
       return {
         paymentCount,
         paymentOrigins

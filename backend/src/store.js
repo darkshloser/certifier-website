@@ -7,6 +7,7 @@ const redis = require('./redis');
 const Identity = require('./identity');
 
 const ONFIDO_CHECKS_CHANNEL = 'picops::onfido-checks-channel';
+const FEE_REFUND_CHANNEL = 'picops::refund-channel';
 
 const REDIS_APPLICANTS_KEY = 'picops::applicants';
 const REDIS_LOCKS_KEY = 'picops::locker';
@@ -191,6 +192,37 @@ class Store {
    */
   static async remove (href) {
     await redis.srem(ONFIDO_CHECKS_CHANNEL, href);
+  }
+
+  /**
+   * Add an address to the Redis Refund Set and publish
+   * a `new` event
+   *
+   * @param {String} who
+   */
+  static async addRefund (who) {
+    await redis.sadd(FEE_REFUND_CHANNEL, who);
+    await redis.publish(FEE_REFUND_CHANNEL, 'new');
+  }
+
+  /**
+   * Check if the given address is in the process
+   * of a refund
+   *
+   * @param {String} who
+   * @returns {Boolean}
+   */
+  static async isRefunding (who) {
+    return redis.sismember(FEE_REFUND_CHANNEL, who);
+  }
+
+  /**
+   * Removes an address from the Redis Refund Set.
+   *
+   * @param {String} who
+   */
+  static async removeRefund (who) {
+    await redis.srem(FEE_REFUND_CHANNEL, who);
   }
 }
 
