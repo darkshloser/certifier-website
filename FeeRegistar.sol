@@ -140,7 +140,7 @@ contract FeeRegistrar is Delegated {
   /// by `origin` for `who`.
   /// @param who The address that `origin` paid for
   /// @param origin The virtual sender of the payment
-  function injectFee (address who, address origin) external only_owner {
+  function inject (address who, address origin) external only_owner {
     // Add the origin address to the list of payers
     s_paid[who].push(origin);
     // Emit the `Paid` event
@@ -153,7 +153,7 @@ contract FeeRegistrar is Delegated {
   /// @param who The address that `origin` paid for
   /// @param origin The sender of the payment, to which we shall
   /// send the refund
-  function revokeFee (address who, address origin) payable external only_delegate {
+  function revoke (address who, address origin) payable external only_delegate {
     // The value must match the current fee, so we can refund
     // the payer, since the contract doesn't hold anything.
     require(msg.value == fee);

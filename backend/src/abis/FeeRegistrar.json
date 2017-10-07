@@ -75,6 +75,24 @@
     "type": "function"
   },
   {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "name": "origin",
+        "type": "address"
+      }
+    ],
+    "name": "inject",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "constant": true,
     "inputs": [],
     "name": "owner",
@@ -119,7 +137,7 @@
         "type": "address"
       }
     ],
-    "name": "revokeFee",
+    "name": "revoke",
     "outputs": [],
     "payable": true,
     "stateMutability": "payable",
