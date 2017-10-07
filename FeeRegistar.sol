@@ -41,7 +41,7 @@ contract Delegated is Owned {
 /// @title Fee Registrar
 /// @author Nicolas Gotchac <nicolas@parity.io>
 /// @notice This contract records fee payments. The address who deploys the contract
-/// is set as the `owner` of the contract (which can be latter modified). The `fee`
+/// is set as the `owner` of the contract (which can be later modified). The `fee`
 /// which users will have to pay must be specified, as well as the address of the treasury
 /// to which the fee will be forwarded to.
 /// A payment is a transaction with the value set as the `fee` value, and an address is
