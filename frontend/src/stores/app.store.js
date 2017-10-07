@@ -1,7 +1,6 @@
 import { countries } from 'country-data';
 import EventEmitter from 'eventemitter3';
 import { iframeResizerContentWindow } from 'iframe-resizer';
-import { difference, uniq } from 'lodash';
 import { action, observable } from 'mobx';
 import store from 'store';
 
@@ -65,6 +64,7 @@ class AppStore extends EventEmitter {
     }
   }
 
+  @observable citizenship = null;
   @observable loading = true;
   @observable messages = {};
   @observable termsAccepted = false;
@@ -182,15 +182,13 @@ class AppStore extends EventEmitter {
         return true;
       });
 
-    const prevCountries = store.get(CITIZENSHIP_LS_KEY) || [];
+    const citizenship = store.get(CITIZENSHIP_LS_KEY) || null;
 
-    // The country selection can be skipped if the user
-    // already said he was not from on of the
-    // current blacklisted countries
-    this.skipCountrySelection = difference(
-      this.blacklistedCountries,
-      prevCountries
-    ).length === 0;
+    // Skip country selection if valid citizenship stored
+    if (countries[citizenship]) {
+      this.skipCountrySelection = !!citizenship;
+      this.citizenship = citizenship;
+    }
   }
 
   register (step, loader) {
@@ -204,12 +202,14 @@ class AppStore extends EventEmitter {
   restart () {
     this.skipTerms = false;
     this.skipStart = false;
+    this.skipCountrySelection = false;
 
     store.remove(CITIZENSHIP_LS_KEY);
     store.remove(FEE_HOLDER_LS_KEY);
     store.remove(PAYER_LS_KEY);
     store.remove(TERMS_LS_KEY);
 
+    this.citizenship = null;
     this.termsAccepted = false;
 
     this.emit('restart');
@@ -266,11 +266,9 @@ class AppStore extends EventEmitter {
     this.step = step;
   }
 
-  storeValidCitizenship () {
-    const prevState = store.get(CITIZENSHIP_LS_KEY) || [];
-    const nextState = uniq(prevState.concat(this.blacklistedCountries));
-
-    store.set(CITIZENSHIP_LS_KEY, nextState);
+  storeValidCitizenship (countryCode) {
+    store.set(CITIZENSHIP_LS_KEY, countryCode);
+    this.citizenship = countryCode;
   }
 
   storeTermsAccepted () {

@@ -1,0 +1,3566 @@
+{
+  "DZA": {
+    "name": "Algeria",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      }
+    ],
+    "iso2": "DZ",
+    "iso3": "DZA"
+  },
+  "AGO": {
+    "name": "Angola",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "AO",
+    "iso3": "AGO"
+  },
+  "BEN": {
+    "name": "Benin",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "BJ",
+    "iso3": "BEN"
+  },
+  "BWA": {
+    "name": "Botswana",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "BW",
+    "iso3": "BWA"
+  },
+  "BFA": {
+    "name": "Burkina Faso",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "BF",
+    "iso3": "BFA"
+  },
+  "BDI": {
+    "name": "Burundi",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "BI",
+    "iso3": "BDI"
+  },
+  "CMR": {
+    "name": "Cameroon",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "CM",
+    "iso3": "CMR"
+  },
+  "CAF": {
+    "name": "Central African Republic",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "CF",
+    "iso3": "CAF"
+  },
+  "TCD": {
+    "name": "Chad",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "TD",
+    "iso3": "TCD"
+  },
+  "COM": {
+    "name": "Comoros",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "KM",
+    "iso3": "COM"
+  },
+  "COD": {
+    "name": "Congo, Democratic Republic of the",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "CD",
+    "iso3": "COD"
+  },
+  "CIV": {
+    "name": "Côte d'Ivoire",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "CI",
+    "iso3": "CIV"
+  },
+  "DJI": {
+    "name": "Djibouti",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "DJ",
+    "iso3": "DJI"
+  },
+  "EGY": {
+    "name": "Egypt",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "EG",
+    "iso3": "EGY"
+  },
+  "GNQ": {
+    "name": "Equatorial Guinea",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "GQ",
+    "iso3": "GNQ"
+  },
+  "ERI": {
+    "name": "Eritrea",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "ER",
+    "iso3": "ERI"
+  },
+  "ETH": {
+    "name": "Ethiopia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "ET",
+    "iso3": "ETH"
+  },
+  "GAB": {
+    "name": "Gabon",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "GA",
+    "iso3": "GAB"
+  },
+  "GMB": {
+    "name": "Gambia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "GM",
+    "iso3": "GMB"
+  },
+  "GHA": {
+    "name": "Ghana",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "GH",
+    "iso3": "GHA"
+  },
+  "GIN": {
+    "name": "Guinea",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "GN",
+    "iso3": "GIN"
+  },
+  "KEN": {
+    "name": "Kenya",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      }
+    ],
+    "iso2": "KE",
+    "iso3": "KEN"
+  },
+  "LSO": {
+    "name": "Lesotho",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "LS",
+    "iso3": "LSO"
+  },
+  "LBR": {
+    "name": "Liberia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "LR",
+    "iso3": "LBR"
+  },
+  "LBY": {
+    "name": "Libya",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "LY",
+    "iso3": "LBY"
+  },
+  "MDG": {
+    "name": "Madagascar",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "MG",
+    "iso3": "MDG"
+  },
+  "MWI": {
+    "name": "Malawi",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "MW",
+    "iso3": "MWI"
+  },
+  "MLI": {
+    "name": "Mali",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "ML",
+    "iso3": "MLI"
+  },
+  "MRT": {
+    "name": "Mauritania",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "MR",
+    "iso3": "MRT"
+  },
+  "MUS": {
+    "name": "Mauritius",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "MU",
+    "iso3": "MUS"
+  },
+  "MYT": {
+    "name": "Mayotte",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "YT",
+    "iso3": "MYT"
+  },
+  "MAR": {
+    "name": "Morocco",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "MA",
+    "iso3": "MAR"
+  },
+  "MOZ": {
+    "name": "Mozambique",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "MZ",
+    "iso3": "MOZ"
+  },
+  "NAM": {
+    "name": "Namibia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "NA",
+    "iso3": "NAM"
+  },
+  "NER": {
+    "name": "Niger",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "NE",
+    "iso3": "NER"
+  },
+  "NGA": {
+    "name": "Nigeria",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "NG",
+    "iso3": "NGA"
+  },
+  "RWA": {
+    "name": "Rwanda",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "RW",
+    "iso3": "RWA"
+  },
+  "SHN": {
+    "name": "Saint Helena",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "SH",
+    "iso3": "SHN"
+  },
+  "STP": {
+    "name": "Sao Tome and Principe",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "ST",
+    "iso3": "STP"
+  },
+  "SEN": {
+    "name": "Senegal",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "SN",
+    "iso3": "SEN"
+  },
+  "SYC": {
+    "name": "Seychelles",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "SC",
+    "iso3": "SYC"
+  },
+  "SLE": {
+    "name": "Sierra Leone",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "SL",
+    "iso3": "SLE"
+  },
+  "SOM": {
+    "name": "Somalia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "SO",
+    "iso3": "SOM"
+  },
+  "ZAF": {
+    "name": "South Africa",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "ZA",
+    "iso3": "ZAF"
+  },
+  "SSD": {
+    "name": "South Sudan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "SS",
+    "iso3": "SSD"
+  },
+  "SDN": {
+    "name": "Sudan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "SD",
+    "iso3": "SDN"
+  },
+  "SWZ": {
+    "name": "Swaziland",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "SZ",
+    "iso3": "SWZ"
+  },
+  "TGO": {
+    "name": "Togo",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "TG",
+    "iso3": "TGO"
+  },
+  "TUN": {
+    "name": "Tunisia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "TN",
+    "iso3": "TUN"
+  },
+  "UGA": {
+    "name": "Uganda",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "UG",
+    "iso3": "UGA"
+  },
+  "ESH": {
+    "name": "Western Sahara",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "EH",
+    "iso3": "ESH"
+  },
+  "ZMB": {
+    "name": "Zambia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "ZM",
+    "iso3": "ZMB"
+  },
+  "ZWE": {
+    "name": "Zimbabwe",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "ZW",
+    "iso3": "ZWE"
+  },
+  "AFG": {
+    "name": "Afghanistan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "AF",
+    "iso3": "AFG"
+  },
+  "ARM": {
+    "name": "Armenia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "AM",
+    "iso3": "ARM"
+  },
+  "AZE": {
+    "name": "Azerbaijan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "AZ",
+    "iso3": "AZE"
+  },
+  "BHR": {
+    "name": "Bahrain",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "BH",
+    "iso3": "BHR"
+  },
+  "BGD": {
+    "name": "Bangladesh",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "BD",
+    "iso3": "BGD"
+  },
+  "BTN": {
+    "name": "Bhutan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "BT",
+    "iso3": "BTN"
+  },
+  "IOT": {
+    "name": "British Indian Ocean Territory",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "IO",
+    "iso3": "IOT"
+  },
+  "BRN": {
+    "name": "Brunei Darussalam",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "BN",
+    "iso3": "BRN"
+  },
+  "KHM": {
+    "name": "Cambodia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "KH",
+    "iso3": "KHM"
+  },
+  "CHN": {
+    "name": "China",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "CN",
+    "iso3": "CHN"
+  },
+  "CXR": {
+    "name": "Christmas Island",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "CX",
+    "iso3": "CXR"
+  },
+  "CCK": {
+    "name": "Cocos (Keeling) Islands",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "CC",
+    "iso3": "CCK"
+  },
+  "GEO": {
+    "name": "Georgia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "GE",
+    "iso3": "GEO"
+  },
+  "HKG": {
+    "name": "Hong Kong",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      }
+    ],
+    "iso2": "HK",
+    "iso3": "HKG"
+  },
+  "IND": {
+    "name": "India",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card (Aadhaar)",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "Tax Identity Card (PAN)",
+        "special": false
+      }
+    ],
+    "iso2": "IN",
+    "iso3": "IND"
+  },
+  "IDN": {
+    "name": "Indonesia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "ID",
+    "iso3": "IDN"
+  },
+  "IRQ": {
+    "name": "Iraq",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "IQ",
+    "iso3": "IRQ"
+  },
+  "JPN": {
+    "name": "Japan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "JP",
+    "iso3": "JPN"
+  },
+  "JOR": {
+    "name": "Jordan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "JO",
+    "iso3": "JOR"
+  },
+  "KAZ": {
+    "name": "Kazakhstan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "KZ",
+    "iso3": "KAZ"
+  },
+  "KWT": {
+    "name": "Kuwait",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "KW",
+    "iso3": "KWT"
+  },
+  "KGZ": {
+    "name": "Kyrgyzstan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "KG",
+    "iso3": "KGZ"
+  },
+  "LBN": {
+    "name": "Lebanon",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "LB",
+    "iso3": "LBN"
+  },
+  "MAC": {
+    "name": "Macao, Special Administrative Region of China",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "MO",
+    "iso3": "MAC"
+  },
+  "MYS": {
+    "name": "Malaysia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "MY",
+    "iso3": "MYS"
+  },
+  "MDV": {
+    "name": "Maldives",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "MV",
+    "iso3": "MDV"
+  },
+  "MNG": {
+    "name": "Mongolia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "MN",
+    "iso3": "MNG"
+  },
+  "MMR": {
+    "name": "Myanmar",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "MM",
+    "iso3": "MMR"
+  },
+  "NPL": {
+    "name": "Nepal",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "NP",
+    "iso3": "NPL"
+  },
+  "OMN": {
+    "name": "Oman",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity Card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "OM",
+    "iso3": "OMN"
+  },
+  "PAK": {
+    "name": "Pakistan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card* (CNIC)",
+        "special": false
+      }
+    ],
+    "iso2": "PK",
+    "iso3": "PAK"
+  },
+  "PSE": {
+    "name": "Palestinian Territory, Occupied",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "PS",
+    "iso3": "PSE"
+  },
+  "PHL": {
+    "name": "Philippines",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "PH",
+    "iso3": "PHL"
+  },
+  "QAT": {
+    "name": "Qatar",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "QA",
+    "iso3": "QAT"
+  },
+  "SAU": {
+    "name": "Saudi Arabia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "SA",
+    "iso3": "SAU"
+  },
+  "SGP": {
+    "name": "Singapore",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card (NRIC)",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "SG",
+    "iso3": "SGP"
+  },
+  "LKA": {
+    "name": "Sri Lanka",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "LK",
+    "iso3": "LKA"
+  },
+  "SYR": {
+    "name": "Syrian Arab Republic (Syria)",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "SY",
+    "iso3": "SYR"
+  },
+  "TWN": {
+    "name": "Iran",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "TW",
+    "iso3": "TWN"
+  },
+  "TJK": {
+    "name": "Tajikistan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "TJ",
+    "iso3": "TJK"
+  },
+  "THA": {
+    "name": "Thailand",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "TH",
+    "iso3": "THA"
+  },
+  "TUR": {
+    "name": "Turkey",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity Card",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "TR",
+    "iso3": "TUR"
+  },
+  "TKM": {
+    "name": "Turkmenistan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "TM",
+    "iso3": "TKM"
+  },
+  "ARE": {
+    "name": "United Arab Emirates",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "AE",
+    "iso3": "ARE"
+  },
+  "UZB": {
+    "name": "Uzbekistan",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "UZ",
+    "iso3": "UZB"
+  },
+  "VNM": {
+    "name": "Viet Nam",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "VN",
+    "iso3": "VNM"
+  },
+  "YEM": {
+    "name": "Yemen",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving License",
+        "special": false
+      }
+    ],
+    "iso2": "YE",
+    "iso3": "YEM"
+  },
+  "ALB": {
+    "name": "Albania",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "AL",
+    "iso3": "ALB"
+  },
+  "AND": {
+    "name": "Andorra",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "AD",
+    "iso3": "AND"
+  },
+  "AUT": {
+    "name": "Austria",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "AT",
+    "iso3": "AUT"
+  },
+  "BLR": {
+    "name": "Belarus",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "BY",
+    "iso3": "BLR"
+  },
+  "BEL": {
+    "name": "Belgium",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "BE",
+    "iso3": "BEL"
+  },
+  "BGR": {
+    "name": "Bulgaria",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "BG",
+    "iso3": "BGR"
+  },
+  "HRV": {
+    "name": "Croatia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "HR",
+    "iso3": "HRV"
+  },
+  "CYP": {
+    "name": "Cyprus",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "CY",
+    "iso3": "CYP"
+  },
+  "CZE": {
+    "name": "Czech Republic",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "CZ",
+    "iso3": "CZE"
+  },
+  "DNK": {
+    "name": "Denmark",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "DK",
+    "iso3": "DNK"
+  },
+  "EST": {
+    "name": "Estonia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "EE",
+    "iso3": "EST"
+  },
+  "FRO": {
+    "name": "Faroe Islands",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "FO",
+    "iso3": "FRO"
+  },
+  "FIN": {
+    "name": "Finland",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "FI",
+    "iso3": "FIN"
+  },
+  "FRA": {
+    "name": "France",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence (Paper and Card series)",
+        "special": false
+      }
+    ],
+    "iso2": "FR",
+    "iso3": "FRA"
+  },
+  "DEU": {
+    "name": "Germany",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "DE",
+    "iso3": "DEU"
+  },
+  "GIB": {
+    "name": "Gibraltar",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      }
+    ],
+    "iso2": "GI",
+    "iso3": "GIB"
+  },
+  "GRC": {
+    "name": "Greece",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "GR",
+    "iso3": "GRC"
+  },
+  "VAT": {
+    "name": "Vatican City State",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "VA",
+    "iso3": "VAT"
+  },
+  "HUN": {
+    "name": "Hungary",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "HU",
+    "iso3": "HUN"
+  },
+  "ISL": {
+    "name": "Iceland",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "IS",
+    "iso3": "ISL"
+  },
+  "IRL": {
+    "name": "Ireland",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "passport",
+        "label": "2015 Passport Card",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "IE",
+    "iso3": "IRL"
+  },
+  "ISR": {
+    "name": "Israel",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "IL",
+    "iso3": "ISR"
+  },
+  "ITA": {
+    "name": "Italy",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "IT",
+    "iso3": "ITA"
+  },
+  "LVA": {
+    "name": "Latvia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "LV",
+    "iso3": "LVA"
+  },
+  "LTU": {
+    "name": "Lithuania",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "LT",
+    "iso3": "LTU"
+  },
+  "LUX": {
+    "name": "Luxembourg",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "LU",
+    "iso3": "LUX"
+  },
+  "MKD": {
+    "name": "Macedonia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "MK",
+    "iso3": "MKD"
+  },
+  "MLT": {
+    "name": "Malta",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "MT",
+    "iso3": "MLT"
+  },
+  "MDA": {
+    "name": "Moldova",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "MD",
+    "iso3": "MDA"
+  },
+  "MCO": {
+    "name": "Monaco",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "MC",
+    "iso3": "MCO"
+  },
+  "MNE": {
+    "name": "Montenegro",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "ME",
+    "iso3": "MNE"
+  },
+  "NLD": {
+    "name": "Netherlands",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "NL",
+    "iso3": "NLD"
+  },
+  "NOR": {
+    "name": "Norway",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "NO",
+    "iso3": "NOR"
+  },
+  "POL": {
+    "name": "Poland",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "PL",
+    "iso3": "POL"
+  },
+  "PRT": {
+    "name": "Portugal",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "PT",
+    "iso3": "PRT"
+  },
+  "ROU": {
+    "name": "Romania",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "RO",
+    "iso3": "ROU"
+  },
+  "RUS": {
+    "name": "Russia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport (External)",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "RU",
+    "iso3": "RUS"
+  },
+  "SMR": {
+    "name": "San Marino",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "SM",
+    "iso3": "SMR"
+  },
+  "SRB": {
+    "name": "Serbia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "RS",
+    "iso3": "SRB"
+  },
+  "SVK": {
+    "name": "Slovakia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "SK",
+    "iso3": "SVK"
+  },
+  "SVN": {
+    "name": "Slovenia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "SI",
+    "iso3": "SVN"
+  },
+  "ESP": {
+    "name": "Spain",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "ES",
+    "iso3": "ESP"
+  },
+  "SWE": {
+    "name": "Sweden",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "SE",
+    "iso3": "SWE"
+  },
+  "CHE": {
+    "name": "Switzerland",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "CH",
+    "iso3": "CHE"
+  },
+  "UKR": {
+    "name": "Ukraine",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "UA",
+    "iso3": "UKR"
+  },
+  "GBR": {
+    "name": "United Kingdom",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "GB",
+    "iso3": "GBR"
+  },
+  "AIA": {
+    "name": "Anguilla",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "AI",
+    "iso3": "AIA"
+  },
+  "ABW": {
+    "name": "Aruba",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "AW",
+    "iso3": "ABW"
+  },
+  "BHS": {
+    "name": "Bahamas",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "BS",
+    "iso3": "BHS"
+  },
+  "BRB": {
+    "name": "Barbados",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "BB",
+    "iso3": "BRB"
+  },
+  "BLZ": {
+    "name": "Belize",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "BZ",
+    "iso3": "BLZ"
+  },
+  "BMU": {
+    "name": "Bermuda",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "BM",
+    "iso3": "BMU"
+  },
+  "VIR": {
+    "name": "Virgin Islands, US",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "VI",
+    "iso3": "VIR"
+  },
+  "CAN": {
+    "name": "Canada",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card* (All Provinces)",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence (All Provinces)",
+        "special": false
+      }
+    ],
+    "iso2": "CA",
+    "iso3": "CAN"
+  },
+  "CYM": {
+    "name": "Cayman Islands",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "KY",
+    "iso3": "CYM"
+  },
+  "CRI": {
+    "name": "Costa Rica",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "CR",
+    "iso3": "CRI"
+  },
+  "CUB": {
+    "name": "Cuba",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "CU",
+    "iso3": "CUB"
+  },
+  "DMA": {
+    "name": "Dominica",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "DM",
+    "iso3": "DMA"
+  },
+  "DOM": {
+    "name": "Dominican Republic",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "DO",
+    "iso3": "DOM"
+  },
+  "SLV": {
+    "name": "El Salvador",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "SV",
+    "iso3": "SLV"
+  },
+  "GRL": {
+    "name": "Greenland",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "GL",
+    "iso3": "GRL"
+  },
+  "GRD": {
+    "name": "Grenada",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "GD",
+    "iso3": "GRD"
+  },
+  "GLP": {
+    "name": "Guadeloupe",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "GP",
+    "iso3": "GLP"
+  },
+  "GTM": {
+    "name": "Guatemala",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence*",
+        "special": true
+      }
+    ],
+    "iso2": "GT",
+    "iso3": "GTM"
+  },
+  "HTI": {
+    "name": "Haiti",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "HT",
+    "iso3": "HTI"
+  },
+  "HND": {
+    "name": "Honduras",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "HN",
+    "iso3": "HND"
+  },
+  "JAM": {
+    "name": "Jamaica",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "JM",
+    "iso3": "JAM"
+  },
+  "MTQ": {
+    "name": "Martinique",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "MQ",
+    "iso3": "MTQ"
+  },
+  "MEX": {
+    "name": "Mexico",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence (All States)",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "Voter Identity Card (IFE, INE) ",
+        "special": false
+      }
+    ],
+    "iso2": "MX",
+    "iso3": "MEX"
+  },
+  "NIC": {
+    "name": "Nicaragua",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "NI",
+    "iso3": "NIC"
+  },
+  "PAN": {
+    "name": "Panama",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "PA",
+    "iso3": "PAN"
+  },
+  "PRI": {
+    "name": "Puerto Rico",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "PR",
+    "iso3": "PRI"
+  },
+  "LCA": {
+    "name": "Saint Lucia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "LC",
+    "iso3": "LCA"
+  },
+  "VCT": {
+    "name": "Saint Vincent and Grenadines",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "VC",
+    "iso3": "VCT"
+  },
+  "USA": {
+    "name": "United States of America",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "passport",
+        "label": "Passport Card",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card* (All States)",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence (All States)",
+        "special": false
+      }
+    ],
+    "iso2": "US",
+    "iso3": "USA"
+  },
+  "ASM": {
+    "name": "American Samoa",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "AS",
+    "iso3": "ASM"
+  },
+  "AUS": {
+    "name": "Australia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence (All States)",
+        "special": false
+      }
+    ],
+    "iso2": "AU",
+    "iso3": "AUS"
+  },
+  "COK": {
+    "name": "Cook Islands",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "CK",
+    "iso3": "COK"
+  },
+  "FJI": {
+    "name": "Fiji",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "FJ",
+    "iso3": "FJI"
+  },
+  "PYF": {
+    "name": "French Polynesia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "PF",
+    "iso3": "PYF"
+  },
+  "GUM": {
+    "name": "Guam",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "GU",
+    "iso3": "GUM"
+  },
+  "KIR": {
+    "name": "Kiribati",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "KI",
+    "iso3": "KIR"
+  },
+  "MHL": {
+    "name": "Marshall Islands",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "MH",
+    "iso3": "MHL"
+  },
+  "NRU": {
+    "name": "Nauru",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "NR",
+    "iso3": "NRU"
+  },
+  "NCL": {
+    "name": "New Caledonia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "NC",
+    "iso3": "NCL"
+  },
+  "NZL": {
+    "name": "New Zealand",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "NZ",
+    "iso3": "NZL"
+  },
+  "NIU": {
+    "name": "Niue",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "NU",
+    "iso3": "NIU"
+  },
+  "NFK": {
+    "name": "Norfolk Island",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "NF",
+    "iso3": "NFK"
+  },
+  "MNP": {
+    "name": "Northern Mariana Islands",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "MP",
+    "iso3": "MNP"
+  },
+  "PLW": {
+    "name": "Palau",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "PW",
+    "iso3": "PLW"
+  },
+  "PNG": {
+    "name": "Papua New Guinea",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "PG",
+    "iso3": "PNG"
+  },
+  "PCN": {
+    "name": "Pitcairn",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "PN",
+    "iso3": "PCN"
+  },
+  "WSM": {
+    "name": "Samoa",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "WS",
+    "iso3": "WSM"
+  },
+  "SLB": {
+    "name": "Solomon Islands",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "SB",
+    "iso3": "SLB"
+  },
+  "TLS": {
+    "name": "Timor-Leste",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "TL",
+    "iso3": "TLS"
+  },
+  "TON": {
+    "name": "Tonga",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "TO",
+    "iso3": "TON"
+  },
+  "VUT": {
+    "name": "Vanuatu",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "VU",
+    "iso3": "VUT"
+  },
+  "ARG": {
+    "name": "Argentina",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card",
+        "special": false
+      }
+    ],
+    "iso2": "AR",
+    "iso3": "ARG"
+  },
+  "BOL": {
+    "name": "Bolivia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "BO",
+    "iso3": "BOL"
+  },
+  "BRA": {
+    "name": "Brazil",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card (RG Card)",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "BR",
+    "iso3": "BRA"
+  },
+  "CHL": {
+    "name": "Chile",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "CL",
+    "iso3": "CHL"
+  },
+  "COL": {
+    "name": "Colombia",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "CO",
+    "iso3": "COL"
+  },
+  "ECU": {
+    "name": "Ecuador",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "EC",
+    "iso3": "ECU"
+  },
+  "FLK": {
+    "name": "Falkland Islands",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "FK",
+    "iso3": "FLK"
+  },
+  "GUF": {
+    "name": "French Guiana",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "GF",
+    "iso3": "GUF"
+  },
+  "GUY": {
+    "name": "Guyana",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "GY",
+    "iso3": "GUY"
+  },
+  "PRY": {
+    "name": "Paraguay",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "PY",
+    "iso3": "PRY"
+  },
+  "PER": {
+    "name": "Peru",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "PE",
+    "iso3": "PER"
+  },
+  "URY": {
+    "name": "Uruguay",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card",
+        "special": false
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "UY",
+    "iso3": "URY"
+  },
+  "VEN": {
+    "name": "Venezuela",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity Card",
+        "special": false
+      }
+    ],
+    "iso2": "VE",
+    "iso3": "VEN"
+  },
+  "GNB": {
+    "name": "Guinea-Bissau",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "GW",
+    "iso3": "GNB"
+  },
+  "REU": {
+    "name": "Réunion",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "RE",
+    "iso3": "REU"
+  },
+  "TZA": {
+    "name": "Tanzania, United Republic of",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "TZ",
+    "iso3": "TZA"
+  },
+  "PRK": {
+    "name": "Korea, Democratic People's Republic of",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "KP",
+    "iso3": "PRK"
+  },
+  "KOR": {
+    "name": "Korea, Republic of",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "KR",
+    "iso3": "KOR"
+  },
+  "ALA": {
+    "name": "Aland Islands",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "AX",
+    "iso3": "ALA"
+  },
+  "ATG": {
+    "name": "Antigua and Barbuda",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "AG",
+    "iso3": "ATG"
+  },
+  "KNA": {
+    "name": "Saint Kitts and Nevis",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "KN",
+    "iso3": "KNA"
+  },
+  "SPM": {
+    "name": "Saint Pierre and Miquelon",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "PM",
+    "iso3": "SPM"
+  },
+  "BLM": {
+    "name": "Saint-Barthélemy",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "BL",
+    "iso3": "BLM"
+  },
+  "TTO": {
+    "name": "Trinidad and Tobago",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "TT",
+    "iso3": "TTO"
+  },
+  "TCA": {
+    "name": "Turks and Caicos Islands",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "TC",
+    "iso3": "TCA"
+  },
+  "FSM": {
+    "name": "Micronesia, Federated States of",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "FM",
+    "iso3": "FSM"
+  },
+  "CPV": {
+    "name": "Cape Verde",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "CV",
+    "iso3": "CPV"
+  },
+  "BIH": {
+    "name": "Bosnia and Herzegovina",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "BA",
+    "iso3": "BIH"
+  },
+  "LIE": {
+    "name": "Lichenstein",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "LI",
+    "iso3": "LIE"
+  },
+  "JEY": {
+    "name": "Turkey",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "JE",
+    "iso3": "JEY"
+  }
+}

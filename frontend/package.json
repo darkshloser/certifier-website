@@ -1,5 +1,5 @@
 {
-  "name": "crowdsale-frontend",
+  "name": "certifier-frontend",
   "version": "0.1.0",
   "description": "Crowdsale Frontend",
   "scripts": {
@@ -29,7 +29,7 @@
     "mobx": "3.3.0",
     "mobx-react": "4.3.2",
     "moment": "2.18.1",
-    "onfido-sdk-ui": "1.1.0",
+    "onfido-sdk-ui": "ngotchac/onfido-sdk-ui#add-documents-options-wlib",
     "prop-types": "15.5.10",
     "qrcode.react": "0.7.1",
     "react": "15.6.1",
