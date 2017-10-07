@@ -123,20 +123,21 @@ class Store {
   }
 
   /**
-   * Iterate over all the Onfido href in the check-queue.
+   * Iterate over all the element in the queue-channel.
    *
+   * @param  {String} channel The channel to scan
    * @param  {Function} callback takes 1 argument:
    *                             - href (`String`)
    *                             will `await` for any returned `Promise`.
    *
    * @return {Promise} resolves after all hrefs have been processed
    */
-  static async scan (callback) {
+  static async scan (channel, callback) {
     let next = 0;
 
     do {
       // Get a batch of responses
-      const [cursor, hrefs] = await redis.sscan(ONFIDO_CHECKS_CHANNEL, next);
+      const [cursor, hrefs] = await redis.sscan(channel, next);
 
       next = Number(cursor);
 
@@ -150,16 +151,17 @@ class Store {
   }
 
   /**
-   * Subscribe to the Onfido check completions
+   * Subscribe to the given channel
    *
-   * @param  {Function} cb   Callback function called on new
+   * @param {String} channel The channel to subscribe to
+   * @param {Function} cb   Callback function called on new
    *                         check completion
    */
-  static async subscribe (cb) {
+  static async subscribe (channel, cb) {
     const client = redis.client.duplicate();
 
-    client.on('message', (channel, message) => {
-      if (channel !== ONFIDO_CHECKS_CHANNEL) {
+    client.on('message', (messageChannel, message) => {
+      if (messageChannel !== channel) {
         return;
       }
 
@@ -167,7 +169,7 @@ class Store {
     });
 
     client.on('error', (err) => redis.errorHandler(err));
-    client.subscribe(ONFIDO_CHECKS_CHANNEL);
+    client.subscribe(channel);
 
     // Call the callback to check all set in case certifier was down
     await cb();
@@ -198,10 +200,10 @@ class Store {
    * Add an address to the Redis Refund Set and publish
    * a `new` event
    *
-   * @param {String} who
+   * @param {Object} refund - Includes `who` and `origin`
    */
-  static async addRefund (who) {
-    await redis.sadd(FEE_REFUND_CHANNEL, who);
+  static async addRefund ({ who, origin }) {
+    await redis.sadd(FEE_REFUND_CHANNEL, JSON.stringify({ who, origin }));
     await redis.publish(FEE_REFUND_CHANNEL, 'new');
   }
 
@@ -209,21 +211,24 @@ class Store {
    * Check if the given address is in the process
    * of a refund
    *
-   * @param {String} who
+   * @param {Object} refund - Includes `who` and `origin`
    * @returns {Boolean}
    */
-  static async isRefunding (who) {
-    return redis.sismember(FEE_REFUND_CHANNEL, who);
+  static async isRefunding ({ who, origin }) {
+    return redis.sismember(FEE_REFUND_CHANNEL, JSON.stringify({ who, origin }));
   }
 
   /**
    * Removes an address from the Redis Refund Set.
    *
-   * @param {String} who
+   * @param {Object} refund - Includes `who` and `origin`
    */
-  static async removeRefund (who) {
-    await redis.srem(FEE_REFUND_CHANNEL, who);
+  static async removeRefund ({ who, origin }) {
+    await redis.srem(FEE_REFUND_CHANNEL, JSON.stringify({ who, origin }));
   }
 }
+
+Store.ONFIDO_CHECKS_CHANNEL = ONFIDO_CHECKS_CHANNEL;
+Store.FEE_REFUND_CHANNEL = FEE_REFUND_CHANNEL;
 
 module.exports = Store;

@@ -3,8 +3,15 @@
 
 'use strict';
 
+const config = require('config');
+const EthereumTx = require('ethereumjs-tx');
+
+const account = require('./account');
 const { FeeRegistrar, OldFeeRegistrar } = require('../abis');
 const Contract = require('../api/contract');
+const { int2hex } = require('../utils');
+
+const gasPrice = config.get('gasPrice');
 
 class Fee extends Contract {
   /**
@@ -81,6 +88,46 @@ class Fee extends Contract {
       paymentCount: oldPaymentCount,
       paymentOrigins: oldPaymentOrigins
     };
+  }
+
+  /**
+   * Refund a payment using a trusted account
+   *
+   * @param {String} who - address to refund, `0x` prefixed
+   * @param {String} origin of the payment, `0x` prefixed
+   *
+   * @return {Promise<String>} promise of a TX hash
+   */
+  async refund ({ who, origin }) {
+    const { connector } = this;
+    const fee = await this.fee();
+
+    const data = this.methods.revoke(who, origin).data;
+    const options = {
+      from: account.address,
+      to: this.address,
+      value: int2hex(fee),
+      gasPrice,
+      data
+    };
+
+    const gasLimit = await connector.estimateGas(options);
+    const nonce = await connector.nextNonce(options.from);
+
+    options.gasLimit = gasLimit;
+    options.nonce = nonce;
+
+    const tx = new EthereumTx(options);
+
+    tx.sign(account.privateKey);
+
+    const serializedTx = `0x${tx.serialize().toString('hex')}`;
+
+    const txHash = await connector.sendTx(serializedTx);
+
+    console.log(`sent refund tx for ${who} : ${txHash} `);
+
+    return txHash;
   }
 }
 

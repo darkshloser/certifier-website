@@ -30,7 +30,7 @@ class AccountCertifier {
 
   async init () {
     try {
-      await store.subscribe(async () => this.verifyOnfidos());
+      await store.subscribe(store.ONFIDO_CHECKS_CHANNEL, async () => this.verifyOnfidos());
       console.warn('\n> Started account certifier!\n');
     } catch (error) {
       console.error(error);
@@ -44,7 +44,7 @@ class AccountCertifier {
 
     this._verifyLock = true;
 
-    await store.scan(async (href) => this.verifyOnfido(href));
+    await store.scan(store.ONFIDO_CHECKS_CHANNEL, async (href) => this.verifyOnfido(href));
 
     this._verifyLock = false;
   }

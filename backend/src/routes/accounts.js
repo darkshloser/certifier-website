@@ -102,10 +102,6 @@ function get ({ connector, certifier, feeRegistrar }) {
       return errorHandler(ctx, 400, 'Missing signature');
     }
 
-    if (await store.isRefunding(address)) {
-      return errorHandler(ctx, 400, 'Already refunding this address. Please be patient.');
-    }
-
     const identity = new Identity(address);
     const checkCount = await identity.checks.count();
     const { paymentCount, paymentOrigins } = await feeRegistrar.paymentStatus(address, { fallback: false });
@@ -127,7 +123,13 @@ function get ({ connector, certifier, feeRegistrar }) {
       return errorHandler(ctx, 400, 'Payer not found in payment origins.');
     }
 
-    await store.addRefund(address);
+    const refund = { who: address, origin: signAddress };
+
+    if (await store.isRefunding(refund)) {
+      return errorHandler(ctx, 400, 'Already refunding this address. Please be patient.');
+    }
+
+    await store.addRefund(refund);
     ctx.body = { result: 'pending' };
   });
 
