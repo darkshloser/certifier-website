@@ -10,6 +10,7 @@ const ONFIDO_CHECKS_CHANNEL = 'picops::onfido-checks-channel';
 const FEE_REFUND_CHANNEL = 'picops::refund-channel';
 
 const REDIS_APPLICANTS_KEY = 'picops::applicants';
+const REDIS_FEE_REFUND_KEY = 'picops::refunds';
 const REDIS_LOCKS_KEY = 'picops::locker';
 const REDIS_USED_DOCUMENTS_KEY = 'picops::used-documents';
 
@@ -216,6 +217,36 @@ class Store {
    */
   static async isRefunding ({ who, origin }) {
     return redis.sismember(FEE_REFUND_CHANNEL, JSON.stringify({ who, origin }));
+  }
+
+  /**
+   * Get the status of a refund
+   *
+   * @param {Object} refund - Includes `who` and `origin`
+   * @return {Object|null}  - The set data of the refund, or null
+   */
+  static async getRefundData ({ who, origin }) {
+    const key = JSON.stringify({ who, origin });
+
+    const result = await redis.get(`${REDIS_FEE_REFUND_KEY}::${key}`);
+
+    return result
+      ? JSON.parse(result)
+      : null;
+  }
+
+  /**
+   * Set the status of a refund.
+   * Expires after 30 minutes
+   *
+   * @param {Object} refund - Includes `who` and `origin`
+   * @param {Object} data   - The data to store
+   */
+  static async setRefundData ({ who, origin }, data) {
+    const key = JSON.stringify({ who, origin });
+
+    // Expires after 30 minutes
+    await redis.psetex(`${REDIS_FEE_REFUND_KEY}::${key}`, 1000 * 60 * 30, JSON.stringify(data));
   }
 
   /**

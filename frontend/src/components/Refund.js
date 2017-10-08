@@ -4,28 +4,23 @@ import { Button, Header } from 'semantic-ui-react';
 
 import backend from '../backend';
 import { isValidAddress } from '../utils';
+import appStore from '../stores/app.store';
 import feeStore from '../stores/fee.store';
 
 import AppContainer from './AppContainer';
 import AddressInput from './AddressInput';
 
-const preStyle = {
-  fontSize: '0.75em',
-  maxWidth: '100%',
-  whiteSpace: 'pre-line',
-  backgroundColor: '#eee',
-  border: '1px solid black',
-  lineHeight: '1.5em',
-  padding: '0.5em 1em',
-  wordWrap: 'break-word'
-};
-
 export default class Refund extends Component {
   state = {
     address: '',
     loaded: false,
-    loading: false
+    loading: false,
+    transaction: null
   };
+
+  componentWillUnmount () {
+    clearInterval(this.intervalId);
+  }
 
   render () {
     const { address } = this.state;
@@ -139,7 +134,7 @@ export default class Refund extends Component {
       );
     }
 
-    const { loading } = this.state;
+    const { loading, transaction } = this.state;
 
     return (
       <div style={contentStyle}>
@@ -147,9 +142,19 @@ export default class Refund extends Component {
           It seems that you are eligible for a refund, congratulations!
         </div>
         <div style={{ margin: '1.5em 0' }}>
-          <Button primary size='big' onClick={this.handleGetRefund} loading={loading}>
-            Get a refund
-          </Button>
+          {
+            transaction
+              ? (
+                <Button primary basic as='a' href={`https://etherscan.io/tx/${transaction}`}>
+                  View transaction on Etherscan
+                </Button>
+              )
+              : (
+                <Button primary size='big' onClick={this.handleGetRefund} loading={loading}>
+                  Get a refund
+                </Button>
+              )
+          }
         </div>
       </div>
     );
@@ -220,6 +225,27 @@ export default class Refund extends Component {
 
     this.setState({ loading: true });
 
-    await backend.getRefund({ message, signature, address });
+    try {
+      await backend.getRefund({ message, signature, address });
+    } catch (error) {
+      appStore.addError(error);
+    }
+
+    this.pollRefundStatus();
   };
+
+  pollRefundStatus () {
+    const { address, storedAddress } = this.state;
+
+    this.intervalId = setInterval(async () => {
+      const { status, transaction } = await backend.getRefundStatus({ who: address, origin: storedAddress });
+
+      if (status !== 'sent') {
+        return;
+      }
+
+      this.setState({ loading: false, transaction });
+      clearInterval(this.intervalId);
+    }, 2000);
+  }
 }

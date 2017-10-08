@@ -56,8 +56,8 @@ class Refunder {
     try {
       const txHash = await this._feeRegistrar.refund({ who, origin });
 
-      store.removeRefund({ who, origin });
-      console.warn('TODO: store tx hash', txHash);
+      await store.removeRefund({ who, origin });
+      await store.setRefundData({ who, origin }, { status: 'sent', transaction: txHash });
     } catch (error) {
       console.error(error);
     }

@@ -30,9 +30,15 @@ class Backend {
   }
 
   async getRefund ({ address, message, signature }) {
-    const { result } = await post(this.url(`/accounts/${address}/refund`), { message, signature });
+    const { status } = await post(this.url(`/accounts/${address}/refund`), { message, signature });
 
-    return result;
+    return status;
+  }
+
+  async getRefundStatus ({ who, origin }) {
+    const { status, transaction } = await get(this.url(`/accounts/${who}/refund/${origin}`));
+
+    return { status, transaction };
   }
 
   async getAccountFeeInfo (address) {

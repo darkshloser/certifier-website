@@ -83,8 +83,35 @@ function get ({ connector, certifier, feeRegistrar }) {
     ctx.body = { nonce };
   });
 
+  router.get('/:address/refund/:origin', async (ctx, next) => {
+    const { address, origin } = ctx.params;
+
+    if (!address || !isValidAddress(address)) {
+      return errorHandler(ctx, 400, 'Missing address');
+    }
+
+    if (!origin || !isValidAddress(origin)) {
+      return errorHandler(ctx, 400, 'Missing origin');
+    }
+
+    await rateLimiter(address, ctx.remoteAddress);
+
+    const lcWho = address.toLowerCase();
+    const lcOrigin = origin.toLowerCase();
+
+    const data = await store.getRefundData({ who: lcWho, origin: lcOrigin });
+
+    if (!data) {
+      ctx.body = { status: 'unkown' };
+      return;
+    }
+
+    ctx.body = data;
+  });
+
   router.post('/:address/refund', async (ctx, next) => {
-    const { address } = ctx.params;
+    const { address: _address } = ctx.params;
+    const address = _address.toLowerCase();
 
     if (!address || !isValidAddress(address)) {
       return errorHandler(ctx, 400, 'Missing address');
@@ -104,7 +131,8 @@ function get ({ connector, certifier, feeRegistrar }) {
 
     const identity = new Identity(address);
     const checkCount = await identity.checks.count();
-    const { paymentCount, paymentOrigins } = await feeRegistrar.paymentStatus(address, { fallback: false });
+    const { paymentCount, paymentOrigins: _pOrigins } = await feeRegistrar.paymentStatus(address, { fallback: false });
+    const paymentOrigins = _pOrigins.map((a) => a.toLowerCase());
 
     if (paymentCount === 0) {
       return errorHandler(ctx, 400, 'No payment have been recorded for this address');
@@ -117,7 +145,7 @@ function get ({ connector, certifier, feeRegistrar }) {
     const msgHash = EthJS.hashPersonalMessage(EthJS.toBuffer(message));
     const { v, r, s } = EthJS.fromRpcSig(signature);
     const signPubKey = EthJS.ecrecover(msgHash, v, r, s);
-    const signAddress = buf2add(EthJS.pubToAddress(signPubKey));
+    const signAddress = buf2add(EthJS.pubToAddress(signPubKey)).toLowerCase();
 
     if (!signAddress || !paymentOrigins.includes(signAddress)) {
       return errorHandler(ctx, 400, 'Payer not found in payment origins.');
@@ -129,8 +157,21 @@ function get ({ connector, certifier, feeRegistrar }) {
       return errorHandler(ctx, 400, 'Already refunding this address. Please be patient.');
     }
 
+    const refundData = await store.getRefundData(refund);
+
+    // If transaction has been sent for the same refund, check if it has been mined
+    if (refundData && refundData.transaction) {
+      const { transaction } = refundData;
+      const txReceipt = await connector.getTx(transaction);
+
+      if (!txReceipt.blockNumber) {
+        return errorHandler(ctx, 400, 'Already refunding this address. Please be patient.');
+      }
+    }
+
+    await store.setRefundData(refund, { status: 'created' });
     await store.addRefund(refund);
-    ctx.body = { result: 'pending' };
+    ctx.body = { status: 'created' };
   });
 
   return router;
