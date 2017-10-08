@@ -12,8 +12,11 @@ const config = require('config');
 
 const { CachingTransport } = require('../api/transport');
 const Certifier = require('../contracts/certifier');
+const Identity = require('../identity');
 const Fee = require('../contracts/fee');
 const ParityConnector = require('../api/parity');
+
+const onfidoMaxChecks = config.get('onfido.maxChecks');
 
 main()
   .then(() => {
@@ -27,23 +30,31 @@ main()
 async function main () {
   const transport = new CachingTransport(config.get('nodeWs'));
   const connector = new ParityConnector(transport);
-  const feeRegistrar = new Fee(connector, config.get('feeContract'));
+  const feeRegistrar = new Fee(connector, config.get('feeContract'), config.get('oldFeeContract'));
 
   const certifier = new Certifier(connector, config.get('certifierContract'));
 
-  const payments = await feeRegistrar.events.Paid().get();
-  const payers = uniq(payments.map((log) => log.params.who));
-  const uncertifiedPayers = [];
+  await fetch(feeRegistrar._oldContract);
 
-  for (const payer of payers) {
-    const certified = await certifier.isCertified(payer);
+  async function fetch (feeContractInstance) {
+    const payments = await feeContractInstance.events.Paid().get();
+    const payers = uniq(payments.map((log) => log.params.who));
+    const uncertifiedPayers = [];
 
-    if (!certified) {
-      uncertifiedPayers.push(payer);
+    for (const payer of payers) {
+      const identity = new Identity(payer);
+      const checks = await identity.checks.count();
+      const certified = await certifier.isCertified(payer);
+      const [ , paymentCount ] = await feeContractInstance.methods.payer(payer).get();
+      const mustPay = paymentCount * onfidoMaxChecks <= checks;
+
+      if (!certified && !mustPay) {
+        uncertifiedPayers.push(payer);
+      }
     }
-  }
 
-  console.warn(`> received ${payments.length} payements`);
-  console.warn(`> by ${payers.length} unique addresses`);
-  console.warn(`> of which ${uncertifiedPayers.length} have not been certified yet`);
+    console.warn(`> received ${payments.length} payements`);
+    console.warn(`> by ${payers.length} unique addresses`);
+    console.warn(`> of which ${uncertifiedPayers.length} have not been certified yet`);
+  }
 }
