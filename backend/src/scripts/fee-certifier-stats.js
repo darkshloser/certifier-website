@@ -48,7 +48,7 @@ async function main () {
       const identity = new Identity(payer);
       const checks = await identity.checks.count();
       const certified = await certifier.isCertified(payer);
-      const [ , paymentCount ] = await feeContractInstance.methods.payer(payer).get();
+      const [ paymentCount ] = await feeContractInstance.methods.payer(payer).get();
       const mustPay = paymentCount * onfidoMaxChecks <= checks;
 
       if (!certified && !mustPay) {
