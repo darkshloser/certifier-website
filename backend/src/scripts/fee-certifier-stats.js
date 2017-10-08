@@ -63,7 +63,11 @@ async function main () {
         continue;
       }
 
-      const { status } = await identity.getData();
+      const { status, reason } = await identity.getData();
+
+      if (reason === 'blocked-country' || reason === 'used-document') {
+        continue;
+      }
 
       uncertifiedPayers.push({
         who: payer,
