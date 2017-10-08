@@ -37,7 +37,10 @@ async function main () {
   await fetch(feeRegistrar._oldContract);
 
   async function fetch (feeContractInstance) {
-    const payments = await feeContractInstance.events.Paid().get();
+    const payments = await feeContractInstance.events.Paid().get({
+      fromBlock: '4000000'
+    });
+
     const payers = uniq(payments.map((log) => log.params.who));
     const uncertifiedPayers = [];
 
