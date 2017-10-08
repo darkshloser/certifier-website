@@ -38,7 +38,7 @@ async function main () {
 
   async function fetch (feeContractInstance) {
     const payments = await feeContractInstance.events.Paid().get({
-      fromBlock: '4000000'
+      fromBlock: '4294787'
     });
 
     const payers = uniq(payments.map((log) => log.params.who));
