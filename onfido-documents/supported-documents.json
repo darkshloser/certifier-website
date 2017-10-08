@@ -1276,8 +1276,20 @@
     "iso2": "SY",
     "iso3": "SYR"
   },
-  "TWN": {
+  "IRN": {
     "name": "Iran",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "IR",
+    "iso3": "IRN"
+  },
+  "TWN": {
+    "name": "Taiwan",
     "documents": [
       {
         "value": "passport",
