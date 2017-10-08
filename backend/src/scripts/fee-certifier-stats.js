@@ -52,7 +52,11 @@ async function main () {
       const mustPay = paymentCount * onfidoMaxChecks <= checks;
 
       if (!certified && !mustPay) {
-        uncertifiedPayers.push(payer);
+        uncertifiedPayers.push({
+          who: payer,
+          checks,
+          payments: paymentCount
+        });
       }
     }
 
