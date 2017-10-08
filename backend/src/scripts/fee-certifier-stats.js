@@ -59,5 +59,6 @@ async function main () {
     console.warn(`> received ${payments.length} payements`);
     console.warn(`> by ${payers.length} unique addresses`);
     console.warn(`> of which ${uncertifiedPayers.length} have not been certified yet`);
+    console.warn(JSON.stringify(uncertifiedPayers.slice(0, 10), null, 2));
   }
 }
