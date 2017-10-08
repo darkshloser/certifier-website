@@ -46,10 +46,10 @@ async function main () {
 
     for (const payer of payers) {
       const identity = new Identity(payer);
-      const checks = await identity.checks.count();
+      const checks = await identity.checks.getAll();
       const certified = await certifier.isCertified(payer);
       const [ paymentCount ] = await feeContractInstance.methods.payer(payer).get();
-      const mustPay = paymentCount * onfidoMaxChecks <= checks;
+      const mustPay = paymentCount * onfidoMaxChecks <= checks.length;
 
       if (!certified && !mustPay) {
         uncertifiedPayers.push({
