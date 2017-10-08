@@ -49,7 +49,7 @@ async function main () {
     .use(cors())
     .use(etag());
 
-  Routes(app, { connector, certifier, feeRegistrar });
+  await Routes(app, { connector, certifier, feeRegistrar });
 
   app.listen(port, hostname);
 }

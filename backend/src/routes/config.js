@@ -6,16 +6,18 @@
 const Router = require('koa-router');
 const config = require('config');
 
-function get () {
+async function get ({ connector, certifier, feeRegistrar }) {
   const router = new Router({
     prefix: '/api'
   });
 
-  router.get('/config', async (ctx, next) => {
-    const gasPrice = config.get('gasPrice');
+  const chainId = await connector.netVersion();
+  const gasPrice = config.get('gasPrice');
 
+  router.get('/config', async (ctx, next) => {
     ctx.body = {
-      gasPrice
+      gasPrice,
+      chainId
     };
   });
 

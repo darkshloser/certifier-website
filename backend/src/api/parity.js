@@ -72,6 +72,17 @@ class ParityConnector extends EventEmitter {
   }
 
   /**
+   * Get chain id / network version
+   *
+   * @return {Promise<String>} The chain id
+   */
+  netVersion () {
+    return this
+      ._transport
+      .request('net_version');
+  }
+
+  /**
    * Send a signed TX to the Parity node
    *
    * @param  {String} tx `0x` prefixed hex data

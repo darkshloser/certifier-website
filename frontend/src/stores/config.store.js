@@ -14,9 +14,11 @@ class Config {
       return;
     }
 
-    const { gasPrice } = await backend.config();
+    const conf = await backend.config();
 
-    this.gasPrice = gasPrice;
+    Object.keys(conf).forEach((key) => {
+      this[key] = conf[key];
+    });
 
     this.loaded = true;
   }

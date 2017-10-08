@@ -12,9 +12,10 @@ class Backend {
   }
 
   async config () {
-    const { gasPrice } = await get(this.url('/config'));
+    const { chainId, gasPrice } = await get(this.url('/config'));
 
     return {
+      chainId: parseInt(chainId),
       gasPrice: new BigNumber(gasPrice)
     };
   }
