@@ -37,27 +37,40 @@ async function main () {
   await fetch(feeRegistrar._oldContract);
 
   async function fetch (feeContractInstance) {
+    process.stderr.write('\n> fetching logs...  ');
+
     const payments = await feeContractInstance.events.Paid().get({
       fromBlock: '4294787'
     });
+
+    process.stderr.write('done!\n\n');
 
     const payers = uniq(payments.map((log) => log.params.who));
     const uncertifiedPayers = [];
 
     for (const payer of payers) {
-      const identity = new Identity(payer);
-      const checks = await identity.checks.getAll();
       const certified = await certifier.isCertified(payer);
-      const [ paymentCount ] = await feeContractInstance.methods.payer(payer).get();
-      const mustPay = paymentCount * onfidoMaxChecks <= checks.length;
 
-      if (!certified && !mustPay) {
-        uncertifiedPayers.push({
-          who: payer,
-          checks,
-          payments: paymentCount
-        });
+      if (certified) {
+        continue;
       }
+
+      const identity = new Identity(payer);
+      const checks = await identity.checks.count();
+      const [ paymentCount ] = await feeContractInstance.methods.payer(payer).get();
+
+      if (paymentCount * onfidoMaxChecks <= checks) {
+        continue;
+      }
+
+      const { status } = await identity.getData();
+
+      uncertifiedPayers.push({
+        who: payer,
+        checks,
+        payments: paymentCount,
+        status
+      });
     }
 
     console.warn(`> received ${payments.length} payements`);
