@@ -42,8 +42,8 @@ export default class ParityCertifier extends Component {
               Separate images for back and front of the document if applicable.
             </strong></p>
             <p><strong>
-              If you can't provide scans of your document and wish for your fee to be refunded,
-              please contact us at <a href='mailto:picops@parity.io'>picops@parity.io</a>.
+              If you have paid the fee and have not initiated the KYC process you may be eligible
+              for a refund. Please email us at <a href='mailto:picops@parity.io'>picops@parity.io</a>.
             </strong></p>
           </div>
         )}
