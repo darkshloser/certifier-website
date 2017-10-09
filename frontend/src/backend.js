@@ -95,12 +95,6 @@ class Backend {
 
     return { hash };
   }
-
-  async sendTx (tx) {
-    const { hash, requiredEth } = await post(this.url('/tx'), { tx });
-
-    return { hash, requiredEth };
-  }
 }
 
 const { protocol, hostname, port } = window.location;

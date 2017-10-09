@@ -1,13 +1,13 @@
 import BigNumber from 'bignumber.js';
-import EthereumTx from 'ethereumjs-tx';
 import React, { Component } from 'react';
 import { Button, Header, Loader } from 'semantic-ui-react';
 
 import backend from '../backend';
 import config from '../stores/config.store';
-import { fromWei, int2hex, isValidAddress } from '../utils';
+import { fromWei, isValidAddress } from '../utils';
 import appStore from '../stores/app.store';
 import feeStore from '../stores/fee.store';
+import Transaction from '../stores/transaction';
 
 import AppContainer from './AppContainer';
 import AddressInput from './AddressInput';
@@ -140,25 +140,12 @@ export default class Transfer extends Component {
         throw new Error(`Not enough funds to send a transaction, missing ${fromWei(totalGas.sub(balance))} ETH...`);
       }
 
-      const privateKey = Buffer.from(storedSecret.slice(2), 'hex');
-      const nonce = await backend.nonce(storedAddress);
-
-      const txParams = {
-        nonce: int2hex(nonce),
-        gasPrice: int2hex(gasPrice),
-        gasLimit: int2hex(GAS_LIMIT),
+      const transaction = new Transaction(storedSecret);
+      const { hash } = await transaction.send({
+        gasLimit: GAS_LIMIT,
         to: address,
-        value: int2hex(balance.sub(totalGas)),
-        chainId: config.get('chainId')
-      };
-
-      const tx = new EthereumTx(txParams);
-
-      tx.sign(privateKey);
-
-      const serializedTx = tx.serialize();
-      const signedTx = '0x' + serializedTx.toString('hex');
-      const { hash } = await backend.sendFeeTx(signedTx);
+        value: balance.sub(totalGas)
+      });
 
       console.warn('sent tx', hash);
       this.setState({ sending: false, transaction: hash });
