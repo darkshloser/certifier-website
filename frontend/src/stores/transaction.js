@@ -1,6 +1,7 @@
 import EthereumTx from 'ethereumjs-tx';
 import { privateToAddress } from 'ethereumjs-util';
 
+import backend from '../backend';
 import config from './config.store';
 import { int2hex, isValidAddress } from '../utils';
 
@@ -18,7 +19,7 @@ class Transaction {
   }
 
   async send ({ gasLimit, to, value, data }) {
-    const nonce = await this.nonce(this.sender);
+    const nonce = await backend.nonce(this.sender);
 
     const gasPrice = config.get('gasPrice');
     const chainId = config.get('chainId');
@@ -39,7 +40,7 @@ class Transaction {
     tx.sign(this.privateKey);
 
     const sigserializedTxnedTx = '0x' + tx.serialize().toString('hex');
-    const { hash } = await this.sendFeeTx(sigserializedTxnedTx);
+    const { hash } = await backend.sendTx(sigserializedTxnedTx);
 
     return { hash };
   }

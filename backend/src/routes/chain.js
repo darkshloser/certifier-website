@@ -35,7 +35,7 @@ function get ({ connector, certifier, feeRegistrar }) {
     ctx.body = { certifier: address };
   });
 
-  router.post('/fee-tx', async (ctx, next) => {
+  router.post('/tx', async (ctx, next) => {
     const { tx } = ctx.request.body;
 
     const txBuf = Buffer.from(tx.substring(2), 'hex');

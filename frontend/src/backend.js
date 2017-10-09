@@ -90,8 +90,8 @@ class Backend {
     return nonce;
   }
 
-  async sendFeeTx (tx) {
-    const { hash } = await post(this.url('/fee-tx'), { tx });
+  async sendTx (tx) {
+    const { hash } = await post(this.url('/tx'), { tx });
 
     return { hash };
   }
