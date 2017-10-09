@@ -35,6 +35,7 @@ class Transaction {
       to
     };
 
+    console.warn('sending tx', txParams);
     const tx = new EthereumTx(txParams);
 
     tx.sign(this.privateKey);

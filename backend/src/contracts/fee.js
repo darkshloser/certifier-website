@@ -3,6 +3,7 @@
 
 'use strict';
 
+const BigNumber = require('bignumber.js');
 const config = require('config');
 const EthereumTx = require('ethereumjs-tx');
 
@@ -13,18 +14,25 @@ const { int2hex } = require('../utils');
 
 const gasPrice = config.get('gasPrice');
 
+const contractAddress = config.get('feeContract');
+const fallbackContracts = config.get('fallbackFeeContracts');
+
 class Fee extends Contract {
   /**
    * Abstraction over the fee registrar contract
    *
    * @param {Object} connector    A ParityConnector
-   * @param {String} address      `0x` prefixed
-   * @param {String} oldAddress   `0x` prefixed address of the old contract
    */
-  constructor (connector, address, oldAddress) {
-    super(connector, address, FeeRegistrar);
+  constructor (connector) {
+    super(connector, contractAddress, FeeRegistrar);
 
-    this._oldContract = new Contract(connector, oldAddress, OldFeeRegistrar);
+    this._fallbacks = fallbackContracts.map((contract) => {
+      const abi = contract.version === 1
+        ? FeeRegistrar
+        : OldFeeRegistrar;
+
+      return new Contract(connector, contract.address, abi);
+    });
   }
 
   /**
@@ -42,10 +50,16 @@ class Fee extends Contract {
       return true;
     }
 
-    // Otherwise fallback to the old contract
-    const [ oldHasPaid ] = await this._oldContract.methods.paid(address).get();
+    // Otherwise fallback
+    for (const fallback of this._fallbacks) {
+      const [ fallbackHasPaid ] = await fallback.methods.paid(address).get();
 
-    return oldHasPaid;
+      if (fallbackHasPaid) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -81,12 +95,21 @@ class Fee extends Contract {
       };
     }
 
-    // Otherwise fallback to the old contract
-    const [ oldPaymentCount, oldPaymentOrigins ] = await this._oldContract.methods.payer(address).get();
+    // Otherwise fallback
+    for (const fallback of this._fallbacks) {
+      const [ fallbackPaymentCount, fallbackPaymentOrigins ] = await fallback.methods.payer(address).get();
+
+      if (fallbackPaymentCount.gt(0)) {
+        return {
+          paymentCount: fallbackPaymentCount,
+          paymentOrigins: fallbackPaymentOrigins
+        };
+      }
+    }
 
     return {
-      paymentCount: oldPaymentCount,
-      paymentOrigins: oldPaymentOrigins
+      paymentCount: new BigNumber(0),
+      paymentOrigins: []
     };
   }
 

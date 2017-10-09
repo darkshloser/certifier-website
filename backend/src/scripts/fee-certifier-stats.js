@@ -30,11 +30,11 @@ main()
 async function main () {
   const transport = new CachingTransport(config.get('nodeWs'));
   const connector = new ParityConnector(transport);
-  const feeRegistrar = new Fee(connector, config.get('feeContract'), config.get('oldFeeContract'));
+  const feeRegistrar = new Fee(connector);
 
   const certifier = new Certifier(connector, config.get('certifierContract'));
 
-  await fetch(feeRegistrar._oldContract);
+  await fetch(feeRegistrar);
 
   async function fetch (feeContractInstance) {
     process.stderr.write('\n> fetching logs...  ');

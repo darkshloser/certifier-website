@@ -188,7 +188,7 @@ contract FeeRegistrar is Delegated {
     require(found);
 
     // Refund the fee to the origin payer
-    origin.transfer(msg.value);
+    who.transfer(msg.value);
   }
 
   /// @notice Change the address of the treasury, the address to which

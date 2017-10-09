@@ -49,7 +49,7 @@ function buf2add (value) {
 }
 
 function buf2hex (buf) {
-  return `0x${buf.toString('hex')}`;
+  return `0x${buf.toString('hex') || 0}`;
 }
 
 function hex2big (hex) {

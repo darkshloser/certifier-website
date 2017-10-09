@@ -22,7 +22,7 @@ class Refunder {
     this._verifyLock = false;
     this._connector = new ParityConnector(transport);
     this._certifier = new Certifier(this._connector, config.get('certifierContract'));
-    this._feeRegistrar = new FeeRegistrar(this._connector, config.get('feeContract'), config.get('oldFeeContract'));
+    this._feeRegistrar = new FeeRegistrar(this._connector);
 
     this.init();
   }

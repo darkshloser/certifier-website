@@ -18,12 +18,12 @@ const Fee = require('./contracts/fee');
 const app = new Koa();
 const { port, hostname } = config.get('http');
 
-main();
+main().catch((error) => console.error(error));
 
 async function main () {
   const transport = new CachingTransport(config.get('nodeWs'));
   const connector = new ParityConnector(transport);
-  const feeRegistrar = new Fee(connector, config.get('feeContract'), config.get('oldFeeContract'));
+  const feeRegistrar = new Fee(connector);
 
   const certifier = new Certifier(connector, config.get('certifierContract'));
 
