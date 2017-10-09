@@ -88,6 +88,18 @@
     "iso2": "CM",
     "iso3": "CMR"
   },
+  "CPV": {
+    "name": "Cape Verde",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "CV",
+    "iso3": "CPV"
+  },
   "CAF": {
     "name": "Central African Republic",
     "documents": [
@@ -123,6 +135,18 @@
     ],
     "iso2": "KM",
     "iso3": "COM"
+  },
+  "COG": {
+    "name": "Congo",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "CG",
+    "iso3": "COG"
   },
   "COD": {
     "name": "Congo, Democratic Republic of the",
@@ -937,6 +961,18 @@
     "iso2": "ID",
     "iso3": "IDN"
   },
+  "IRN": {
+    "name": "Iran",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      }
+    ],
+    "iso2": "IR",
+    "iso3": "IRN"
+  },
   "IRQ": {
     "name": "Iraq",
     "documents": [
@@ -1276,20 +1312,8 @@
     "iso2": "SY",
     "iso3": "SYR"
   },
-  "IRN": {
-    "name": "Iran",
-    "documents": [
-      {
-        "value": "passport",
-        "label": "Passport",
-        "special": false
-      }
-    ],
-    "iso2": "IR",
-    "iso3": "IRN"
-  },
   "TWN": {
-    "name": "Taiwan",
+    "name": "Taiwan, Republic of China",
     "documents": [
       {
         "value": "passport",
@@ -1344,8 +1368,8 @@
       },
       {
         "value": "national_identity_card",
-        "label": "National Identity Card",
-        "special": false
+        "label": "National Identity card*",
+        "special": true
       },
       {
         "value": "driving_licence",
@@ -1535,6 +1559,28 @@
     ],
     "iso2": "BE",
     "iso3": "BEL"
+  },
+  "BIH": {
+    "name": "Bosnia and Herzegovina",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "BA",
+    "iso3": "BIH"
   },
   "BGR": {
     "name": "Bulgaria",
@@ -1923,6 +1969,28 @@
     ],
     "iso2": "LV",
     "iso3": "LVA"
+  },
+  "LIE": {
+    "name": "Lichenstein",
+    "documents": [
+      {
+        "value": "passport",
+        "label": "Passport",
+        "special": false
+      },
+      {
+        "value": "national_identity_card",
+        "label": "National Identity card*",
+        "special": true
+      },
+      {
+        "value": "driving_licence",
+        "label": "Driving Licence",
+        "special": false
+      }
+    ],
+    "iso2": "LI",
+    "iso3": "LIE"
   },
   "LTU": {
     "name": "Lithuania",
@@ -3496,83 +3564,5 @@
     ],
     "iso2": "FM",
     "iso3": "FSM"
-  },
-  "CPV": {
-    "name": "Cape Verde",
-    "documents": [
-      {
-        "value": "passport",
-        "label": "Passport",
-        "special": false
-      }
-    ],
-    "iso2": "CV",
-    "iso3": "CPV"
-  },
-  "BIH": {
-    "name": "Bosnia and Herzegovina",
-    "documents": [
-      {
-        "value": "passport",
-        "label": "Passport",
-        "special": false
-      },
-      {
-        "value": "national_identity_card",
-        "label": "National Identity card*",
-        "special": true
-      },
-      {
-        "value": "driving_licence",
-        "label": "Driving Licence",
-        "special": false
-      }
-    ],
-    "iso2": "BA",
-    "iso3": "BIH"
-  },
-  "LIE": {
-    "name": "Lichenstein",
-    "documents": [
-      {
-        "value": "passport",
-        "label": "Passport",
-        "special": false
-      },
-      {
-        "value": "national_identity_card",
-        "label": "National Identity card*",
-        "special": true
-      },
-      {
-        "value": "driving_licence",
-        "label": "Driving Licence",
-        "special": false
-      }
-    ],
-    "iso2": "LI",
-    "iso3": "LIE"
-  },
-  "JEY": {
-    "name": "Turkey",
-    "documents": [
-      {
-        "value": "passport",
-        "label": "Passport",
-        "special": false
-      },
-      {
-        "value": "national_identity_card",
-        "label": "National Identity card*",
-        "special": true
-      },
-      {
-        "value": "driving_licence",
-        "label": "Driving Licence",
-        "special": false
-      }
-    ],
-    "iso2": "JE",
-    "iso3": "JEY"
   }
 }

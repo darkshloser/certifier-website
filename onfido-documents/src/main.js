@@ -28,22 +28,27 @@ const onfidoDocs = [
 ];
 
 const manualMap = {
+  'Bolivia': 'BOL',
+  'Bosnia and Herzegovina': 'BIH',
   'British Virgin Islands': 'VIR',
+  'Cape Verde': 'CPV',
+  'Congo': 'COG',
   'Congo, Democratic Republic of the': 'COD',
-  'Russia': 'RUS',
-  'Congo': 'COD',
-
-  'Saint Helena': 'SHN',
+  'Georgia': 'GEO',
+  'Iran': 'IRN',
+  'Lichenstein': 'LIE',
   'Macao, Special Administrative Region of China': 'MAC',
+  'Macedonia': 'MKD',
+  'Russia': 'RUS',
+  'Saint Helena': 'SHN',
+  'Saint Vincent and Grenadines': 'VCT',
   'Syrian Arab Republic (Syria)': 'SYR',
   'Taiwan, Republic of China': 'TWN',
-  'Macedonia': 'MKD',
-  'Saint Vincent and Grenadines': 'VCT',
-  'United States of America': 'USA',
   'Timor-Leste': 'TLS',
-  'Bolivia': 'BOL',
+  'Turkey': 'TUR',
+  'United States of America': 'USA',
   'Venezuela': 'VEN',
-  'Georgia': 'GEO'
+  'Virgin Islands, US': 'VIR'
 };
 
 async function main () {
@@ -56,11 +61,6 @@ async function main () {
 
   filter((country, name) => country.name === name);
   filter((country, name) => levenshtein.get(country.name, name, { useCollator: true }) <= 1);
-  filter((country, name) => {
-    const distance = levenshtein.get(country.name, name, { useCollator: true });
-
-    return distance <= 3;
-  });
 
   if (data.length > 0) {
     console.error('Some countries have not been matched:', data.map(({ name }) => name));
@@ -85,6 +85,7 @@ async function main () {
       if (manualMap[name]) {
         const country = countryData[manualMap[name]];
 
+        console.warn(`found "${name}" instead of "${country.name}"`);
         found.push({ name, docs, country });
         return false;
       }
