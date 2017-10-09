@@ -3,7 +3,7 @@ import EthJS from 'ethereumjs-util';
 import { Button, Header } from 'semantic-ui-react';
 
 import backend from '../backend';
-import { isValidAddress } from '../utils';
+import { isValidAddress, fromWei } from '../utils';
 import appStore from '../stores/app.store';
 import feeStore from '../stores/fee.store';
 
@@ -134,12 +134,15 @@ export default class Refund extends Component {
       );
     }
 
-    const { loading, transaction } = this.state;
+    const { address, loading, transaction } = this.state;
 
     return (
       <div style={contentStyle}>
         <div>
           It seems that you are eligible for a refund, congratulations!
+        </div>
+        <div>
+          We can issue a refund of {fromWei(feeStore.fee).toFormat()} ETH to the address above.
         </div>
         <div style={{ margin: '1.5em 0' }}>
           {

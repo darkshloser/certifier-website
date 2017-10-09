@@ -4,6 +4,8 @@ import { Button, Header } from 'semantic-ui-react';
 
 import EthAccounts from '../../eth_accounts.json';
 
+import backend from '../../backend';
+import appStore from '../../stores/app.store';
 import feeStore from '../../stores/fee.store';
 import { isValidAddress } from '../../utils';
 
@@ -12,10 +14,16 @@ import AddressInput from '../AddressInput';
 
 @observer
 export default class FromPersonal extends Component {
+  state = {
+    loading: false,
+    reason: null,
+    valid: false
+  };
+
   render () {
+    const { valid, loading, reason } = this.state;
     const { payer, incomingChoices = [] } = feeStore;
     const knownAccount = EthAccounts[payer];
-    const valid = isValidAddress(payer) && !knownAccount;
 
     return (
       <div>
@@ -47,6 +55,15 @@ export default class FromPersonal extends Component {
             )
             : null
         }
+        {
+          reason
+            ? (
+              <div style={{ color: 'red' }}>
+                {reason}
+              </div>
+            )
+            : null
+        }
         <AddressInput
           onChange={this.handleWhoChange}
           onEnter={this.handleSendPayment}
@@ -58,7 +75,7 @@ export default class FromPersonal extends Component {
           <Button secondary onClick={this.handleBack}>
             Back
           </Button>
-          <Button primary disabled={!valid} onClick={this.handleSendPayment}>
+          <Button primary disabled={!valid} onClick={this.handleSendPayment} loading={loading}>
             Next
           </Button>
         </div>
@@ -122,8 +139,28 @@ export default class FromPersonal extends Component {
     feeStore.sendPayment();
   };
 
-  handleWhoChange = (_, { value }) => {
+  handleWhoChange = async (_, { value }) => {
+    this.setState({ loading: true, valid: false, reason: null });
     feeStore.setPayer(value);
+
+    try {
+      const knownAccount = EthAccounts[value];
+      const valid = isValidAddress(value) && !knownAccount;
+
+      if (valid) {
+        const { certified } = await backend.checkStatus(value);
+
+        if (certified) {
+          return this.setState({ loading: false, valid: false, reason: 'This account is already certified.' });
+        }
+
+        return this.setState({ loading: false, valid: true });
+      }
+    } catch (error) {
+      appStore.addError(error);
+    }
+
+    this.setState({ loading: false });
   };
 
   setAddressInputRef = (element) => {
