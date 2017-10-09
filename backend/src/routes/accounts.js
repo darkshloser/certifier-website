@@ -143,7 +143,7 @@ function get ({ connector, certifier, feeRegistrar }) {
 
     const identity = new Identity(address);
     const checkCount = await identity.checks.count();
-    const { paymentCount, paymentOrigins: _pOrigins } = await feeRegistrar.paymentStatus(address, { fallback: false });
+    const { paymentCount, paymentOrigins: _pOrigins } = await feeRegistrar.paymentStatus(address, { version: 1 });
     const paymentOrigins = _pOrigins.map((a) => a.toLowerCase());
 
     if (paymentCount === 0) {

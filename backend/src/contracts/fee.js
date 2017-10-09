@@ -26,12 +26,15 @@ class Fee extends Contract {
   constructor (connector) {
     super(connector, contractAddress, FeeRegistrar);
 
-    this._fallbacks = fallbackContracts.map((contract) => {
-      const abi = contract.version === 1
+    this._fallbacks = fallbackContracts.map((c) => {
+      const abi = c.version === 1
         ? FeeRegistrar
         : OldFeeRegistrar;
 
-      return new Contract(connector, contract.address, abi);
+      const contract = new Contract(connector, c.address, abi);
+
+      contract.version = c.version;
+      return contract;
     });
   }
 
@@ -77,18 +80,17 @@ class Fee extends Contract {
    * Get the payment origins (addresses) and count
    *
    * @param {String} address `0x` prefixed
-   * @param {Object} options Options Object, fallback can be
-   *                         set to `false` if we don't want to
-   *                         fallback to the old fee contract (@see refund)
+   * @param {Object} options Options Object, the abi version can
+   *                         be specified (@see refund)
    *
    * @return {Promise<Object>} contains `paymentCount` and `paymentOrigins`
    */
-  async paymentStatus (address, options = { fallback: true }) {
+  async paymentStatus (address, options = { version: null }) {
     const [ paymentCount, paymentOrigins ] = await this.methods.payer(address).get();
 
     // Return the new-contract value if any
     // or if no fallback option set
-    if (paymentCount.gt(0) || !options.fallback) {
+    if (paymentCount.gt(0)) {
       return {
         paymentCount,
         paymentOrigins
@@ -97,6 +99,10 @@ class Fee extends Contract {
 
     // Otherwise fallback
     for (const fallback of this._fallbacks) {
+      if (options.version !== null && fallback.version !== options.version) {
+        return;
+      }
+
       const [ fallbackPaymentCount, fallbackPaymentOrigins ] = await fallback.methods.payer(address).get();
 
       if (fallbackPaymentCount.gt(0)) {

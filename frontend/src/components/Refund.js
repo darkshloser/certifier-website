@@ -134,7 +134,7 @@ export default class Refund extends Component {
       );
     }
 
-    const { address, loading, transaction } = this.state;
+    const { loading, transaction } = this.state;
 
     return (
       <div style={contentStyle}>
