@@ -9,12 +9,8 @@ function errorHandler (err) {
     return console.error(err.message);
   }
 
-  if (err instanceof redis.AbortError) {
-    console.error('AbortError - the process will exit and should be restarted');
-    process.exit(1);
-  }
-
   console.error('Redis error', err);
+  process.exit(1);
 }
 
 client.on('error', (err) => errorHandler(err));
