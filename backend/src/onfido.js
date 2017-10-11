@@ -295,7 +295,8 @@ async function verifyCheck ({ applicantId, checkId }, address, check) {
   let valid = complete && documentReport && watchlistReport;
 
   if (valid) {
-    const watchlistVerification = verifyWatchlist(watchlistReport);
+    const dob = documentReport.properties.date_of_birth;
+    const watchlistVerification = verifyWatchlist(watchlistReport, dob);
 
     if (!watchlistVerification.valid) {
       result.reason = watchlistVerification.reason;
@@ -341,21 +342,35 @@ function hashDocumentNumbers (documentNumbers) {
  * Verify that the watchlist report is valid
  *
  * @param {Object} watchlistReport as sent from Onfido
+ * @param {String} dob             date of birth from the document report: YYYY-MM-DD
  *
  * @return {Object}
  */
-function verifyWatchlist (watchlistReport) {
-  const { breakdown } = watchlistReport;
+function verifyWatchlist (watchlistReport, dob) {
+  const shortDob = dob.substr(0, 4);
+  const { properties } = watchlistReport;
+  const { records = [] } = properties;
 
-  for (const category of REQUIRED_WATCHLIST_CATEGORIES) {
-    const { result } = breakdown[category];
+  const PEPS_PATTERN = /\bpeps?\b/i;
 
-    if (result !== 'clear') {
-      return { valid: false, reason: result };
+  const valid = !records.find((record) => {
+    const sources = record.sources;
+    const recordDob = record.entity_fields_dob;
+
+    // Ignore PEPs lists
+    if (!sources.split(',').find((source) => !PEPS_PATTERN.test(source))) {
+      return false;
     }
+
+    // Filter out records with different date of birth
+    return !dob || recordDob === dob || recordDob === shortDob;
+  });
+
+  if (!valid) {
+    return { valid, reason: 'blocked-watchlist' };
   }
 
-  return { valid: true };
+  return { valid };
 }
 
 /**
