@@ -24,7 +24,6 @@ export default class Faq extends Component {
         hideStepper
         footer={this.renderGoBack()}
         style={{ paddingTop: '1em' }}
-        title='FAQ'
       >
         <div>
           <Segment vertical>
