@@ -4,25 +4,13 @@
 'use strict';
 
 const config = require('config');
-const fs = require('fs');
-const path = require('path');
 const EthereumTx = require('ethereumjs-tx');
-const Wallet = require('ethereumjs-wallet');
 
+const account = require('./account');
 const { MultiCertifier } = require('../abis');
 const Contract = require('../api/contract');
 
 const gasPrice = config.get('gasPrice');
-const { filename, password } = config.get('account');
-const keyFile = fs.readFileSync(path.resolve(__dirname, `../../keys/${filename}`));
-const keyObject = JSON.parse(keyFile.toString());
-
-const wallet = Wallet.fromV3(keyObject, password);
-const account = {
-  address: '0x' + wallet.getAddress().toString('hex'),
-  publicKey: wallet.getPublicKey(),
-  privateKey: wallet.getPrivateKey()
-};
 
 class Certifier extends Contract {
   /**

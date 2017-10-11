@@ -12,7 +12,7 @@ const Identity = require('../identity');
 const Onfido = require('../onfido');
 const store = require('../store');
 const { error: errorHandler, rateLimiter } = require('./utils');
-const { buf2add } = require('../utils');
+const { buf2add, isValidAddress } = require('../utils');
 
 const onfidoMaxChecks = config.get('onfido.maxChecks');
 
@@ -60,6 +60,10 @@ function get ({ certifier, feeRegistrar }) {
   router.get('/:address', async (ctx, next) => {
     const { address } = ctx.params;
 
+    if (!isValidAddress(address)) {
+      return errorHandler(ctx, 400, 'Invalid address');
+    }
+
     await rateLimiter(address, ctx.remoteAddress);
 
     const identity = new Identity(address);
@@ -74,6 +78,10 @@ function get ({ certifier, feeRegistrar }) {
 
   router.post('/:address/applicant', async (ctx, next) => {
     const { address } = ctx.params;
+
+    if (!isValidAddress(address)) {
+      return errorHandler(ctx, 400, 'Invalid address');
+    }
 
     await rateLimiter(address, ctx.remoteAddress);
 
@@ -146,6 +154,10 @@ function get ({ certifier, feeRegistrar }) {
   router.post('/:address/check', async (ctx, next) => {
     const { address } = ctx.params;
     const { sdkToken } = ctx.request.body;
+
+    if (!isValidAddress(address)) {
+      return errorHandler(ctx, 400, 'Invalid address');
+    }
 
     await rateLimiter(address, ctx.remoteAddress);
 

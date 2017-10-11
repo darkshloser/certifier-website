@@ -14,6 +14,7 @@ import Fee from './Fee';
 import Messages from './Messages';
 import Refund from './Refund';
 import Terms from './Terms';
+import Transfer from './Transfer';
 
 import appStore, { STEPS } from '../stores/app.store';
 import feeStore from '../stores/fee.store';
@@ -30,6 +31,7 @@ export default class App extends Component {
           <Route path='/tc' component={Terms} />
           <Route path='/check' component={Check} />
           <Route path='/refund' component={Refund} />
+          <Route path='/transfer' component={Transfer} />
           <Route path='/check-refund' component={CheckRefund} />
           <Messages />
         </div>

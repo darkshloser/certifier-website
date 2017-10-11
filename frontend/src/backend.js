@@ -12,9 +12,10 @@ class Backend {
   }
 
   async config () {
-    const { gasPrice } = await get(this.url('/config'));
+    const { chainId, gasPrice } = await get(this.url('/config'));
 
     return {
+      chainId: parseInt(chainId),
       gasPrice: new BigNumber(gasPrice)
     };
   }
@@ -27,6 +28,18 @@ class Backend {
     const { incomingTxs } = await get(this.url(`/accounts/${address}/incoming-txs`));
 
     return { incomingTxs };
+  }
+
+  async getRefund ({ address, message, signature }) {
+    const { status } = await post(this.url(`/accounts/${address}/refund`), { message, signature });
+
+    return status;
+  }
+
+  async getRefundStatus ({ who, origin }) {
+    const { status, transaction } = await get(this.url(`/accounts/${who}/refund/${origin}`));
+
+    return { status, transaction };
   }
 
   async getAccountFeeInfo (address) {
@@ -77,16 +90,10 @@ class Backend {
     return nonce;
   }
 
-  async sendFeeTx (tx) {
-    const { hash } = await post(this.url('/fee-tx'), { tx });
+  async sendTx (tx) {
+    const { hash } = await post(this.url('/tx'), { tx });
 
     return { hash };
-  }
-
-  async sendTx (tx) {
-    const { hash, requiredEth } = await post(this.url('/tx'), { tx });
-
-    return { hash, requiredEth };
   }
 }
 

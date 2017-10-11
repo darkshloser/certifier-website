@@ -7,6 +7,7 @@
     "start": "NODE_CONFIG_DIR=../config node src/main.js | bunyan",
     "sync": "NODE_CONFIG_DIR=../config node src/synchronizer.js | bunyan",
     "start:certifier": "NODE_CONFIG_DIR=../config node src/certifier.js | bunyan",
+    "start:refunder": "NODE_CONFIG_DIR=../config node src/refunder.js | bunyan",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --ignore-path .gitignore ./src/",
     "lint:js:cached": "eslint --cache --ignore-path .gitignore ./src/",

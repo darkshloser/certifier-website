@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js';
-import EthereumTx from 'ethereumjs-tx';
 import { action, computed, observable } from 'mobx';
 import { phraseToWallet } from '@parity/ethkey.js';
 import { randomPhrase } from '@parity/wordlist';
@@ -7,6 +6,7 @@ import store from 'store';
 
 import backend from '../backend';
 import config from './config.store';
+import Transaction from './transaction';
 import appStore, { FEE_HOLDER_LS_KEY, PAYER_LS_KEY } from './app.store';
 import blockStore from './block.store';
 import { isValidAddress } from '../utils';
@@ -162,20 +162,12 @@ class FeeStore {
         return;
       }
 
-      const nonce = await backend.nonce(wallet.address);
-      const privateKey = Buffer.from(wallet.secret.slice(2), 'hex');
-      const tx = new EthereumTx({
+      const transaction = new Transaction(wallet.secret);
+      const { hash } = await transaction.send({
         to: payer,
-        gasLimit: '0x' + gasLimit.toString(16),
-        gasPrice: '0x' + config.get('gasPrice').toString(16),
-        value: '0x' + value.toString(16),
-        nonce
+        gasLimit,
+        value
       });
-
-      tx.sign(privateKey);
-
-      const serializedTx = `0x${tx.serialize().toString('hex')}`;
-      const { hash } = await backend.sendFeeTx(serializedTx);
 
       console.warn('sent emptying account tx', hash);
     } catch (error) {
@@ -222,25 +214,15 @@ class FeeStore {
 
       this.goto('sending-payment');
 
-      const { address, secret } = this.wallet;
-      const privateKey = Buffer.from(secret.slice(2), 'hex');
+      const transaction = new Transaction(this.wallet.secret);
 
-      const nonce = await backend.nonce(address);
       const calldata = FEE_REGISTRAR_PAY_SIGNATURE + payer.slice(-40).padStart(64, 0);
-
-      const tx = new EthereumTx({
+      const { hash } = await transaction.send({
         to: this.feeRegistrar,
-        gasLimit: '0x' + FEE_REGISTRAR_GAS_LIMIT.toString(16),
-        gasPrice: '0x' + config.get('gasPrice').toString(16),
+        gasLimit: FEE_REGISTRAR_GAS_LIMIT,
         data: calldata,
-        value: '0x' + this.fee.toString(16),
-        nonce
+        value: this.fee
       });
-
-      tx.sign(privateKey);
-
-      const serializedTx = `0x${tx.serialize().toString('hex')}`;
-      const { hash } = await backend.sendFeeTx(serializedTx);
 
       console.warn('sent FeeRegistrar tx', hash);
       this.setTransaction(hash);
