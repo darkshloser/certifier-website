@@ -60,7 +60,7 @@ function get ({ certifier, feeRegistrar }) {
   router.get('/:address', async (ctx, next) => {
     const { address } = ctx.params;
 
-    if (!address || !isValidAddress(address)) {
+    if (!isValidAddress(address)) {
       return errorHandler(ctx, 400, 'Invalid address');
     }
 
@@ -79,7 +79,7 @@ function get ({ certifier, feeRegistrar }) {
   router.post('/:address/applicant', async (ctx, next) => {
     const { address } = ctx.params;
 
-    if (!address || !isValidAddress(address)) {
+    if (!isValidAddress(address)) {
       return errorHandler(ctx, 400, 'Invalid address');
     }
 
@@ -155,7 +155,7 @@ function get ({ certifier, feeRegistrar }) {
     const { address } = ctx.params;
     const { sdkToken } = ctx.request.body;
 
-    if (!address || !isValidAddress(address)) {
+    if (!isValidAddress(address)) {
       return errorHandler(ctx, 400, 'Invalid address');
     }
 

@@ -18,7 +18,10 @@ const Fee = require('./contracts/fee');
 const app = new Koa();
 const { port, hostname } = config.get('http');
 
-main().catch((error) => console.error(error));
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
 
 async function main () {
   const transport = new CachingTransport(config.get('nodeWs'));
