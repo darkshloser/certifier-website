@@ -11,6 +11,7 @@ import CheckRefund from './CheckRefund';
 import CountrySelector from './CountrySelector';
 import Details from './Details';
 import Fee from './Fee';
+import Faq from './Faq';
 import Messages from './Messages';
 import Refund from './Refund';
 import Terms from './Terms';
@@ -29,6 +30,7 @@ export default class App extends Component {
           <Route exact path='/' component={MainApp} />
           <Route path='/details' component={Details} />
           <Route path='/tc' component={Terms} />
+          <Route path='/faq' component={Faq} />
           <Route path='/check' component={Check} />
           <Route path='/refund' component={Refund} />
           <Route path='/transfer' component={Transfer} />
