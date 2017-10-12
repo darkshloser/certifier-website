@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Form, Header, Container, Segment } from 'semantic-ui-react';
 
 import certifierStore from '../../stores/certifier.store';
@@ -37,10 +38,13 @@ export default class ParityCertifier extends Component {
             <p>
               Prepare a document proving your identity (Passport, Driver's Licence or National ID).
             </p>
-            <p><strong>
-              You will have to upload scan or high quality picture of said document on the next step.
-              Separate images for back and front of the document if applicable.
-            </strong></p>
+            <p>
+              <strong>
+                You will have to upload scan or high quality picture of said document on the next step.
+                Separate images for back and front of the document if applicable.
+                Make sure to check out <Link to='/faq'>our FAQ</Link> if you have any more questions.
+              </strong>
+            </p>
             <p><strong>
               If you have paid the fee and have not initiated the KYC process you may be eligible
               for a refund. Please email us at <a href='mailto:picops@parity.io'>picops@parity.io</a>.

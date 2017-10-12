@@ -30,6 +30,7 @@ class AppStore extends EventEmitter {
   loaders = {};
   padding = true;
   showStepper = true;
+  showFinalScreen = true;
 
   skipCountrySelection = false;
   skipStart = false;
@@ -51,6 +52,9 @@ class AppStore extends EventEmitter {
     },
     'no-stepper': () => {
       this.showStepper = false;
+    },
+    'no-final-screen': () => {
+      this.showFinalScreen = false;
     },
     'terms-accepted': () => {
       this.skipTerms = true;
@@ -130,6 +134,10 @@ class AppStore extends EventEmitter {
   }
 
   async goto (name) {
+    if (!this.showFinalScreen && name === 'certified') {
+      return;
+    }
+
     if (!STEPS[name]) {
       throw new Error(`unknown step ${name}`);
     }
