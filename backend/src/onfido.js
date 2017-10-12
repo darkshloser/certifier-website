@@ -20,10 +20,7 @@ const SANDBOX_DOCUMENT_HASH = hashDocumentNumbers([{
   value: '9999999999'
 }]);
 const BLOCKED_COUNTRIES = new Set([ 'USA' ]);
-const REQUIRED_WATCHLIST_CATEGORIES = [
-  'sanction',
-  'legal_and_regulatory_warnings'
-];
+const PEPS_PATTERN = /\bpeps?\b/i;
 
 /// Get the Report Types
 // _call('/report_type_groups').then((data) => console.log(JSON.stringify(data, null, 2)));
@@ -351,8 +348,6 @@ function verifyWatchlist (watchlistReport, dob) {
   const { properties } = watchlistReport;
   const { records = [] } = properties;
 
-  const PEPS_PATTERN = /\bpeps?\b/i;
-
   const valid = !records.find((record) => {
     const sources = record.sources;
     const recordDob = record.entity_fields_dob;
@@ -363,7 +358,7 @@ function verifyWatchlist (watchlistReport, dob) {
     }
 
     // Filter out records with different date of birth
-    return !dob || recordDob === dob || recordDob === shortDob;
+    return !recordDob || recordDob === dob || recordDob === shortDob;
   });
 
   if (!valid) {
