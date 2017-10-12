@@ -20,10 +20,7 @@ const SANDBOX_DOCUMENT_HASH = hashDocumentNumbers([{
   value: '9999999999'
 }]);
 const BLOCKED_COUNTRIES = new Set([ 'USA' ]);
-const REQUIRED_WATCHLIST_CATEGORIES = [
-  'sanction',
-  'legal_and_regulatory_warnings'
-];
+const PEPS_PATTERN = /\bpeps?\b/i;
 
 /// Get the Report Types
 // _call('/report_type_groups').then((data) => console.log(JSON.stringify(data, null, 2)));
@@ -295,7 +292,8 @@ async function verifyCheck ({ applicantId, checkId }, address, check) {
   let valid = complete && documentReport && watchlistReport;
 
   if (valid) {
-    const watchlistVerification = verifyWatchlist(watchlistReport);
+    const dob = documentReport.properties.date_of_birth;
+    const watchlistVerification = verifyWatchlist(watchlistReport, dob);
 
     if (!watchlistVerification.valid) {
       result.reason = watchlistVerification.reason;
@@ -341,21 +339,33 @@ function hashDocumentNumbers (documentNumbers) {
  * Verify that the watchlist report is valid
  *
  * @param {Object} watchlistReport as sent from Onfido
+ * @param {String} dob             date of birth from the document report: YYYY-MM-DD
  *
  * @return {Object}
  */
-function verifyWatchlist (watchlistReport) {
-  const { breakdown } = watchlistReport;
+function verifyWatchlist (watchlistReport, dob) {
+  const shortDob = dob.substr(0, 4);
+  const { properties } = watchlistReport;
+  const { records = [] } = properties;
 
-  for (const category of REQUIRED_WATCHLIST_CATEGORIES) {
-    const { result } = breakdown[category];
+  const valid = !records.find((record) => {
+    const sources = record.sources;
+    const recordDob = record.entity_fields_dob;
 
-    if (result !== 'clear') {
-      return { valid: false, reason: result };
+    // Ignore PEPs lists
+    if (!sources.split(',').find((source) => !PEPS_PATTERN.test(source))) {
+      return false;
     }
+
+    // Filter out records with different date of birth
+    return !recordDob || recordDob === dob || recordDob === shortDob;
+  });
+
+  if (!valid) {
+    return { valid, reason: 'blocked-watchlist' };
   }
 
-  return { valid: true };
+  return { valid };
 }
 
 /**

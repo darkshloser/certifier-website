@@ -45,6 +45,12 @@ export const ONFIDO_REASONS = {
     retry: true
   },
 
+  // Watchlist hard-match
+  'blocked-watchlist': {
+    message: 'For legal reasons, you cannot be certified.',
+    retry: false
+  },
+
   // If the country is USA
   'blocked-country': {
     message: 'For legal reasons, you cannot be certified.',
