@@ -49,10 +49,10 @@ export default class PendingCertification extends Component {
             result is saved on the blockchain.
           </p>
 
-          <p>
-            This can take several minutes or longer depending on the
-            volume of transactions on the Ethereum network.
-          </p>
+          <p><strong>
+            This process can take up to several hours, depending on
+            the number of people trying to certify at the same time.
+          </strong></p>
         </div>
       </Step>
     );
