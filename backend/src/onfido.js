@@ -347,7 +347,10 @@ function hashFallback (properties) {
     'first_name',
     'last_name',
     'issuing_country',
-    'document_type'
+    'document_type',
+    'date_of_birth',
+    'date_of_expiry',
+    'gender'
   ]
     .map(prop => properties[prop])
     .join(',');
