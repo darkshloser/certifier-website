@@ -367,6 +367,10 @@ function hashFallback (properties) {
  * @return {Object}
  */
 function verifyWatchlist (watchlistReport, dob) {
+  if (!dob) {
+    return { valid: false, reason: 'caution' };
+  }
+
   const shortDob = dob.substr(0, 4);
   const { properties } = watchlistReport;
   const { records = [] } = properties;
