@@ -103,7 +103,7 @@ export default class FromPersonal extends Component {
 
         {addresses.map((address) => {
           const onClick = () => {
-            feeStore.setPayer(address);
+            this.handleWhoChange(null, { value: address });
 
             // Focus on the input field if possible
             setTimeout(() => {
