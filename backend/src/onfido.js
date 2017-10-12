@@ -336,6 +336,29 @@ function hashDocumentNumbers (documentNumbers) {
 }
 
 /**
+ * Fallback deterministic way to hash a document that lacks document numbers
+ *
+ * @param  {Object} properties as returned from Onfido
+ *
+ * @return {String} keccak256 hash
+ */
+function hashFallback (properties) {
+  const string = [
+    'first_name',
+    'last_name',
+    'issuing_country',
+    'document_type',
+    'date_of_birth',
+    'date_of_expiry',
+    'gender'
+  ]
+    .map(prop => properties[prop])
+    .join(',');
+
+  return keccak256(string);
+}
+
+/**
  * Verify that the watchlist report is valid
  *
  * @param {Object} watchlistReport as sent from Onfido
@@ -389,7 +412,10 @@ async function verifyDocument (documentReport) {
     return { valid: false, reason: 'blocked-country' };
   }
 
-  const hash = hashDocumentNumbers(properties['document_numbers']);
+  const documentNumbers = properties['document_numbers'];
+  const hash = documentNumbers
+    ? hashDocumentNumbers(documentNumbers)
+    : hashFallback(properties);
 
   // Allow sandbox documents to go through
   if (hash === SANDBOX_DOCUMENT_HASH) {
