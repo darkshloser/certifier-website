@@ -274,7 +274,7 @@ class AppStore extends EventEmitter {
     this.step = step;
   }
 
-  storeValidCitizenship (countryCode) {
+  @action storeValidCitizenship (countryCode) {
     store.set(CITIZENSHIP_LS_KEY, countryCode);
     this.citizenship = countryCode;
   }

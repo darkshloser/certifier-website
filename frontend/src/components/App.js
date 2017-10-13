@@ -9,6 +9,7 @@ import Certifier from './Certifier';
 import Check from './Check';
 import CheckRefund from './CheckRefund';
 import CountrySelector from './CountrySelector';
+import CountrySelectionWrapper from './CountrySelectionWrapper';
 import Details from './Details';
 import Fee from './Fee';
 import Faq from './Faq';
@@ -24,18 +25,37 @@ import { parentMessage } from '../utils';
 @observer
 export default class App extends Component {
   render () {
+    const { loading } = appStore;
+
     return (
       <Router>
         <div data-iframe-height='true'>
-          <Route exact path='/' component={MainApp} />
-          <Route path='/details' component={Details} />
-          <Route path='/tc' component={Terms} />
-          <Route path='/faq' component={Faq} />
-          <Route path='/check' component={Check} />
-          <Route path='/refund' component={Refund} />
-          <Route path='/transfer' component={Transfer} />
-          <Route path='/check-refund' component={CheckRefund} />
-          <Messages />
+          {
+            loading
+              ? (
+                <div style={{ textAlign: 'center', padding: '2em 0' }}>
+                  <Loader active inline='centered' size='huge' />
+
+                  <Header as='h2'>
+                    Loading data...
+                  </Header>
+                </div>
+              )
+              : (
+                <div>
+                  <Route exact path='/' component={MainApp} />
+                  <Route path='/details' component={Details} />
+                  <Route path='/tc' component={Terms} />
+                  <Route path='/faq' component={Faq} />
+                  <Route path='/check' component={Check} />
+                  <Route path='/refund' component={Refund} />
+                  <Route path='/transfer' component={Transfer} />
+                  <Route path='/check-refund' component={CheckRefund} />
+                  <Route path='/country-selection' component={CountrySelectionWrapper} />
+                  <Messages />
+                </div>
+              )
+          }
         </div>
       </Router>
     );
@@ -56,20 +76,8 @@ class MainApp extends Component {
   }
 
   renderContent () {
-    const { loading, step } = appStore;
+    const { step } = appStore;
     const { payer } = feeStore;
-
-    if (loading) {
-      return (
-        <div style={{ textAlign: 'center' }}>
-          <Loader active inline='centered' size='huge' />
-
-          <Header as='h2'>
-            Loading data...
-          </Header>
-        </div>
-      );
-    }
 
     if (step === STEPS['start']) {
       return this.renderStart();
