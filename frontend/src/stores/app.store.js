@@ -1,5 +1,6 @@
 import { countries } from 'country-data';
 import EventEmitter from 'eventemitter3';
+import queryString from 'query-string';
 import { iframeResizerContentWindow } from 'iframe-resizer';
 import { action, observable } from 'mobx';
 import store from 'store';
@@ -27,6 +28,7 @@ let nextErrorId = 1;
 class AppStore extends EventEmitter {
   blacklistedCountries = [];
   certifierAddress = null;
+  exludedCountries = [];
   loaders = {};
   padding = true;
   showStepper = true;
@@ -38,6 +40,9 @@ class AppStore extends EventEmitter {
   showAbi = true;
 
   queryCommands = {
+    'blacklist': (countryCodes) => {
+      this.exludedCountries = countryCodes;
+    },
     'no-padding': () => {
       this.padding = false;
       this.showAbi = false;
@@ -78,17 +83,15 @@ class AppStore extends EventEmitter {
   constructor () {
     super();
 
-    window
-      .location
-      .search
-      .substr(1) // skip '?'
-      .split('&')
-      .map((chunk) => chunk.split('='))
-      .forEach(([key, value]) => {
-        if (this.queryCommands[key]) {
-          this.queryCommands[key](value);
-        }
-      });
+    const parsed = queryString.parse(window.location.search, {
+      arrayFormat: 'bracket'
+    });
+
+    Object.keys(parsed).forEach((key) => {
+      if (this.queryCommands[key]) {
+        this.queryCommands[key](parsed[key]);
+      }
+    });
 
     const bg = this.padding
       ? '#f1f1f1'

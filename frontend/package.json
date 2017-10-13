@@ -32,6 +32,7 @@
     "onfido-sdk-ui": "ngotchac/onfido-sdk-ui#01aee251e66a67f3f1ae0671dc38cb4132bab89e",
     "prop-types": "15.5.10",
     "qrcode.react": "0.7.1",
+    "query-string": "5.0.0",
     "react": "15.6.1",
     "react-async-script": "0.9.1",
     "react-dom": "15.6.1",

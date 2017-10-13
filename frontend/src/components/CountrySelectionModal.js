@@ -15,7 +15,11 @@ import PassportBlack from '../images/PassportBlack.svg';
 // Not supporting the USA
 delete supportedCountries['USA'];
 
-export const countryOptions = Object.keys(supportedCountries)
+appStore.exludedCountries.forEach((isoCode) => {
+  delete supportedCountries[isoCode];
+});
+
+const countryOptions = Object.keys(supportedCountries)
   .map((key) => supportedCountries[key])
   .map((country) => ({
     key: country.iso3,
@@ -53,7 +57,7 @@ export default class CountrySelectionModal extends Component {
         onClose={this.handleClose}
         size='small'
         data-iframe-height='true'
-        dimmer={black ? 'default' : false}
+        dimmer={black}
       >
         <Header icon='world' content='Select your country of citizenship'
           style={{ color: black ? 'white' : 'black' }}
