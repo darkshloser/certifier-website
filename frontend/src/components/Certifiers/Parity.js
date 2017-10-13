@@ -52,19 +52,22 @@ export default class ParityCertifier extends Component {
             />
 
             <p>
-              Prepare a document proving your identity (Passport, Driver's Licence or National ID).
+              Prepare a document proving your identity (passport, driver's licence or national ID).
             </p>
+
             <p>
-              <strong>
-                You will have to upload scan or high quality picture of said document on the next step.
-                Separate images for back and front of the document if applicable.
-                Make sure to check out <Link to='/faq'>our FAQ</Link> if you have any more questions.
-              </strong>
+              Verification of a good-quality image of a passport usually takes just a few minutes.
+              <b>Verification of bad quality, non-passport documents can take many hours.
+              FOR BEST RESULTS SUBMIT HIGH-QUALITY, SHARP PHOTO OF YOUR PASSPORT.</b> You will have to
+              upload a scan or high quality picture of your document. Separate images for back and
+              front of the document may be required. Make sure to check
+              out <Link to='/faq' target='_blank'>our FAQ</Link> if you have any more questions.
             </p>
-            <p><strong>
-              If you have paid the fee and have not initiated the KYC process you may be eligible
-              for a refund. Please email us at <a href='mailto:picops@parity.io'>picops@parity.io</a>.
-            </strong></p>
+
+            <p>
+              If you have paid the fee and have not initiated the KYC process, you
+              may be eligible for a refund. You can reach us at <a href='mailto:picops@parity.io'>picops@parity.io</a>.
+            </p>
           </div>
         )}
         title='PROVIDE YOUR IDENTITY TO CERTIFY THIS ADDRESS'

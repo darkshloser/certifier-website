@@ -45,7 +45,7 @@ class AppStore extends EventEmitter {
       // Call the iframe resizer method so
       // parent embedding PICOPS can set
       // the iframe height automatically
-      return console.warn(iframeResizerContentWindow);
+      return console.warn(iframeResizerContentWindow ? 'got iframe resizer window' : '');
     },
     'extraneous': () => {
       this.showAbi = false;
