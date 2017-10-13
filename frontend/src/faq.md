@@ -4,7 +4,7 @@
 You can check the status of your certification [here](https://picops.parity.io/#/check).
 
 ### What do I have to consider when going through the KYC process?
-Please have a look at [this document](https://onfido.com/an-applicant-guide.pdf) to make sure all the information is entered correctly. Make sure you submit your surname (last name) and given names (including middle name) in the correct order. Also when you upload a valid file type such as a jpg, png or pdf, the file size must be between 32KB and 10MB.
+Make sure you submit your surname (last name) and given names (including middle name) in the correct order. Also when you upload a valid file type such as a jpg, png or pdf, the file size must be between 32KB and 10MB.
 
 **Other requirements:**
 
@@ -15,7 +15,7 @@ Please have a look at [this document](https://onfido.com/an-applicant-guide.pdf)
 + The whole document is visible – try not to cut off the corners or edges of the documents
 + Make sure the picture is in color, not black and white
 
-There is also an [Uploading Document FAQ](https://onfido.zendesk.com/hc/en-us/sections/201763639-Uploading-Documents-FAQ?mobile_site=false) and a [Personal Details FAQ](https://onfido.zendesk.com/hc/en-us/sections/201811985-Personal-Details-FAQ), you can check out.
+Also look at [Supported Documents](https://info.onfido.com/supported-documents) see which documents are accepted from your country.
 
 ### Can I certify more than one ETH address?
 No, each individual can only certify one ETH address. Every attempt to register a second ETH address will fail.
