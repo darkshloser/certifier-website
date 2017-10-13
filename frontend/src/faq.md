@@ -15,7 +15,7 @@ Make sure you submit your surname (last name) and given names (including middle 
 + The whole document is visible – try not to cut off the corners or edges of the documents
 + Make sure the picture is in color, not black and white
 
-Also look at [Supported Documents](https://info.onfido.com/supported-documents) see which documents are accepted from your country.
+Make sure you are using one of the [Supported Documents](https://info.onfido.com/supported-documents).
 
 ### Can I certify more than one ETH address?
 No, each individual can only certify one ETH address. Every attempt to register a second ETH address will fail.
