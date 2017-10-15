@@ -46,7 +46,11 @@ class AccountCertifier {
     this._checkPendingTxsLock = true;
 
     try {
-      await store.scanPendingTransactions(async ({ address, txHash, verification }) => {
+      await store.scanPendingTransactions(async (error, { address, txHash, verification }) => {
+        if (error) {
+          throw error;
+        }
+
         const receipt = await this._connector.getTxReceipt(txHash);
 
         if (!receipt || !receipt.blockHash) {
