@@ -74,13 +74,13 @@ class Store {
 
       for (let datum of values) {
         if (!datum) {
-          return console.warn('no value returned', { datum });
+          return console.warn('no value returned', JSON.stringify({ datum }));
         }
 
         const [ address, json ] = datum;
 
         if (!address || !json) {
-          return console.warn('no address or json', { address, json });
+          return console.warn('no address or json', JSON.stringify({ address, json, datum }));
         }
 
         try {
@@ -88,7 +88,7 @@ class Store {
 
           await callback(null, { address, txHash, verification });
         } catch (error) {
-          console.error('json parse error', json);
+          console.error('JSON parsing error', JSON.stringify({ address, json, datum }));
           callback(error);
         }
       }
