@@ -72,15 +72,17 @@ class Store {
 
       next = Number(cursor);
 
-      for (let datum of values) {
+      for (let index = 0; index < values.length / 2; index += 2) {
+        const datum = values.slice(index, index + 2);
+
         if (!datum) {
-          return console.warn('no value returned', JSON.stringify({ datum }));
+          return console.warn('no value returned', { datum });
         }
 
         const [ address, json ] = datum;
 
         if (!address || !json) {
-          return console.warn('no address or json', JSON.stringify({ address, json, datum }));
+          return console.warn('no address or json', { address, json, datum });
         }
 
         try {
@@ -88,7 +90,7 @@ class Store {
 
           await callback(null, { address, txHash, verification });
         } catch (error) {
-          console.error('JSON parsing error', JSON.stringify({ address, json, datum }));
+          console.warn('JSON parsing error', { address, json, datum });
           callback(error);
         }
       }
