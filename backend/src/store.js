@@ -72,12 +72,23 @@ class Store {
 
       next = Number(cursor);
 
-      for (let [ address, json ] of values) {
+      for (let datum of values) {
+        if (!datum) {
+          return console.warn('no value returned', { datum });
+        }
+
+        const [ address, json ] = datum;
+
+        if (!address || !json) {
+          return console.warn('no address or json', { address, json });
+        }
+
         try {
           const { txHash, verification } = JSON.parse(json);
 
           await callback(null, { address, txHash, verification });
         } catch (error) {
+          console.error('json parse error', json);
           callback(error);
         }
       }
