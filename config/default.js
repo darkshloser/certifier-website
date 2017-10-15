@@ -26,5 +26,6 @@ module.exports = {
     password: ''
   },
   // Gas Price of 2GWei
-  gasPrice: '0x77359400'
+  gasPrice: '0x77359400',
+  etherscan: 'https://kovan.etherscan.io'
 };

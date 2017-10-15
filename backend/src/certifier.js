@@ -59,6 +59,8 @@ class AccountCertifier {
 
         const identity = new Identity(address);
 
+        console.warn(`got a receipt for ${address} ; storing the value in Redis`);
+
         // Store the verification result
         await identity.storeVerification(verification);
         // Remove the pending transaction from Redis

@@ -72,8 +72,9 @@ function get ({ certifier, feeRegistrar }) {
     const { paymentCount } = await feeRegistrar.paymentStatus(address);
     const { result, status, reason, error } = await identity.getData();
     const certified = await certifier.isCertified(address);
+    const txHash = await store.getPendingTransaction(address);
 
-    ctx.body = { certified, status, result, reason, error, checkCount, paymentCount };
+    ctx.body = { certified, status, result, reason, error, checkCount, paymentCount, txHash };
   });
 
   router.post('/:address/applicant', async (ctx, next) => {

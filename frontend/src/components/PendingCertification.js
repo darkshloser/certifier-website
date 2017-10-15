@@ -4,6 +4,7 @@ import { Header, Loader } from 'semantic-ui-react';
 
 import AccountInfo from './AccountInfo';
 import Step from './Step';
+import ViewTransaction from './ui/ViewTransaction';
 
 import certifierStore from '../stores/certifier.store';
 import feeStore from '../stores/fee.store';
@@ -20,6 +21,7 @@ export default class PendingCertification extends Component {
 
   render () {
     const { payer } = feeStore;
+    const { transaction } = certifierStore;
 
     return (
       <Step
@@ -53,6 +55,8 @@ export default class PendingCertification extends Component {
             This process can take up to several hours, depending on
             the number of people trying to certify at the same time.
           </strong></p>
+
+          <ViewTransaction transaction={transaction} />
         </div>
       </Step>
     );

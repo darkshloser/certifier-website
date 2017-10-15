@@ -9,6 +9,7 @@ import feeStore from '../stores/fee.store';
 
 import AppContainer from './AppContainer';
 import AddressInput from './AddressInput';
+import ViewTransaction from './ui/ViewTransaction';
 
 export default class Refund extends Component {
   state = {
@@ -147,9 +148,7 @@ export default class Refund extends Component {
           {
             transaction
               ? (
-                <Button primary basic as='a' href={`https://etherscan.io/tx/${transaction}`}>
-                  View transaction on Etherscan
-                </Button>
+                <ViewTransaction transaction={transaction} />
               )
               : (
                 <Button primary size='big' onClick={this.handleGetRefund} loading={loading}>

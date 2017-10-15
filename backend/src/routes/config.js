@@ -13,9 +13,11 @@ async function get ({ connector, certifier, feeRegistrar }) {
 
   const chainId = await connector.netVersion();
   const gasPrice = config.get('gasPrice');
+  const etherscan = config.get('etherscan');
 
   router.get('/config', async (ctx, next) => {
     ctx.body = {
+      etherscan,
       gasPrice,
       chainId
     };

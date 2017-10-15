@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Button, Header, Loader } from 'semantic-ui-react';
+import { Header, Loader } from 'semantic-ui-react';
 
+import ViewTransaction from '../ui/ViewTransaction';
 import feeStore from '../../stores/fee.store';
 
 @observer
@@ -16,7 +17,6 @@ export default class SendingPayment extends Component {
 
   render () {
     const { transaction } = feeStore;
-    const etherscanUrl = 'https://etherscan.io/tx/' + transaction;
 
     return (
       <div style={{ textAlign: 'center' }}>
@@ -35,15 +35,7 @@ export default class SendingPayment extends Component {
           volume of transactions on the Ethereum network.
         </p>
 
-        {
-          transaction
-            ? (
-              <Button as='a' href={etherscanUrl} target='_blank' basic>
-                View transaction on Etherscan
-              </Button>
-            )
-            : null
-        }
+        <ViewTransaction transaction={transaction} />
       </div>
     );
   }

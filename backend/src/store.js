@@ -38,6 +38,30 @@ class Store {
   }
 
   /**
+   * Get the transaction hash of the pending transaction,
+   * if any...
+   *
+   * @param  {String} address `0x` prefixed hex address
+   * @return {String|null} The pending transaction hash, if any
+   */
+  static async getPendingTransaction (address) {
+    const json = await redis.hget(REDIS_PENDING_TXS_KEY, address);
+
+    if (!json) {
+      return null;
+    }
+
+    try {
+      const { txHash } = JSON.parse(json);
+
+      return txHash || null;
+    } catch (error) {
+      console.error('could not parse JSON: ', { json });
+      return null;
+    }
+  }
+
+  /**
    * Check if the given address has a pending transaction
    *
    * @param  {String} address `0x` prefixed hex address
