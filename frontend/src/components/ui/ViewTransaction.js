@@ -20,7 +20,7 @@ export default class ViewTransaction extends Component {
     }
 
     return (
-      <Button as='a' href={etherscanUrl} target='_blank' basic style={{ marginTop: '0.5em' }}>
+      <Button as='a' href={etherscanUrl} target='_blank' basic style={{ marginTop: '1.5em' }}>
         View transaction on Etherscan
       </Button>
     );
