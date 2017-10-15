@@ -31,7 +31,7 @@ class AccountCertifier {
   async init () {
     try {
       await store.subscribe(store.ONFIDO_CHECKS_CHANNEL, async () => this.verifyOnfidos());
-      this._connector.on('block', () => this.checkPendingTransactions(), this);
+      this._connector.on('block', async () => this.checkPendingTransactions(), this);
       console.warn('\n> Started account certifier!\n');
     } catch (error) {
       console.error(error);
@@ -48,7 +48,7 @@ class AccountCertifier {
     try {
       await store.scanPendingTransactions(async (error, { address, txHash, verification }) => {
         if (error) {
-          throw error;
+          return console.error(error);
         }
 
         const receipt = await this._connector.getTxReceipt(txHash);
