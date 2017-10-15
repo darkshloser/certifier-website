@@ -149,7 +149,7 @@ export default class AccountType extends Component {
               an ICO for a NON-ERC20 token.
             </p>
             <p>
-              Some ICOs are not compatible with hardware and multisig wallet addresses!
+              Some ICOs, <em>Polkadot for example</em>, are not compatible with hardware and multisig wallet addresses!
               Please check the compatibility before using a hardware or multisig wallet, or just use a
               JSON wallet file.
             </p>
