@@ -31,7 +31,7 @@ class AccountCertifier {
   async init () {
     try {
       await store.subscribe(store.ONFIDO_CHECKS_CHANNEL, async () => this.verifyOnfidos());
-      this._connector.on('block', this.checkPendingTransactions, this);
+      this._connector.on('block', () => this.checkPendingTransactions(), this);
       console.warn('\n> Started account certifier!\n');
     } catch (error) {
       console.error(error);
@@ -45,20 +45,24 @@ class AccountCertifier {
 
     this._checkPendingTxsLock = true;
 
-    await store.scanPendingTransactions(async ({ address, txHash, verification }) => {
-      const receipt = await this._connector.getTxReceipt(txHash);
+    try {
+      await store.scanPendingTransactions(async ({ address, txHash, verification }) => {
+        const receipt = await this._connector.getTxReceipt(txHash);
 
-      if (!receipt || !receipt.blockHash) {
-        return;
-      }
+        if (!receipt || !receipt.blockHash) {
+          return;
+        }
 
-      const identity = new Identity(address);
+        const identity = new Identity(address);
 
-      // Store the verification result
-      await identity.storeVerification(verification);
-      // Remove the pending transaction from Redis
-      await store.removePendingTransaction(address);
-    });
+        // Store the verification result
+        await identity.storeVerification(verification);
+        // Remove the pending transaction from Redis
+        await store.removePendingTransaction(address);
+      });
+    } catch (error) {
+      console.error(error);
+    }
 
     this._checkPendingTxsLock = false;
   }
