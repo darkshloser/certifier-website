@@ -78,6 +78,7 @@ class CertifierStore {
   @observable loading;
   @observable onfido;
   @observable pending;
+  @observable transaction;
 
   sdkToken;
   shouldMountOnfido;
@@ -106,6 +107,7 @@ class CertifierStore {
     this.loading = false;
     this.onfido = false;
     this.pending = false;
+    this.transaction = null;
 
     this.sdkToken = null;
     this.shouldMountOnfido = false;
@@ -277,7 +279,11 @@ class CertifierStore {
   async checkCertification () {
     try {
       const { payer } = feeStore;
-      const { certified, status, result, reason } = await backend.checkStatus(payer);
+      const { certified, status, result, reason, txHash } = await backend.checkStatus(payer);
+
+      if (txHash) {
+        this.setTransaction(txHash);
+      }
 
       if (certified) {
         return appStore.setCertified(payer);
@@ -331,6 +337,11 @@ class CertifierStore {
   @action
   setPending (pending) {
     this.pending = pending;
+  }
+
+  @action
+  setTransaction (transaction) {
+    this.transaction = transaction;
   }
 
   watchCertification () {

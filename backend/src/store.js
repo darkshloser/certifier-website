@@ -10,6 +10,7 @@ const ONFIDO_CHECKS_CHANNEL = 'picops::onfido-checks-channel';
 const FEE_REFUND_CHANNEL = 'picops::refund-channel';
 
 const REDIS_APPLICANTS_KEY = 'picops::applicants';
+const REDIS_PENDING_TXS_KEY = 'picops::pending-txs';
 const REDIS_FEE_REFUND_KEY = 'picops::refunds';
 const REDIS_LOCKS_KEY = 'picops::locker';
 const REDIS_USED_DOCUMENTS_KEY = 'picops::used-documents';
@@ -22,6 +23,105 @@ class Store {
    */
   static async addApplicant (applicantId) {
     return redis.sadd(REDIS_APPLICANTS_KEY, applicantId);
+  }
+
+  /**
+   * Add a pending certification to the Redis state.
+   * It will be checked on new block to see if the
+   * transaction has been mined or not.
+   *
+   * @param {String} txHash       `0x`-prefixed transaction hash
+   * @param {Object} verification The Onfido verification to store
+   */
+  static async addPendingTransaction (txHash, verification) {
+    await redis.hset(REDIS_PENDING_TXS_KEY, verification.address, JSON.stringify({ txHash, verification }));
+  }
+
+  /**
+   * Get the transaction hash of the pending transaction,
+   * if any...
+   *
+   * @param  {String} address `0x` prefixed hex address
+   * @return {String|null} The pending transaction hash, if any
+   */
+  static async getPendingTransaction (address) {
+    const json = await redis.hget(REDIS_PENDING_TXS_KEY, address);
+
+    if (!json) {
+      return null;
+    }
+
+    try {
+      const { txHash } = JSON.parse(json);
+
+      return txHash || null;
+    } catch (error) {
+      console.error('could not parse JSON: ', { json });
+      return null;
+    }
+  }
+
+  /**
+   * Check if the given address has a pending transaction
+   *
+   * @param  {String} address `0x` prefixed hex address
+   * @return {Boolean}
+   */
+  static async hasPendingTransaction (address) {
+    return redis.hexists(REDIS_PENDING_TXS_KEY, address);
+  }
+
+  /**
+   * Remove any existing pending transaction for the given
+   * address
+   *
+   * @param  {String} address `0x` prefixed hex address
+   */
+  static async removePendingTransaction (address) {
+    await redis.hdel(REDIS_PENDING_TXS_KEY, address);
+  }
+
+  /**
+   * Scan through all the pending transactions
+   *
+   * @param  {Function} callback Callback called whith every pending
+   *                             transactions
+   */
+  static async scanPendingTransactions (callback) {
+    let next = 0;
+
+    do {
+      // Get a batch of responses
+      const [cursor, values] = await redis.hscan(REDIS_PENDING_TXS_KEY, next);
+
+      next = Number(cursor);
+
+      for (let index = 0; index < values.length / 2; index += 2) {
+        const datum = values.slice(index, index + 2);
+
+        if (!datum) {
+          return console.warn('no value returned', { datum });
+        }
+
+        const [ address, json ] = datum;
+
+        if (!address || !json) {
+          return console.warn('no address or json', { address, json, datum });
+        }
+
+        try {
+          const { txHash, verification } = JSON.parse(json);
+
+          await callback(null, { address, txHash, verification });
+        } catch (error) {
+          console.warn('JSON parsing error', { address, json, datum });
+          callback(error);
+        }
+      }
+
+    // `next` will be `0` at the end of iteration, explained here:
+    // https://redis.io/commands/scan
+    } while (next !== 0);
   }
 
   /**
@@ -259,6 +359,7 @@ class Store {
   }
 }
 
+Store.REDIS_PENDING_TXS_KEY = REDIS_PENDING_TXS_KEY;
 Store.ONFIDO_CHECKS_CHANNEL = ONFIDO_CHECKS_CHANNEL;
 Store.FEE_REFUND_CHANNEL = FEE_REFUND_CHANNEL;
 

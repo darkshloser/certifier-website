@@ -59,6 +59,18 @@ class ParityConnector extends EventEmitter {
   }
 
   /**
+   * Get the transaction receipt
+   *
+   * @param  {String} txHash
+   * @return {Promise<Object>}
+   */
+  getTxReceipt (txHash) {
+    return this
+      ._transport
+      .request('eth_getTransactionReceipt', txHash);
+  }
+
+  /**
    * Get next nonce for address
    *
    * @param  {String} address

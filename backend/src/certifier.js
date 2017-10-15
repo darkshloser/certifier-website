@@ -31,10 +31,46 @@ class AccountCertifier {
   async init () {
     try {
       await store.subscribe(store.ONFIDO_CHECKS_CHANNEL, async () => this.verifyOnfidos());
+      this._connector.on('block', async () => this.checkPendingTransactions(), this);
       console.warn('\n> Started account certifier!\n');
     } catch (error) {
       console.error(error);
     }
+  }
+
+  async checkPendingTransactions () {
+    if (this._checkPendingTxsLock) {
+      return;
+    }
+
+    this._checkPendingTxsLock = true;
+
+    try {
+      await store.scanPendingTransactions(async (error, { address, txHash, verification }) => {
+        if (error) {
+          return console.error(error);
+        }
+
+        const receipt = await this._connector.getTxReceipt(txHash);
+
+        if (!receipt || !receipt.blockHash) {
+          return;
+        }
+
+        const identity = new Identity(address);
+
+        console.warn(`got a receipt for ${address} ; storing the value in Redis`);
+
+        // Store the verification result
+        await identity.storeVerification(verification);
+        // Remove the pending transaction from Redis
+        await store.removePendingTransaction(address);
+      });
+    } catch (error) {
+      console.error(error);
+    }
+
+    this._checkPendingTxsLock = false;
   }
 
   async verifyOnfidos () {
@@ -70,42 +106,40 @@ class AccountCertifier {
     }
   }
 
+  // Only error here is Redis error or Onfido error
+  // which shouldn't be saved linked to the address
   async storeVerification (verification) {
     const {
       address,
       valid,
-      applicantId,
-      checkId,
-      creationDate,
-      documentHash
+      applicantId
     } = verification;
 
-    const check = { id: checkId, applicantId, creationDate, documentHash };
+    if (await store.hasPendingTransaction(address)) {
+      console.warn(`already has a pending transaction for ${address}`);
+      return;
+    }
+
     const identity = new Identity(address);
     let shouldCertify = false;
 
-    try {
-      await store.addApplicant(applicantId);
+    await store.addApplicant(applicantId);
+
+    const certified = await this._certifier.isCertified(address);
+
+    shouldCertify = valid && !certified;
+
+    // If no need to certify, then store the transaction
+    if (!shouldCertify) {
       await identity.storeVerification(verification);
-
-      const certified = await this._certifier.isCertified(address);
-
-      shouldCertify = valid && !certified;
-    } catch (error) {
-      console.error(error);
-
-      await identity.checks.store(Object.assign({}, check, {
-        status: Identity.STATUS.COMPLETED,
-        result: Identity.RESULT.FAIL,
-        reason: 'error',
-        error: error.message
-      }));
+      return;
     }
 
-    if (shouldCertify) {
-      console.warn(`> certifying ${address}...`);
-      await this._certifier.certify(address);
-    }
+    process.stderr.write(`> certifying ${address} ... `);
+    const txHash = await this._certifier.certify(address);
+
+    process.stderr.write(` sent tx with : ${txHash} ; adding verification to pending store \n`);
+    store.addPendingTransaction(txHash, verification);
   }
 }
 

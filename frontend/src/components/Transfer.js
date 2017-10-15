@@ -12,6 +12,7 @@ import Transaction from '../stores/transaction';
 import AppContainer from './AppContainer';
 import AddressInput from './AddressInput';
 import AccountInfo from './AccountInfo';
+import ViewTransaction from './ui/ViewTransaction';
 
 const GAS_LIMIT = new BigNumber(21000);
 
@@ -106,9 +107,7 @@ export default class Transfer extends Component {
           {
             transaction
               ? (
-                <Button primary basic as='a' href={`https://etherscan.io/tx/${transaction}`}>
-                  View transaction on Etherscan
-                </Button>
+                <ViewTransaction transaction={transaction} />
               )
               : (
                 <Button disabled={!valid} primary size='big' onClick={this.handleSend} loading={sending}>
