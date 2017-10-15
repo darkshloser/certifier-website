@@ -22,7 +22,7 @@ function get ({ connector, certifier, feeRegistrar }) {
   router.get('/:address/incoming-txs', async (ctx, next) => {
     const { address } = ctx.params;
 
-    if (!address || !isValidAddress(address)) {
+    if (!isValidAddress(address)) {
       return errorHandler(ctx, 400, 'Invalid address');
     }
 
@@ -50,7 +50,7 @@ function get ({ connector, certifier, feeRegistrar }) {
   router.get('/:address/fee', async (ctx, next) => {
     const { address } = ctx.params;
 
-    if (!address || !isValidAddress(address)) {
+    if (!isValidAddress(address)) {
       return errorHandler(ctx, 400, 'Invalid address');
     }
 
@@ -84,7 +84,7 @@ function get ({ connector, certifier, feeRegistrar }) {
   router.get('/:address/nonce', async (ctx, next) => {
     const { address } = ctx.params;
 
-    if (!address || !isValidAddress(address)) {
+    if (!isValidAddress(address)) {
       return errorHandler(ctx, 400, 'Invalid address');
     }
 
@@ -98,7 +98,7 @@ function get ({ connector, certifier, feeRegistrar }) {
   router.get('/:address/refund/:origin', async (ctx, next) => {
     const { address, origin } = ctx.params;
 
-    if (!address || !isValidAddress(address)) {
+    if (!isValidAddress(address)) {
       return errorHandler(ctx, 400, 'Invalid address');
     }
 
@@ -125,7 +125,7 @@ function get ({ connector, certifier, feeRegistrar }) {
     const { address: _address } = ctx.params;
     const address = _address.toLowerCase();
 
-    if (!address || !isValidAddress(address)) {
+    if (!isValidAddress(address)) {
       return errorHandler(ctx, 400, 'Missing address');
     }
 

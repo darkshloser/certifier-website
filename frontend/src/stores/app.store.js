@@ -11,6 +11,7 @@ import { parentMessage } from '../utils';
 
 export const CITIZENSHIP_LS_KEY = '_parity-certifier::citizenship';
 export const FEE_HOLDER_LS_KEY = '_parity-certifier::fee-holder';
+export const OLD_FEE_HOLDER_LS_KEY = '_parity-certifier::old-fee-holder';
 export const PAYER_LS_KEY = '_parity-certifier::payer';
 export const TERMS_LS_KEY = '_parity-certifier::agreed-terms::v1';
 
@@ -211,6 +212,15 @@ class AppStore extends EventEmitter {
   }
 
   restart () {
+    const currentFeeHolder = store.get(FEE_HOLDER_LS_KEY);
+
+    if (currentFeeHolder) {
+      const prevFeeHolders = store.get(OLD_FEE_HOLDER_LS_KEY) || [];
+
+      prevFeeHolders.push(currentFeeHolder);
+      store.set(OLD_FEE_HOLDER_LS_KEY, prevFeeHolders);
+    }
+
     this.skipTerms = false;
     this.skipStart = false;
     this.skipCountrySelection = false;

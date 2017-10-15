@@ -107,8 +107,8 @@ class FeeStore {
       if (origins.find((address) => address.toLowerCase() === lcFeeAddress)) {
         store.set(PAYER_LS_KEY, payer);
         appStore.goto('certify');
-        this.emptyWallet(payer);
 
+        blockStore.once('block', () => this.emptyWallet(payer));
         return true;
       }
     } catch (error) {
@@ -171,7 +171,7 @@ class FeeStore {
 
       console.warn('sent emptying account tx', hash);
     } catch (error) {
-      appStore.addError(error);
+      console.error(error);
     }
   }
 

@@ -1,8 +1,7 @@
-import keycode from 'keycode';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Flag, Form, Header, Container, Segment } from 'semantic-ui-react';
+import { Button, Form, Header, Container, Segment } from 'semantic-ui-react';
 
 import supportedCountries from '../../../../onfido-documents/supported-documents.json';
 
@@ -11,15 +10,11 @@ import certifierStore from '../../stores/certifier.store';
 import feeStore from '../../stores/fee.store';
 
 import AccountInfo from '../AccountInfo';
-import CountrySelectionModal from '../CountrySelectionModal';
+import { countryOptions } from '../CountrySelectionModal';
 import Step from '../Step';
 
 @observer
 export default class ParityCertifier extends Component {
-  state = {
-    showCountrySelection: false
-  };
-
   componentWillUnmount () {
     certifierStore.unmountOnfido();
   }
@@ -31,7 +26,6 @@ export default class ParityCertifier extends Component {
       return this.renderOnfidoForm();
     }
 
-    const { showCountrySelection } = this.state;
     const { payer } = feeStore;
 
     return (
@@ -45,20 +39,16 @@ export default class ParityCertifier extends Component {
               showCertified={false}
             />
 
-            <CountrySelectionModal
-              onCancel={this.handleHideCountrySelection}
-              onContinue={this.handleSelectCountry}
-              show={showCountrySelection}
-            />
-
             <p>
               Prepare a document proving your identity (passport, driver's licence or national ID).
             </p>
 
             <p>
-              Verification of a good-quality image of a passport usually takes just a few minutes.
-              <b>Verification of bad quality, non-passport documents can take many hours.
-              FOR BEST RESULTS SUBMIT HIGH-QUALITY, SHARP PHOTO OF YOUR PASSPORT.</b> You will have to
+              Certification with a good-quality passport image usually
+              takes just a few minutes; a bad-quality, non-passport
+              image may take many hours. <b>FOR BEST RESULTS SUBMIT A HIGH-QUALITY,
+              SHARP IMAGE OF YOUR PASSPORT</b>.
+              You will have to
               upload a scan or high quality picture of your document. Separate images for back and
               front of the document may be required. Make sure to check
               out <Link to='/faq' target='_blank'>our FAQ</Link> if you have any more questions.
@@ -109,33 +99,18 @@ export default class ParityCertifier extends Component {
                 value={firstName}
               />
             </Form.Field>
-
-            {
-              country
-                ? (
-                  <Form.Field
-                    onClick={this.handleShowCountrySelection}
-                    onKeyUp={this.handleCountryKeyUp}
-                    style={{ pointer: 'cursor' }}
-                  >
-                    <Form.Input
-                      label='Citizen Of'
-                      readOnly
-                      value={country.name}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}
-                    >
-                      <Flag name={country.iso2.toLowerCase()} style={{
-                        marginLeft: 'calc(-16px - 0.5em)'
-                      }} />
-                      <input style={{ cursor: 'pointer' }} />
-                    </Form.Input>
-                  </Form.Field>
-                )
-                : null
-            }
+            <Form.Field>
+              <Form.Dropdown
+                fluid
+                label='Citizen Of'
+                onChange={this.handleCountryChange}
+                options={countryOptions}
+                placeholder='Select Country'
+                search
+                selection
+                value={country ? country.iso3 : null}
+              />
+            </Form.Field>
           </Form>
         </Segment>
         <Segment basic style={{ textAlign: 'right' }}>
@@ -166,22 +141,10 @@ export default class ParityCertifier extends Component {
     );
   }
 
-  handleCountryKeyUp = (event) => {
-    const key = keycode(event);
-
-    if (key === 'enter' || key === 'space') {
-      return this.handleShowCountrySelection();
-    }
-  };
-
   handleFirstNameChange = (event) => {
     const firstName = event.target.value;
 
     certifierStore.setFirstName(firstName);
-  };
-
-  handleHideCountrySelection = () => {
-    this.setState({ showCountrySelection: false });
   };
 
   handleLastNameChange = (event) => {
@@ -194,16 +157,13 @@ export default class ParityCertifier extends Component {
     certifierStore.createApplicant();
   };
 
-  handleSelectCountry = (country) => {
-    appStore.storeValidCitizenship(country.iso3);
-    this.setState({ showCountrySelection: false });
-  };
-
   handleSetOnfidoElt = () => {
     certifierStore.mountOnfido();
   };
 
-  handleShowCountrySelection = () => {
-    this.setState({ showCountrySelection: true });
+  handleCountryChange = (_, { value }) => {
+    const country = supportedCountries[value];
+
+    appStore.storeValidCitizenship(country.iso3);
   };
 }

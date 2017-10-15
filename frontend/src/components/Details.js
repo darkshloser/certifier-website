@@ -1,6 +1,5 @@
 import copy from 'copy-to-clipboard';
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { Button, Checkbox, Header, Grid, Input, Popup, Segment } from 'semantic-ui-react';
 
 import appStore from '../stores/app.store';
@@ -24,10 +23,9 @@ export default class Details extends Component {
   render () {
     return (
       <AppContainer
-        header={this.renderGoBack()}
         hideStepper
-        footer={this.renderGoBack()}
         style={{ paddingTop: '1em' }}
+        showBack
         title='LEARN MORE ABOUT PICOPS'
       >
         <div>
@@ -106,19 +104,6 @@ export default class Details extends Component {
             : null
         }
 
-      </div>
-    );
-  }
-
-  renderGoBack () {
-    return (
-      <div style={{ textAlign: 'right', paddingTop: '0.75em' }}>
-        <Link
-          to='/'
-          style={{ color: 'gray', fontSize: '1.75em' }}
-        >
-          Go Back
-        </Link>
       </div>
     );
   }

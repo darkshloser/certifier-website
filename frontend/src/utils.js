@@ -37,6 +37,13 @@ export async function get (url) {
   let response = await fetch(url);
 
   checkStatus(response);
+
+  if (!response.ok) {
+    const text = await response.text();
+
+    throw new Error(text);
+  }
+
   return response.json();
 }
 

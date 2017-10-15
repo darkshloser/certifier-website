@@ -49,7 +49,6 @@ export default class Transfer extends Component {
       <AppContainer
         hideStepper
         style={{ textAlign: 'center', padding: '2.5em 1em 2em', maxWidth: '60em', margin: '0 auto' }}
-        title=''
       >
         <div>
           <div style={{ marginBottom: '1.5em' }}>
@@ -61,7 +60,7 @@ export default class Transfer extends Component {
 
           <div>
             <Button secondary as='a' href='/#/'>
-              Go Back
+              Back to PICOPS
             </Button>
           </div>
         </div>

@@ -250,6 +250,7 @@ class CertifierStore {
         {
           type: 'document',
           options: {
+            title: 'Certify your identity',
             useWebcam: false,
             types: documentTypes
           }

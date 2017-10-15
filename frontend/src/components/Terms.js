@@ -21,7 +21,7 @@ export default class Terms extends Component {
         <Header
           as='h2'
         >
-          TERMS & CONDITIONS
+          PICOPS USER TERMS & CONDITIONS
         </Header>
         <div
           style={{

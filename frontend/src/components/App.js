@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { HashRouter as Router, Link, Route } from 'react-router-dom';
+import { HashRouter as Router, Route } from 'react-router-dom';
 import { Button, Header, Loader } from 'semantic-ui-react';
 
 import AccountInfo from './AccountInfo';
@@ -25,37 +25,21 @@ import { parentMessage } from '../utils';
 @observer
 export default class App extends Component {
   render () {
-    const { loading } = appStore;
-
     return (
       <Router>
         <div data-iframe-height='true'>
-          {
-            loading
-              ? (
-                <div style={{ textAlign: 'center', padding: '2em 0' }}>
-                  <Loader active inline='centered' size='huge' />
-
-                  <Header as='h2'>
-                    Loading data...
-                  </Header>
-                </div>
-              )
-              : (
-                <div>
-                  <Route exact path='/' component={MainApp} />
-                  <Route path='/details' component={Details} />
-                  <Route path='/tc' component={Terms} />
-                  <Route path='/faq' component={Faq} />
-                  <Route path='/check' component={Check} />
-                  <Route path='/refund' component={Refund} />
-                  <Route path='/transfer' component={Transfer} />
-                  <Route path='/check-refund' component={CheckRefund} />
-                  <Route path='/country-selection' component={CountrySelectionWrapper} />
-                  <Messages />
-                </div>
-              )
-          }
+          <div>
+            <Route exact path='/' component={MainApp} />
+            <Route path='/details' component={Details} />
+            <Route path='/tc' component={Terms} />
+            <Route path='/faq' component={Faq} />
+            <Route path='/check' component={Check} />
+            <Route path='/refund' component={Refund} />
+            <Route path='/transfer' component={Transfer} />
+            <Route path='/check-refund' component={CheckRefund} />
+            <Route path='/country-selection' component={CountrySelectionWrapper} />
+            <Messages />
+          </div>
         </div>
       </Router>
     );
@@ -67,7 +51,7 @@ class MainApp extends Component {
   render () {
     return (
       <AppContainer
-        header={this.renderFooter()}
+        action={this.renderAction()}
         title='PARITY ICO PASSPORT SERVICE'
       >
         {this.renderContent()}
@@ -76,8 +60,20 @@ class MainApp extends Component {
   }
 
   renderContent () {
-    const { step } = appStore;
+    const { loading, step } = appStore;
     const { payer } = feeStore;
+
+    if (loading) {
+      return (
+        <div style={{ textAlign: 'center', padding: '2em 0' }}>
+          <Loader active inline='centered' size='huge' />
+
+          <Header as='h2'>
+            Loading data...
+          </Header>
+        </div>
+      );
+    }
 
     if (step === STEPS['start']) {
       return this.renderStart();
@@ -140,23 +136,18 @@ class MainApp extends Component {
     return null;
   }
 
-  renderFooter () {
+  renderAction () {
     const { step } = appStore;
 
     if (step !== STEPS['start']) {
-      return null;
+      return;
     }
 
-    return (
-      <div style={{ textAlign: 'right', paddingTop: '0.75em' }}>
-        <Link
-          to='/details'
-          style={{ color: 'gray', fontSize: '1.75em' }}
-        >
-          Learn More
-        </Link>
-      </div>
-    );
+    return {
+      text: 'Learn More',
+      href: '/#/details',
+      position: 'top'
+    };
   }
 
   renderStart () {

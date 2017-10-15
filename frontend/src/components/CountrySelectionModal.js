@@ -19,14 +19,15 @@ appStore.exludedCountries.forEach((isoCode) => {
   delete supportedCountries[isoCode];
 });
 
-const countryOptions = Object.keys(supportedCountries)
+export const countryOptions = Object.keys(supportedCountries)
   .map((key) => supportedCountries[key])
   .map((country) => ({
     key: country.iso3,
     value: country.iso3,
     flag: country.iso2.toLowerCase(),
     text: country.name
-  }));
+  }))
+  .sort((ca, cb) => ca.text.localeCompare(cb.text));
 
 const black = !!appStore.padding;
 
@@ -49,6 +50,11 @@ export default class CountrySelectionModal extends Component {
   render () {
     const { onCancel, show } = this.props;
     const { confirmPossession, confirmValidity, country } = this.state;
+
+    // Special means back and front required
+    const hasSpecial = country
+      ? country.documents.findIndex((doc) => doc.label.includes('*')) >= 0
+      : null;
 
     return (
       <Modal
@@ -76,6 +82,16 @@ export default class CountrySelectionModal extends Component {
           {this.renderConfirm()}
         </Modal.Content>
         <Modal.Actions>
+          {
+            hasSpecial
+              ? (
+                <p style={{ color: black ? 'white' : 'black', textAlign: 'left' }}>
+                  *The back of document is required for processing
+                </p>
+              )
+              : null
+          }
+
           {
             onCancel
               ? (
@@ -142,8 +158,6 @@ export default class CountrySelectionModal extends Component {
     }
 
     const { documents } = country;
-    // Special means back and front required
-    const hasSpecial = documents.findIndex((doc) => doc.special) >= 0;
 
     return (
       <div>
@@ -159,15 +173,12 @@ export default class CountrySelectionModal extends Component {
           {documents.map((doc) => this.renderDocumentLabels(doc))}
         </div>
 
-        {
-          hasSpecial
-            ? (
-              <p>
-                *The back of document is required for processing
-              </p>
-            )
-            : null
-        }
+        <p style={{ color: black ? 'white' : 'black', textAlign: 'left' }}>
+          Certification with a good-quality passport image usually
+          takes just a few minutes; a bad-quality, non-passport
+          image may take many hours. <b>FOR BEST RESULTS SUBMIT A HIGH-QUALITY,
+          SHARP IMAGE OF YOUR PASSPORT</b>.
+        </p>
       </div>
     );
   }

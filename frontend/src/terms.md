@@ -1,5 +1,3 @@
-## PARITY BACKGROUND CHECK SERVICE
-### TERMS OF USE
 #### 1. About us
 
 1.1. picops.parity.io (the **Site**) is owned and operated by **PARITY TECHNOLOGIES LIMITED**, a limited company registered in England & Wales with company number 09760015 (**we, us, our**). Our registered office is at Ignition Law, Moray House Floor 1, Moray House, 23-31 Great Titchfield Street, London, United Kingdom, WC1W 7PA. Our VAT number is 249 6785 46.
