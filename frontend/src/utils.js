@@ -4,6 +4,17 @@ import { keccak_256 } from 'js-sha3'; // eslint-disable-line camelcase
 
 const WEI = new BigNumber(10).pow(18);
 
+class NetworkError extends Error {
+  constructor (message, { status } = {}) {
+    super(message);
+    this._status = status;
+  }
+
+  get status () {
+    return this._status;
+  }
+}
+
 export function createWallet (secret, password) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -41,7 +52,7 @@ export async function get (url) {
   if (!response.ok) {
     const text = await response.text();
 
-    throw new Error(text);
+    throw new NetworkError(text, { status: response.status });
   }
 
   return response.json();
@@ -49,26 +60,6 @@ export async function get (url) {
 
 export function isValidAddress (value) {
   return !!value && value.length === 42 && /^0x[0-9a-g]{40}$/i.test(value);
-}
-
-export async function del (url, body) {
-  let response = await fetch(url, {
-    method: 'delete',
-    body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-
-  checkStatus(response);
-
-  if (!response.ok) {
-    const text = await response.text();
-
-    throw new Error(text);
-  }
-
-  return response.json();
 }
 
 export async function post (url, body) {
@@ -85,7 +76,7 @@ export async function post (url, body) {
   if (!response.ok) {
     const text = await response.text();
 
-    throw new Error(text);
+    throw new NetworkError(text, { status: response.status });
   }
 
   return response.json();
@@ -162,6 +153,14 @@ export function buildABIData (fnId, ...args) {
   }
 
   return result;
+}
+
+export async function sleep (duration) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, duration);
+  });
 }
 
 /**

@@ -239,7 +239,12 @@ class AppStore extends EventEmitter {
 
   addError (error) {
     if (!error) {
-      return console.error('no error given....', error);
+      return;
+    }
+
+    // If it's not a client error, don't show it
+    if (error.status && (error.status < 400 || error.status >= 500)) {
+      return console.error(error);
     }
 
     console.error(error);
