@@ -48,10 +48,22 @@ class Backend {
     return this.get('/block/hash');
   }
 
+  async certificationLocked (address) {
+    const { locked } = await this.get(`/accounts/${address}/certification-locked`);
+
+    return locked;
+  }
+
   async certifierAddress () {
     const { certifier } = await this.get(`/certifier`);
 
     return certifier;
+  }
+
+  async checkRecertificationStatus (address) {
+    const { error, status, transactions } = await this.get(`/accounts/${address}/recertification`);
+
+    return { error, status, transactions };
   }
 
   async checkStatus (address) {
@@ -122,6 +134,15 @@ class Backend {
     const { nonce } = await this.get(`/accounts/${address}/nonce`);
 
     return nonce;
+  }
+
+  async recertifier () {
+    const { address, fee } = await this.get('/recertifier');
+
+    return {
+      fee: new BigNumber(fee),
+      address
+    };
   }
 
   async sendTx (tx) {

@@ -8,14 +8,14 @@ const Config = require('./config');
 const Chain = require('./chain');
 const Onfido = require('./onfido');
 
-module.exports = async function set (app, { connector, certifier, feeRegistrar }) {
+module.exports = async function set (app, { connector, certifier, certifierHandler, feeRegistrar }) {
   for (const Route of [
     Accounts,
     Config,
     Chain,
     Onfido
   ]) {
-    const instance = await Route({ connector, certifier, feeRegistrar });
+    const instance = await Route({ connector, certifier, certifierHandler, feeRegistrar });
 
     app.use(instance.routes(), instance.allowedMethods());
   }

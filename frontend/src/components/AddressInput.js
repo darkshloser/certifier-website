@@ -1,26 +1,59 @@
 import keycode from 'keycode';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Input, Segment } from 'semantic-ui-react';
+import { Form, Input, Segment } from 'semantic-ui-react';
 
 import { isValidAddress } from '../utils';
 
-import AccountIcon from './AccountIcon.js';
+import AccountIcon from './AccountIcon';
+import CopyButton from './ui/CopyButton';
+
+let id = 0;
 
 export default class AddressInput extends Component {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
     value: PropTypes.string.isRequired,
 
-    onEnter: PropTypes.func
+    basic: PropTypes.bool,
+    label: PropTypes.string,
+    onEnter: PropTypes.func,
+    showCopy: PropTypes.bool
+  };
+
+  static defaultProps = {
+    showCopy: false
+  };
+
+  componentWillMount () {
+    id++;
+  }
+
+  static defaultProps = {
+    basic: false
   };
 
   render () {
-    const { value } = this.props;
+    const { basic, label, showCopy, value, ...otherProps } = this.props;
     const valid = isValidAddress(value);
+    const inputId = `input--${label || ''}--${id}`;
+
+    const input = (
+      <Input
+        action={showCopy && value ? (<CopyButton value={value.toString()} />) : false}
+        id={inputId}
+        fluid
+        onChange={this.handleChange}
+        onKeyUp={this.handleKeyUp}
+        placeholder='0x...'
+        ref={this.setInputRef}
+        value={value}
+        {...otherProps}
+      />
+    );
 
     return (
-      <Segment>
+      <Segment basic={basic}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {
             valid
@@ -44,14 +77,18 @@ export default class AddressInput extends Component {
           }
 
           <div style={{ flex: 1 }}>
-            <Input
-              fluid
-              onChange={this.handleChange}
-              onKeyUp={this.handleKeyUp}
-              placeholder='0x...'
-              ref={this.setInputRef}
-              value={value}
-            />
+            {
+              label
+                ? (
+                  <Form>
+                    <Form.Field>
+                      <label htmlFor={inputId}>{label}</label>
+                      {input}
+                    </Form.Field>
+                  </Form>
+                )
+                : input
+            }
           </div>
         </div>
       </Segment>

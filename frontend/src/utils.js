@@ -15,6 +15,47 @@ class NetworkError extends Error {
   }
 }
 
+export function isString (test) {
+  return Object.prototype.toString.call(test) === '[object String]';
+}
+
+export function isHex (_test) {
+  if (!isString(_test)) {
+    return false;
+  }
+
+  if (_test.substr(0, 2) === '0x') {
+    return isHex(_test.slice(2));
+  }
+
+  return /^[0-9a-f]+$/.test(_test);
+}
+
+export function hexToBytes (hex) {
+  const raw = hex.slice(2);
+  const bytes = [];
+
+  for (let i = 0; i < raw.length; i += 2) {
+    bytes.push(parseInt(raw.substr(i, 2), 16));
+  }
+
+  return bytes;
+}
+
+export function sha3 (value, options) {
+  const forceHex = options && options.encoding === 'hex';
+
+  if (forceHex || (!options && isHex(value))) {
+    const bytes = hexToBytes(value);
+
+    return sha3(bytes);
+  }
+
+  const hash = keccak_256(value);
+
+  return `0x${hash}`;
+}
+
 export function createWallet (secret, password) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {

@@ -14,9 +14,42 @@ const { buf2add, hex2big, big2hex, isValidAddress } = require('../utils');
 
 const onfidoMaxChecks = config.get('onfido.maxChecks');
 
-function get ({ connector, certifier, feeRegistrar }) {
+function get ({ connector, certifier, certifierHandler, feeRegistrar }) {
   const router = new Router({
     prefix: '/api/accounts'
+  });
+
+  router.get('/:address/certification-locked', async (ctx, next) => {
+    const { address } = ctx.params;
+
+    if (!isValidAddress(address)) {
+      return errorHandler(ctx, 400, 'Invalid address');
+    }
+
+    await rateLimiter(address, ctx.remoteAddress);
+
+    const [ locked ] = await certifierHandler.methods.locked(address).get();
+
+    ctx.body = { locked };
+  });
+
+  router.get('/:address/recertification', async (ctx, next) => {
+    const { address } = ctx.params;
+
+    if (!isValidAddress(address)) {
+      return errorHandler(ctx, 400, 'Invalid address');
+    }
+
+    await rateLimiter(address, ctx.remoteAddress);
+
+    const data = await store.getPendingRecertification(address) || { status: 'unkown' };
+
+    // If success or error, send the data and delete it from Redis
+    if (data.status !== 'pending') {
+      store.removePendingRecertification(address);
+    }
+
+    ctx.body = data;
   });
 
   router.get('/:address/incoming-txs', async (ctx, next) => {

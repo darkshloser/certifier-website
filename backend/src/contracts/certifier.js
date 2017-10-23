@@ -4,7 +4,6 @@
 'use strict';
 
 const config = require('config');
-const EthereumTx = require('ethereumjs-tx');
 
 const account = require('./account');
 const { MultiCertifier } = require('../abis');
@@ -32,29 +31,7 @@ class Certifier extends Contract {
    * @return {Promise<String>} promise of a TX hash
    */
   async certify (address) {
-    const { connector } = this;
-    const data = this.methods.certify(address).data;
-    const options = {
-      from: account.address,
-      to: this.address,
-      value: '0x0',
-      gasPrice,
-      data
-    };
-
-    const gasLimit = await connector.estimateGas(options);
-    const nonce = await connector.nextNonce(options.from);
-
-    options.gasLimit = gasLimit;
-    options.nonce = nonce;
-
-    const tx = new EthereumTx(options);
-
-    tx.sign(account.privateKey);
-
-    const serializedTx = `0x${tx.serialize().toString('hex')}`;
-
-    const txHash = await connector.sendTx(serializedTx);
+    const txHash = await this.methods.certify(address).post({ gasPrice }, account.privateKey);
 
     console.log(`sent certify tx for ${address} : ${txHash} `);
 
@@ -72,6 +49,21 @@ class Certifier extends Contract {
     const [ certified ] = await this.methods.certified(address).get();
 
     return certified;
+  }
+
+  /**
+   * Revoke an address using a trusted account
+   *
+   * @param {String} address to revoke, `0x` prefixed
+   *
+   * @return {Promise<String>} promise of a TX hash
+   */
+  async revoke (address) {
+    const txHash = await this.methods.revoke(address).post({ gasPrice }, account.privateKey);
+
+    console.log(`sent revoke tx for ${address} : ${txHash} `);
+
+    return txHash;
   }
 }
 

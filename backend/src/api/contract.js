@@ -3,8 +3,12 @@
 
 'use strict';
 
+const BigNumber = require('bignumber.js');
 const EthereumAbi = require('ethereumjs-abi');
+const EthereumTx = require('ethereumjs-tx');
+const { privateToAddress } = require('ethereumjs-util');
 
+const logger = require('../logger');
 const { buf2hex, ejs2val, hex2buf } = require('../utils');
 
 class Event {
@@ -123,11 +127,18 @@ class Method {
     const params = [].concat(args);
     const types = this._types;
 
-    if (params.length !== types.length) {
-      throw new Error(`Expected ${types.length} params for "${this._name}" ; ${params.length} given`);
+    if (params.filter((p) => p !== undefined).length !== types.length) {
+      throw new Error(`Expected ${types.length} params for "${this._name}" ; ${JSON.stringify(params)} given`);
     }
 
-    const encoded = EthereumAbi.rawEncode(types, params);
+    const nextParams = params.map((param) => {
+      if (param instanceof BigNumber) {
+        return param.toNumber().toString();
+      }
+
+      return param;
+    });
+    const encoded = EthereumAbi.rawEncode(types, nextParams);
 
     return this.id + encoded.toString('hex');
   }
@@ -169,6 +180,10 @@ class Contract {
     this.events = {};
     this.values = {};
 
+    this.filters = [];
+
+    this.connector.on('block', () => this.checkFilters());
+
     abi.forEach((iface) => {
       const { constant, name, type } = iface;
 
@@ -193,7 +208,7 @@ class Contract {
           }
 
           return {
-            post: (options) => this._post(method, data, options),
+            post: (options, privateKey) => this._post(method, data, options, privateKey),
             data
           };
         };
@@ -226,6 +241,24 @@ class Contract {
     return this._transport;
   }
 
+  checkFilters () {
+    this.filters.forEach(async ({ id, callback }) => {
+      try {
+        const logs = await this.transport.request('eth_getFilterChanges', id);
+
+        if (logs.length === 0) {
+          return;
+        }
+
+        const filteredLogs = logs.filter((log) => log.address === this.address);
+
+        callback(this.parse(filteredLogs));
+      } catch (error) {
+        logger.error(error);
+      }
+    });
+  }
+
   /**
    * Parse the given logs for the contract events
    *
@@ -239,12 +272,42 @@ class Contract {
       const event = this._events.get(topic);
 
       if (!event) {
-        console.warn('could not find an event for this log', log.topics);
+        logger.warn('could not find an event for this log', log.topics);
         return log;
       }
 
       return event.decode([ log ])[0];
     });
+  }
+
+  async subscribe (eventNames, options, callback) {
+    if (typeof options === 'function' && !callback) {
+      return this.subscribe(eventNames, {}, options);
+    }
+
+    const eventsTopics = eventNames.map((eventName) => {
+      if (!this._events.has(eventName)) {
+        throw new Error(`Unknown event ${eventName}`);
+      }
+
+      return this._events.get(eventName).topic;
+    });
+
+    const filterTopics = [ eventsTopics ].concat(options.topics || []);
+    const filterOptions = Object.assign({}, options, {
+      address: this.address,
+      topics: filterTopics
+    });
+
+    const filterId = await this.transport.request('eth_newFilter', filterOptions);
+
+    this.filters.push({ id: filterId, callback });
+    return filterId;
+  }
+
+  async unsubscribe (filterId) {
+    await this.transport.request('eth_uninstallFilter', filterId);
+    this.filters = this.filters.filter((f) => f.id !== filterId);
   }
 
   /**
@@ -316,7 +379,7 @@ class Contract {
    */
   _call (method, data) {
     return this
-      ._transport
+      .transport
       .request('eth_call', {
         to: this._address,
         data,
@@ -329,7 +392,7 @@ class Contract {
 
   _logs (topics, options) {
     return this
-      ._transport
+      .transport
       .request('eth_getLogs', Object.assign({}, {
         fromBlock: '0x0',
         toBlock: 'latest',
@@ -339,8 +402,40 @@ class Contract {
       .then((logs) => this.parse(logs));
   }
 
-  _post (method, args = [], options = {}) {
-    throw new Error('Not Implemented');
+  async _post (method, data, _options = {}, privateKey) {
+    const from = '0x' + privateToAddress(privateKey).toString('hex');
+    const { connector } = this;
+    const options = Object.assign(
+      {
+        from,
+        value: '0x0'
+      },
+      _options,
+      {
+        to: this.address,
+        data
+      }
+    );
+
+    if (!options.gasLimit) {
+      const gasLimit = await connector.estimateGas(options);
+
+      options.gasLimit = gasLimit;
+    }
+
+    const nonce = await connector.nextNonce(options.from);
+
+    options.nonce = nonce;
+
+    const tx = new EthereumTx(options);
+
+    tx.sign(privateKey);
+
+    const serializedTx = `0x${tx.serialize().toString('hex')}`;
+
+    const txHash = await connector.sendTx(serializedTx);
+
+    return txHash;
   }
 }
 

@@ -11,6 +11,7 @@ const cors = require('kcors');
 
 const { CachingTransport } = require('./api/transport');
 const Certifier = require('./contracts/certifier');
+const CertifierHandler = require('./contracts/certifierHandler');
 const ParityConnector = require('./api/parity');
 const Routes = require('./routes');
 const Fee = require('./contracts/fee');
@@ -29,6 +30,7 @@ async function main () {
   const feeRegistrar = new Fee(connector);
 
   const certifier = new Certifier(connector, config.get('certifierContract'));
+  const certifierHandler = new CertifierHandler(connector, certifier);
 
   app.use(async (ctx, next) => {
     ctx.remoteAddress = ctx.req.headers['x-forwarded-for'] || ctx.req.connection.remoteAddress;
@@ -52,7 +54,7 @@ async function main () {
     .use(cors())
     .use(etag());
 
-  await Routes(app, { connector, certifier, feeRegistrar });
+  await Routes(app, { connector, certifier, certifierHandler, feeRegistrar });
 
   app.listen(port, hostname);
 }

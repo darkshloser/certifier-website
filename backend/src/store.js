@@ -10,6 +10,7 @@ const ONFIDO_CHECKS_CHANNEL = 'picops::onfido-checks-channel';
 const FEE_REFUND_CHANNEL = 'picops::refund-channel';
 
 const REDIS_APPLICANTS_KEY = 'picops::applicants';
+const REDIS_PENDING_RECERTIFICATIONS_KEY = 'picops::pending-recertifications';
 const REDIS_PENDING_TXS_KEY = 'picops::pending-txs';
 const REDIS_FEE_REFUND_KEY = 'picops::refunds';
 const REDIS_LOCKS_KEY = 'picops::locker';
@@ -23,6 +24,96 @@ class Store {
    */
   static async addApplicant (applicantId) {
     return redis.sadd(REDIS_APPLICANTS_KEY, applicantId);
+  }
+
+  /**
+   * Get the pending re-certification data.
+   *
+   * @param {String} address     `0x`-prefixed address of the account
+   */
+  static async getPendingRecertification (address) {
+    const json = await redis.hget(REDIS_PENDING_RECERTIFICATIONS_KEY, address.toLowerCase());
+
+    if (!json) {
+      return null;
+    }
+
+    try {
+      const data = JSON.parse(json);
+
+      return data || null;
+    } catch (error) {
+      console.error('could not parse JSON: ', { json });
+      return null;
+    }
+  }
+
+  /**
+   * Remove any existing pending re-certification for the given
+   * address
+   *
+   * @param  {String} address `0x` prefixed hex address
+   */
+  static async removePendingRecertification (address) {
+    await redis.hdel(REDIS_PENDING_RECERTIFICATIONS_KEY, address.toLowerCase());
+  }
+
+  /**
+   * Scan through all the pending re-certifications
+   *
+   * @param  {Function} callback Callback called whith every pending
+   *                             re-certifications
+   */
+  static async scanPendingRecertifications (callback) {
+    let next = 0;
+
+    do {
+      // Get a batch of responses
+      const [cursor, values] = await redis.hscan(REDIS_PENDING_RECERTIFICATIONS_KEY, next);
+
+      next = Number(cursor);
+
+      for (let index = 0; index < values.length; index += 2) {
+        const datum = values.slice(index, index + 2);
+
+        if (!datum) {
+          console.warn('no value returned', { datum });
+          continue;
+        }
+
+        const [ address, json ] = datum;
+
+        if (!address || !json) {
+          console.warn('no address or json', { address, json, datum });
+          continue;
+        }
+
+        try {
+          const data = JSON.parse(json);
+
+          await callback(null, { address, data });
+        } catch (error) {
+          console.warn('JSON parsing error', { address, json, datum });
+          callback(error);
+        }
+      }
+
+    // `next` will be `0` at the end of iteration, explained here:
+    // https://redis.io/commands/scan
+    } while (next !== 0);
+  }
+
+  /**
+   * Add a pending re-certification to the Redis state.
+   * It will be checked on new block to see if the
+   * transactions has been mined or not.
+   *
+   * @param {String} who     `0x`-prefixed address of the account
+   * @param {Object} data    Data to store in Redis
+   */
+  static async setPendingRecertification (address, data = {}) {
+    data.updatedAt = Date.now();
+    await redis.hset(REDIS_PENDING_RECERTIFICATIONS_KEY, address.toLowerCase(), JSON.stringify(data));
   }
 
   /**
@@ -96,17 +187,19 @@ class Store {
 
       next = Number(cursor);
 
-      for (let index = 0; index < values.length / 2; index += 2) {
+      for (let index = 0; index < values.length; index += 2) {
         const datum = values.slice(index, index + 2);
 
         if (!datum) {
-          return console.warn('no value returned', { datum });
+          console.warn('no value returned', { datum });
+          continue;
         }
 
         const [ address, json ] = datum;
 
         if (!address || !json) {
-          return console.warn('no address or json', { address, json, datum });
+          console.warn('no address or json', { address, json, datum });
+          continue;
         }
 
         try {

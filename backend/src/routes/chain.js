@@ -6,10 +6,10 @@
 const EthereumTx = require('ethereumjs-tx');
 const Router = require('koa-router');
 
-const { buf2hex, buf2big } = require('../utils');
+const { buf2hex, buf2big, int2hex } = require('../utils');
 const { error, rateLimiter } = require('./utils');
 
-function get ({ connector, certifier, feeRegistrar }) {
+async function get ({ connector, certifier, certifierHandler, feeRegistrar }) {
   const router = new Router({
     prefix: '/api'
   });
@@ -33,6 +33,13 @@ function get ({ connector, certifier, feeRegistrar }) {
     const { address } = certifier;
 
     ctx.body = { certifier: address };
+  });
+
+  router.get('/recertifier', async (ctx, next) => {
+    const { address } = certifierHandler;
+    const fee = certifierHandler.values.fee;
+
+    ctx.body = { address, fee: int2hex(fee) };
   });
 
   const txHandler = async (ctx, next) => {
