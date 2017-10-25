@@ -1,10 +1,11 @@
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
-import { Header, Loader } from 'semantic-ui-react';
+import { Button, Header, Loader } from 'semantic-ui-react';
 import QRCode from 'qrcode.react';
 
 import { fromWei } from '../../utils';
 
+import appStore from '../../stores/app.store';
 import feeStore from '../../stores/fee.store';
 
 import AccountInfo from '../AccountInfo';
@@ -45,7 +46,7 @@ export default class WaitingPayment extends Component {
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          padding: '1.5em 0',
+          padding: '1.5em 0 0',
           flexDirection: 'column'
         }}>
           <AccountInfo
@@ -72,8 +73,16 @@ export default class WaitingPayment extends Component {
             <Loader active inline size='tiny' style={{ marginRight: '0.5em' }} />
             <span>Waiting for transaction...</span>
           </div>
+
+          <Button secondary onClick={this.handleCancel}>
+            Cancel
+          </Button>
         </div>
       </div>
     );
   }
+
+  handleCancel = () => {
+    appStore.restart();
+  };
 }

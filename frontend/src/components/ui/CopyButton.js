@@ -5,7 +5,9 @@ import { Button, Popup } from 'semantic-ui-react';
 
 export default class CopyButton extends Component {
   static propTypes = {
-    value: PropTypes.string.isRequired
+    value: PropTypes.string.isRequired,
+
+    trigger: PropTypes.node
   };
 
   state = {
@@ -17,12 +19,30 @@ export default class CopyButton extends Component {
 
     return (
       <Popup
-        trigger={<Button color='blue' disabled={copied} icon='copy' onClick={this.handleCopy} />}
-        content='Copied!'
+        trigger={this.renderTrigger()}
+        content={copied ? 'Copied!' : 'Copy'}
         on='click'
         open={copied}
-        position='top right'
       />
+    );
+  }
+
+  renderTrigger () {
+    const { copied } = this.state;
+    const { trigger } = this.props;
+
+    if (!trigger) {
+      return (
+        <Button color='blue' disabled={copied} icon='copy' onClick={this.handleCopy} />
+      );
+    }
+
+    return (
+      <div onClick={this.handleCopy} style={{
+        cursor: 'pointer'
+      }}>
+        {trigger}
+      </div>
     );
   }
 

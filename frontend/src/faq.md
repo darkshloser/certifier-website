@@ -1,7 +1,7 @@
 # FAQ
 
 ### How can I check if my ETH address is certified?
-You can check the status of your certification [here](https://picops.parity.io/#/check).
+You can check the status of your certification [here](/#/check).
 
 ### What do I have to consider when going through the KYC process?
 Make sure you submit your surname (last name) and given names (including middle name) in the correct order. Also when you upload a valid file type such as a jpg, png or pdf, the file size must be between 32KB and 10MB.
@@ -21,9 +21,10 @@ Make sure you are using one of the [Supported Documents](https://info.onfido.com
 No, each individual can only certify one ETH address. Every attempt to register a second ETH address will fail.
 
 ### Can I get a refund for the fee I paid?
-If you have paid the fee and have not initiated the KYC process you may be eligible for a refund. Please email us at [picops@parity.io](mailto:picops@parity.io).
+If you have paid the fee and have not initiated the KYC process you may be eligible for a refund. Please
+visit [this page](/#/refund) or email us at [picops@parity.io](mailto:picops@parity.io).
 
-If you have paid the fee and have initiated the KYC process unfortunately, we are not able to refund your fee. Our KYC service is provided by a third party. You can check out our [terms and conditions](https://picops.parity.io/#/tc).
+If you have paid the fee and have initiated the KYC process unfortunately, we are not able to refund your fee. Our KYC service is provided by a third party. You can check out our [terms and conditions](/#/tc).
 
 ### Can the PICOPS team manually certify me?
 Unfortunately the KYC service is provided by a 3rd party, and we have no influence over their process. Therefore we can not manually certify you.

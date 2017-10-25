@@ -1,4 +1,5 @@
 import keycode from 'keycode';
+import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Form, Input, Segment } from 'semantic-ui-react';
@@ -35,6 +36,7 @@ export default class AddressInput extends Component {
 
   render () {
     const { basic, label, showCopy, value, ...otherProps } = this.props;
+    const inputProps = omit(otherProps, [ 'onChange', 'onEnter' ]);
     const valid = isValidAddress(value);
     const inputId = `input--${label || ''}--${id}`;
 
@@ -48,7 +50,7 @@ export default class AddressInput extends Component {
         placeholder='0x...'
         ref={this.setInputRef}
         value={value}
-        {...otherProps}
+        {...inputProps}
       />
     );
 

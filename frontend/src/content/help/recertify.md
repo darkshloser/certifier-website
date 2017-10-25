@@ -1,0 +1,1 @@
+Under specific circumstances we are able to change the ETH address you certified. This includes the accidental linking of your ID to an exchange or a hardware wallet address. Please visit [this page](/#/recertification) or contact [picops@parity.io](mailto:picops@parity.io) for further information.

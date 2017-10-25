@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Button, Container, Header, Segment } from 'semantic-ui-react';
 
+import Footer from './Footer';
 import Stepper from './Stepper';
 
 import appStore from '../stores/app.store';
 
 const baseContentStyle = {
   backgroundColor: 'white',
-  padding: '4em 2.5em'
+  padding: '2em 1.5em 1em'
 };
 
 const STEPS = [
@@ -26,14 +27,12 @@ export default class AppContainer extends Component {
 
     action: PropTypes.object,
     hideStepper: PropTypes.bool,
-    noPadding: PropTypes.bool,
     showBack: PropTypes.bool,
     style: PropTypes.object
   };
 
   static defaultProps = {
     hideStepper: false,
-    noPadding: false,
     showBack: false,
     style: {}
   };
@@ -44,39 +43,42 @@ export default class AppContainer extends Component {
     };
 
     const { padding } = appStore;
-    const { children, noPadding, title } = this.props;
-
-    if (!noPadding && padding) {
-      style.paddingBottom = '2em';
-      style.paddingTop = '3em';
-    }
-
-    if (noPadding) {
-      style.padding = '1.5em 0';
-    }
-
+    const { children, title } = this.props;
+    const embedded = !padding;
     const contentStyle = Object.assign({}, baseContentStyle, this.props.style);
 
-    const titleNode = !noPadding && padding
-      ? <Header as='h4'>{title}</Header>
+    const titleNode = !embedded && title
+      ? <Header as='h3' style={{ textTransform: 'uppercase', margin: '0' }}>{title}</Header>
       : <div />;
 
     return (
-      <Container style={style}>
-        <div style={{
-          alignItems: 'flex-end',
-          display: 'flex',
-          justifyContent: 'space-between'
-        }}>
-          {titleNode}
-          {this.renderAction('top')}
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <div style={{ paddingBottom: '3em', flex: '1 1 auto' }}>
+          <Container>
+            <div style={{ fontSize: '4em', fontWeight: '200', lineHeight: '1em', margin: '0.25em 0 0.25em -5px' }}>
+              PICOPS
+            </div>
+          </Container>
+          <Container style={style}>
+            <div style={{
+              alignItems: 'flex-end',
+              display: 'flex',
+              justifyContent: 'space-between'
+            }}>
+              {titleNode}
+              {this.renderAction('top')}
+            </div>
+            {this.renderStepper()}
+            <Segment basic style={contentStyle}>
+              {children}
+            </Segment>
+            {this.renderAction('bottom')}
+          </Container>
         </div>
-        {this.renderStepper()}
-        <Segment basic style={contentStyle}>
-          {children}
-        </Segment>
-        {this.renderAction('bottom')}
-      </Container>
+        <div style={{ flex: '0 0 auto' }}>
+          <Footer />
+        </div>
+      </div>
     );
   }
 
@@ -96,6 +98,7 @@ export default class AppContainer extends Component {
         <Button
           as='a'
           href={action.href}
+          onClick={this.handleBack}
           basic
           secondary
         >
@@ -125,4 +128,19 @@ export default class AppContainer extends Component {
       />
     );
   }
+
+  handleBack = (event) => {
+    if (!window.opener) {
+      return event;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const opened = window.open('', window.opener.name);
+
+    if (opened) {
+      window.close();
+    }
+  };
 }

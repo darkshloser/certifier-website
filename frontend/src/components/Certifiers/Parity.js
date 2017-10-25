@@ -51,12 +51,12 @@ export default class ParityCertifier extends Component {
               You will have to
               upload a scan or high quality picture of your document. Separate images for back and
               front of the document may be required. Make sure to check
-              out <Link to='/faq' target='_blank'>our FAQ</Link> if you have any more questions.
+              out <Link to='/faq' target='picops-secondary'>our FAQ</Link> if you have any more questions.
             </p>
 
             <p>
               If you have paid the fee and have not initiated the KYC process, you
-              may be eligible for a refund. You can reach us at <a href='mailto:picops@parity.io'>picops@parity.io</a>.
+              may be eligible for a refund. Please have a look at our <a href='/#/help' target='picops-secondary'>help page</a>.
             </p>
           </div>
         )}

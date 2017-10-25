@@ -1,3 +1,4 @@
+import { phraseToWallet } from '@parity/ethkey.js';
 import { countries } from 'country-data';
 import EventEmitter from 'eventemitter3';
 import queryString from 'query-string';
@@ -135,6 +136,40 @@ class AppStore extends EventEmitter {
     });
 
     await this.goto('certified');
+  }
+
+  async getAccounts () {
+    const currentPhrase = store.get(FEE_HOLDER_LS_KEY, '');
+    const phrases = [ currentPhrase ]
+      .concat(store.get(OLD_FEE_HOLDER_LS_KEY, []))
+      .filter((phrase) => phrase);
+
+    const accounts = [];
+
+    for (const phrase of phrases) {
+      const current = phrase === currentPhrase;
+
+      try {
+        const { address, secret } = await phraseToWallet(phrase);
+
+        accounts.push({ address, secret, phrase, current });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    return accounts;
+  }
+
+  async deleteAccount (phrase) {
+    const nextPhrases = store.get(OLD_FEE_HOLDER_LS_KEY, [])
+      .filter((ph) => ph && ph !== phrase);
+
+    if (nextPhrases.length === 0) {
+      store.remove(OLD_FEE_HOLDER_LS_KEY);
+    } else {
+      store.set(OLD_FEE_HOLDER_LS_KEY, nextPhrases);
+    }
   }
 
   async goto (name) {

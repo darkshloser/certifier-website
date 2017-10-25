@@ -157,7 +157,7 @@ export default class AccountType extends Component {
         )}
         title='HARDWARE OR MULTISIG WALLET'
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Button.Group size='huge'>
             <Button onClick={this.handleBack}>
               Back
@@ -168,7 +168,7 @@ export default class AccountType extends Component {
             </Button>
           </Button.Group>
         </div>
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', marginTop: '1em' }}>
           <Button color='red' onClick={this.handleFromPersonal}>
             ADVANCED: Proceed with certifying my hardware or multisig wallet
           </Button>

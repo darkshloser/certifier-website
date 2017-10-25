@@ -1,28 +1,37 @@
 import BigNumber from 'bignumber.js';
 import React, { Component } from 'react';
-import { Button, Header, Loader } from 'semantic-ui-react';
+import { Button, Checkbox, Form, Header, Loader, Message, Modal, Icon, Input } from 'semantic-ui-react';
 
 import backend from '../backend';
 import config from '../stores/config.store';
-import { fromWei, isValidAddress } from '../utils';
+import { fromWei, isValidAddress, toWei } from '../utils';
 import appStore from '../stores/app.store';
-import feeStore from '../stores/fee.store';
 import Transaction from '../stores/transaction';
 
 import AppContainer from './AppContainer';
 import AddressInput from './AddressInput';
 import AccountInfo from './AccountInfo';
+import Text from './ui/Text';
 import ViewTransaction from './ui/ViewTransaction';
 
 const GAS_LIMIT = new BigNumber(21000);
 
 export default class Transfer extends Component {
   state = {
-    address: '',
+    accounts: [],
+    deleting: null,
+    data: '',
+    error: null,
+    gasLimit: GAS_LIMIT,
+    gasModified: false,
+    minGasLimit: GAS_LIMIT,
     loading: true,
+    receipient: '',
+    sender: null,
     sending: false,
-    storedAddress: null,
-    transaction: null
+    showAdvanced: false,
+    transaction: null,
+    value: 0
   };
 
   componentWillMount () {
@@ -30,18 +39,14 @@ export default class Transfer extends Component {
   }
 
   async init () {
-    const { storedPhrase } = feeStore;
+    this.setState({ loading: true });
 
-    if (!storedPhrase) {
-      return this.setState({ loading: false });
-    }
-
-    const { address: storedAddress, secret: storedSecret } = await feeStore.getWallet();
+    const accounts = await appStore.getAccounts();
 
     this.setState({
+      accounts,
       loading: false,
-      storedAddress,
-      storedSecret
+      sender: accounts.length > 0 ? accounts[0] : null
     });
   }
 
@@ -49,28 +54,16 @@ export default class Transfer extends Component {
     return (
       <AppContainer
         hideStepper
-        style={{ textAlign: 'center', padding: '2.5em 1em 2em', maxWidth: '60em', margin: '0 auto' }}
+        showBack
+        title='Transfer your funds'
       >
-        <div>
-          <div style={{ marginBottom: '1.5em' }}>
-            <Header as='h4' style={{ textTransform: 'uppercase' }}>
-              Transfer your funds
-            </Header>
-            {this.renderContent()}
-          </div>
-
-          <div>
-            <Button secondary as='a' href='/#/'>
-              Back to PICOPS
-            </Button>
-          </div>
-        </div>
+        {this.renderContent()}
       </AppContainer>
     );
   }
 
   renderContent () {
-    const { address, loading, sending, storedAddress, transaction } = this.state;
+    const { accounts, receipient, loading, sending, sender, transaction } = this.state;
 
     if (loading) {
       return (
@@ -78,78 +71,268 @@ export default class Transfer extends Component {
       );
     }
 
-    if (!storedAddress) {
+    if (accounts.length === 0) {
       return (
-        <p>
-          It seemed that you cleared your cache.
-          There is nothing we can do...
-        </p>
+        <Text.Container>
+          <Text>
+            No accounts have been found. It might be because you cleared your cache,
+            and there is nothing we can do about it, sadly...
+          </Text>
+        </Text.Container>
       );
     }
 
-    const valid = isValidAddress(address) && (address.toLowerCase() !== storedAddress.toLowerCase());
+    const { deleting, data, error, gasLimit, minGasLimit, showAdvanced, value } = this.state;
+
+    const validReceipient = isValidAddress(receipient) && (receipient.toLowerCase() !== sender.address.toLowerCase());
+    const validGasLimit = gasLimit.gte(minGasLimit);
+    const validData = !data || /^0x[0-9a-f]*$/i.test(data);
+
+    const valid = validData && validGasLimit && validReceipient;
 
     return (
-      <div>
-        <AccountInfo
-          address={storedAddress}
-          showCertified={false}
-        />
+      <Text.Container>
+        <Text>
+          You can transfer funds from the accounts we created for you if any are left.
+          Please select the sender and the receiver of the transaction.
+        </Text>
+        {this.renderAccountSelection()}
         <Header as='h4'>
-          Enter an Ethereum address to which the funds should be
-          transfered
+          Enter the transfer parameters
         </Header>
+
         <AddressInput
+          basic
+          label='To'
           onChange={this.handleAddressChange}
-          value={address}
+          value={receipient}
         />
-        <div style={{ margin: '1.5em 0' }}>
+
+        <Form style={{
+          paddingLeft: '5.5em',
+          paddingRight: '1em'
+        }}>
+          {
+            showAdvanced
+              ? (
+                <Form.Group>
+                  <Form.Input
+                    error={!validData}
+                    label='Data (optional)'
+                    onChange={this.handleDataChange}
+                    placeholder='0x...'
+                    value={data}
+                    width={16}
+                  />
+                </Form.Group>
+              )
+              : null
+          }
+          <Form.Group>
+            <Form.Field>
+              <label>Value</label>
+              <Input
+                label='ETH'
+                onChange={this.handleValueChange}
+                value={value}
+                type='number'
+                min={0}
+              />
+            </Form.Field>
+            {
+              showAdvanced
+                ? (
+                  <Form.Field error={!validGasLimit}>
+                    <label>Gas Limit</label>
+                    <Input
+                      label='wei'
+                      onChange={this.handleGasLimitChange}
+                      value={gasLimit.toNumber()}
+                      type='number'
+                      min={minGasLimit.toNumber()}
+                    />
+                  </Form.Field>
+                )
+                : null
+            }
+          </Form.Group>
+
+          <div>
+            <br />
+            <Checkbox
+              checked={showAdvanced}
+              label='Advanced settings'
+              onChange={this.handleAdvancedChange}
+            />
+          </div>
+
+          {
+            error
+              ? (
+                <Message negative>
+                  <p>{error.message}</p>
+                </Message>
+              )
+              : null
+          }
+        </Form>
+
+        <div style={{ margin: '1em 0 0', textAlign: 'right' }}>
           {
             transaction
               ? (
                 <ViewTransaction transaction={transaction} />
               )
-              : (
-                <Button disabled={!valid} primary size='big' onClick={this.handleSend} loading={sending}>
-                  Send
-                </Button>
-              )
+              : null
           }
+          <Button disabled={!valid} primary size='big' onClick={this.handleSend} loading={sending}>
+            Send
+          </Button>
         </div>
+
+        <Modal open={!!deleting} onClose={this.handleCancelDelete} basic size='small'>
+          <Header icon='trash' content='Delete old Ethereum account' />
+          <Modal.Content>
+            <p>
+              Do you really want to delete this account? Once deleted, any funds sent to it
+              will be stuck in the account forever!
+            </p>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button basic color='red' inverted onClick={this.handleCancelDelete}>
+              <Icon name='remove' /> No
+            </Button>
+            <Button color='green' inverted onClick={this.handleDelete}>
+              <Icon name='checkmark' /> Yes
+            </Button>
+          </Modal.Actions>
+        </Modal>
+      </Text.Container>
+    );
+  }
+
+  renderAccountSelection () {
+    const { accounts } = this.state;
+
+    return (
+      <div>
+        {accounts.map((account) => this.renderAccount(account))}
       </div>
     );
   }
 
+  renderAccount (account) {
+    const { sender } = this.state;
+    const selected = sender.address === account.address;
+
+    const onClick = () => {
+      this.setState({ sender: account });
+    };
+
+    const onDelete = () => {
+      this.setState({ deleting: account });
+    };
+
+    return (
+      <div key={account.address} style={{
+        display: 'flex',
+        alignItems: 'center',
+        margin: '0.5em 0 1em 1em'
+      }}>
+        <Button disabled={account.current} circular icon='trash' color='red' size='small' onClick={onDelete} />
+        <AccountInfo
+          address={account.address}
+          onClick={onClick}
+          showCertified={false}
+          style={{
+            border: selected ? '1px solid black' : 'none',
+            cursor: 'pointer',
+            margin: '0 0.5em'
+          }}
+        />
+      </div>
+    );
+  }
+
+  handleCancelDelete = () => {
+    this.setState({ deleting: null });
+  };
+
+  handleAdvancedChange = (_, { checked }) => {
+    this.setState({ showAdvanced: checked });
+  };
+
   handleAddressChange = async (_, { value }) => {
-    this.setState({ address: value });
+    this.setState({ receipient: value });
+  };
+
+  handleDataChange = (_, { value }) => {
+    const validData = !value || /^0x[0-9a-f]*$/i.test(value);
+    // Add at least 68 wei of gas for every byte of data
+    const minGasLimit = validData
+      ? GAS_LIMIT.add(Math.ceil(Math.max((value.length - 2), 0) / 2) * 68)
+      : GAS_LIMIT;
+
+    const nextState = {
+      data: value,
+      minGasLimit
+    };
+
+    // Modify gas limit accrodingly if it hasn't been
+    // touched yet
+    if (!this.state.gasModified) {
+      nextState.gasLimit = minGasLimit;
+    }
+
+    this.setState(nextState);
+  };
+
+  handleDelete = async () => {
+    const account = this.state.deleting;
+
+    this.setState({ deleting: null });
+    await appStore.deleteAccount(account.phrase);
+    this.init();
+  };
+
+  handleGasLimitChange = (_, { value }) => {
+    this.setState({ gasLimit: new BigNumber(value), gasModified: true });
+  };
+
+  handleValueChange = (_, { value }) => {
+    this.setState({ value });
   };
 
   handleSend = async () => {
-    this.setState({ sending: true });
+    this.setState({ error: null, sending: true, transaction: null });
 
     try {
-      const { address, storedAddress, storedSecret } = this.state;
+      const { data, gasLimit, receipient, sender, value } = this.state;
 
-      const { balance } = await backend.getAccountFeeInfo(storedAddress);
+      const { balance } = await backend.getAccountFeeInfo(sender.address);
       const gasPrice = config.get('gasPrice');
-      const totalGas = GAS_LIMIT.mul(gasPrice);
+      const totalGas = gasLimit.mul(gasPrice);
 
       if (balance.lt(totalGas)) {
         throw new Error(`Not enough funds to send a transaction, missing ${fromWei(totalGas.sub(balance))} ETH...`);
       }
 
-      const transaction = new Transaction(storedSecret);
+      const maxValue = balance.sub(totalGas);
+      const weiValue = toWei(value);
+
+      const transaction = new Transaction(sender.secret);
       const { hash } = await transaction.send({
-        gasLimit: GAS_LIMIT,
-        to: address,
-        value: balance.sub(totalGas)
+        data: data || '',
+        gasLimit: gasLimit,
+        to: receipient,
+        value: maxValue.lt(weiValue) ? maxValue : weiValue
       });
 
       console.warn('sent tx', hash);
       this.setState({ sending: false, transaction: hash });
     } catch (error) {
-      appStore.addError(error);
-      this.setState({ sending: false });
+      console.error(error);
+      this.setState({ error, sending: false });
     }
   };
 }

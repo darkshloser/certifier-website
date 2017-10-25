@@ -59,7 +59,6 @@ export default class Recertification extends Component {
     return (
       <AppContainer
         hideStepper
-        noPadding
         showBack
         style={{ padding: '2em 2em' }}
       >

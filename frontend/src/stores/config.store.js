@@ -1,26 +1,46 @@
+import EventEmitter from 'eventemitter3';
+import { action } from 'mobx';
+
 import backend from '../backend';
 
-class Config {
+/**
+ * Configuration stores.
+ * Emits a `loaded` event when loaded
+ */
+class Config extends EventEmitter {
   loaded = false;
 
   constructor () {
+    super();
+
     this.load().catch((error) => {
       console.error(error);
     });
   }
 
   async load () {
-    if (this.loaded) {
+    if (this.loaded || this.loading) {
       return;
     }
 
-    const conf = await backend.config();
+    try {
+      const conf = await backend.config();
 
+      this.set(conf);
+      this.loaded = true;
+      this.emit('loaded');
+    } catch (error) {
+      console.error(error);
+      setTimeout(() => this.load(), 1000);
+    }
+
+    this.loading = false;
+  }
+
+  @action set (conf) {
     Object.keys(conf).forEach((key) => {
       this[key] = conf[key];
     });
-
-    this.loaded = true;
   }
 
   get (key) {
@@ -31,6 +51,14 @@ class Config {
     }
 
     return value;
+  }
+
+  ready (cb) {
+    if (this.loaded) {
+      return cb();
+    }
+
+    this.once('loaded', () => cb());
   }
 }
 

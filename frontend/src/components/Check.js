@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Button, Header, Icon } from 'semantic-ui-react';
+import { Button, Icon } from 'semantic-ui-react';
 
 import backend from '../backend';
 import { isValidAddress } from '../utils';
+import Text from './ui/Text';
 
 import AppContainer from './AppContainer';
 import AddressInput from './AddressInput';
@@ -10,37 +11,47 @@ import AddressInput from './AddressInput';
 export default class Check extends Component {
   state = {
     address: '',
-    certified: null
+    certified: null,
+    loading: false
   };
 
   render () {
-    const { address } = this.state;
+    const { address, loading } = this.state;
+    const valid = isValidAddress(address);
 
     return (
       <AppContainer
         hideStepper
-        style={{ textAlign: 'center', padding: '2.5em 1em 1em', maxWidth: '60em', margin: '0 auto' }}
+        showBack
+        title='Certification status'
       >
-        <div>
-          <div style={{ marginBottom: '1.5em' }}>
-            <Header as='h4' style={{ textTransform: 'uppercase' }}>
-              Enter an Ethereum address below to check
-              its certification status
-            </Header>
-            <AddressInput
-              onChange={this.handleAddressChange}
-              value={address}
-            />
+        <Text.Container>
+          <Text>
+            Enter an Ethereum address below to check
+            its certification status
+          </Text>
+
+          <AddressInput
+            onChange={this.handleAddressChange}
+            value={address}
+          />
+
+          <div style={{ textAlign: 'center' }}>
+            {this.renderCertified()}
           </div>
 
-          {this.renderCertified()}
-
-          <div>
-            <Button secondary as='a' href='/#/'>
-              Back to PICOPS
+          <div style={{ textAlign: 'right' }}>
+            <Button
+              loading={loading}
+              disabled={!valid}
+              primary
+              onClick={this.handleQuery}
+              size='big'
+            >
+              Query
             </Button>
           </div>
-        </div>
+        </Text.Container>
       </AppContainer>
     );
   }
@@ -75,11 +86,22 @@ export default class Check extends Component {
 
   handleAddressChange = async (_, { value }) => {
     this.setState({ address: value, certified: null });
+  };
 
-    if (isValidAddress(value)) {
-      const { certified } = await backend.checkStatus(value);
+  handleQuery = async () => {
+    const { address } = this.state;
 
-      this.setState({ certified });
+    if (isValidAddress(address)) {
+      this.setState({ certified: null, loading: true });
+
+      try {
+        const { certified } = await backend.checkStatus(address);
+
+        this.setState({ certified, loading: false });
+      } catch (error) {
+        console.error(error);
+        this.setState({ loading: false });
+      }
     }
   };
 }

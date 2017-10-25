@@ -39,7 +39,7 @@ export default class Stepper extends Component {
 
     return (
       <div style={{
-        padding: '1em 50px',
+        padding: '1em 75px',
         height: '7em',
         display: 'flex',
         flexDirection: 'column',

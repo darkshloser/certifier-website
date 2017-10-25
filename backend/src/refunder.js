@@ -5,6 +5,7 @@
 
 const config = require('config');
 
+const account = require('./contracts/account');
 const { RpcTransport } = require('./api/transport');
 const Certifier = require('./contracts/certifier');
 const FeeRegistrar = require('./contracts/fee');
@@ -29,6 +30,13 @@ class Refunder {
 
   async init () {
     try {
+      const [ isDelegate ] = await this._feeRegistrar.methods.delegate(account.address).get();
+
+      if (!isDelegate) {
+        console.error(`${account.address} is not a delegate in the Fee Registrar. Aborting.`);
+        process.exit(1);
+      }
+
       await store.subscribe(store.FEE_REFUND_CHANNEL, async () => this.processRefunds());
       console.warn('\n> Started refunder!\n');
     } catch (error) {

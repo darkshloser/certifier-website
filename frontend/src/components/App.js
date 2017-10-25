@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { HashRouter as Router, Route } from 'react-router-dom';
-import { Button, Header, Loader } from 'semantic-ui-react';
+import { Button, Header, Icon, Loader, Popup } from 'semantic-ui-react';
 
 import AccountInfo from './AccountInfo';
 import AppContainer from './AppContainer';
@@ -11,12 +11,14 @@ import CheckRefund from './CheckRefund';
 import CountrySelector from './CountrySelector';
 import CountrySelectionWrapper from './CountrySelectionWrapper';
 import Details from './Details';
+import Help from './Help';
 import Fee from './Fee';
 import Faq from './Faq';
 import Messages from './Messages';
 import Recertification from './Recertification';
 import Refund from './Refund';
 import Terms from './Terms';
+import TermsView from './TermsView';
 import Transfer from './Transfer';
 
 import appStore, { STEPS } from '../stores/app.store';
@@ -32,7 +34,8 @@ export default class App extends Component {
           <div>
             <Route exact path='/' component={MainApp} />
             <Route path='/details' component={Details} />
-            <Route path='/tc' component={Terms} />
+            <Route path='/help' component={Help} />
+            <Route path='/tc' component={TermsView} />
             <Route path='/faq' component={Faq} />
             <Route path='/check' component={Check} />
             <Route path='/refund' component={Refund} />
@@ -50,14 +53,58 @@ export default class App extends Component {
 
 @observer
 class MainApp extends Component {
+  componentWillMount () {
+    if (window.name !== 'picops-main') {
+      window.name = 'picops-main';
+    }
+  }
+
   render () {
     return (
       <AppContainer
         action={this.renderAction()}
         title='PARITY ICO PASSPORT SERVICE'
+        style={{ padding: '2em 1.5em' }}
       >
+        {this.renderHelp()}
         {this.renderContent()}
       </AppContainer>
+    );
+  }
+
+  renderHelp () {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        padding: '1em'
+      }}>
+        <Popup
+          trigger={(
+            <Button
+              as='a'
+              circular
+              href='/#/help'
+              target='picops-secondary'
+              style={{
+                padding: '0.75em 1em',
+                backgroundColor: 'white',
+                boxShadow: '0 0 1px 0px black inset, 0 0 1px 0px black',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Icon name='help' size='large' style={{ height: 'auto', marginRight: '0.2em' }} />
+              <span style={{ fontSize: '1.2em' }}>
+                Help
+              </span>
+            </Button>
+          )}
+          content='If you have any questions or issues, click here to go to the help center.'
+        />
+      </div>
     );
   }
 

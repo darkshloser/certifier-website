@@ -44,6 +44,12 @@ class Backend {
     }
   }
 
+  async balance (address) {
+    const { balance } = await this.get(`/accounts/${address}/balance`);
+
+    return new BigNumber(balance);
+  }
+
   async blockHash () {
     return this.get('/block/hash');
   }

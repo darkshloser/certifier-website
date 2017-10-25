@@ -1,6 +1,7 @@
+import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import EthJS from 'ethereumjs-util';
-import { Button, Header } from 'semantic-ui-react';
+import { Button } from 'semantic-ui-react';
 
 import backend from '../backend';
 import { isValidAddress, fromWei } from '../utils';
@@ -9,47 +10,72 @@ import feeStore from '../stores/fee.store';
 
 import AppContainer from './AppContainer';
 import AddressInput from './AddressInput';
+import Text from './ui/Text';
 import ViewTransaction from './ui/ViewTransaction';
 
+@observer
 export default class Refund extends Component {
   state = {
+    accounts: [],
     address: '',
     loaded: false,
     loading: false,
     transaction: null
   };
 
+  componentWillMount () {
+    this.init();
+  }
+
+  async init () {
+    const accounts = await appStore.getAccounts();
+
+    this.setState({ accounts });
+  }
+
   componentWillUnmount () {
     clearInterval(this.intervalId);
   }
 
   render () {
-    const { address } = this.state;
+    const { address, loaded, loading } = this.state;
+    const valid = isValidAddress(address);
 
     return (
       <AppContainer
         hideStepper
-        style={{ textAlign: 'center', padding: '2.5em 1em 2em', maxWidth: '60em', margin: '0 auto' }}
+        showBack
+        title='Ask for a refund'
       >
-        <div>
-          <div style={{ marginBottom: '1.5em' }}>
-            <Header as='h4' style={{ textTransform: 'uppercase' }}>
-              Enter the Ethereum address that you whish to be refunded
-            </Header>
-            <AddressInput
-              onChange={this.handleAddressChange}
-              value={address}
-            />
-          </div>
+        <Text.Container>
+          <Text>
+            Enter the Ethereum address that you whish to be refunded
+          </Text>
+          <AddressInput
+            onChange={this.handleAddressChange}
+            value={address}
+          />
 
           {this.renderResult()}
 
-          <div>
-            <Button secondary as='a' href='/#/'>
-              Back to PICOPS
-            </Button>
-          </div>
-        </div>
+          {
+            loaded
+              ? null
+              : (
+                <div style={{ textAlign: 'right' }}>
+                  <Button
+                    loading={loading}
+                    disabled={!valid}
+                    primary
+                    onClick={this.handleQuery}
+                    size='big'
+                  >
+                    Query
+                  </Button>
+                </div>
+              )
+          }
+        </Text.Container>
       </AppContainer>
     );
   }
@@ -59,77 +85,65 @@ export default class Refund extends Component {
       return null;
     }
 
-    const contentStyle = { fontSize: '1.25em', margin: '1em 0 1em', lineHeight: '1.5em' };
     const { certified, checkCount } = this.state;
 
     if (certified) {
       return (
-        <div style={contentStyle}>
-          This address is certified, congratulations!
-        </div>
+        <Text>
+          This address is already certified, congratulations!
+          You can use your certified account on any platform
+          supporting PICOPS.
+        </Text>
       );
     }
 
     if (checkCount > 0) {
       return (
-        <div style={contentStyle}>
-          <div>
-            {checkCount} check(s) have been intiated for
-            this address.
-          </div>
-          <div>
-            No refunds can be sent, sorry.
-          </div>
+        <div>
+          <Text>
+            We registered that {checkCount} check(s) of your
+            documents have been intiated for this address.
+          </Text>
+          <Text>
+            We cannot refund this account according to our
+            <a href='/#/tc' target='picops-secondary'> Terms and Conditions</a>.
+          </Text>
         </div>
       );
     }
 
-    const { paid, origins } = this.state;
+    const { paid } = this.state;
 
     if (!paid) {
       return (
-        <div style={contentStyle}>
-          <div>
-            This address has not been paid for.
-          </div>
-          <div>
-            No refunds can be sent, sorry.
-          </div>
+        <div>
+          <Text>
+            No payment have been received for this address.
+          </Text>
         </div>
       );
     }
 
-    const { storedPhrase } = this.state;
+    const { accounts, matchingAccount } = this.state;
 
-    if (!storedPhrase) {
+    if (!accounts.length || !matchingAccount) {
       return (
-        <div style={contentStyle}>
-          <div>
-            It seems that your cache has been cleared.
-          </div>
-          <div>
-            There is no way to prove to you are at the origin of
-            the fee payment.
-          </div>
-          <div>
-            Please contact us if you think this is a mistake.
-          </div>
-        </div>
-      );
-    }
-
-    const { storedAddress } = this.state;
-
-    if (!origins.includes(storedAddress)) {
-      return (
-        <div style={contentStyle}>
-          <div>
-            We could not match the origin of the payment with
-            the address stored in your browser.
-          </div>
-          <div>
-            Please contact us if you think this is a mistake.
-          </div>
+        <div>
+          <Text>
+            In order to initiate the refund, you must prove
+            that your are at the origin of the payment. When PICOPS
+            loads for the first time on your machine, we create an account
+            for you, that will pay for the fee when the funds are received.
+            This account is stored in your browser cache.
+          </Text>
+          <Text>
+            However, it seems that we couldn't find this account in your cache.
+            It might be because you are trying to ask for a refund for an address
+            you did not pay from this browser; or because you cleared your cache.
+          </Text>
+          <Text>
+            Sadly, there is nothing more we can do about it.
+          </Text>
         </div>
       );
     }
@@ -137,14 +151,12 @@ export default class Refund extends Component {
     const { loading, transaction } = this.state;
 
     return (
-      <div style={contentStyle}>
-        <div>
+      <div>
+        <Text>
           It seems that you are eligible for a refund, congratulations!
-        </div>
-        <div>
           We can issue a refund of {fromWei(feeStore.fee).toFormat()} ETH to the address above.
-        </div>
-        <div style={{ margin: '1.5em 0' }}>
+        </Text>
+        <div style={{ margin: '1.5em 0', textAlign: 'right' }}>
           {
             transaction
               ? (
@@ -181,24 +193,18 @@ export default class Refund extends Component {
       return data;
     }
 
-    const { storedPhrase } = feeStore;
+    const { accounts } = this.state;
 
-    data.storedPhrase = storedPhrase;
+    const lcAddresses = accounts.map((a) => a.address.toLowerCase());
+    const matchedOrigin = data.origins.find((origin) => lcAddresses.includes(origin.toLowerCase()));
 
-    if (!storedPhrase) {
+    if (!matchedOrigin) {
       return data;
     }
 
-    const { address: storedAddress, secret: storedSecret } = await feeStore.getWallet();
-
-    data.storedAddress = storedAddress.toLowerCase();
-
-    if (!data.origins.includes(data.storedAddress)) {
-      return data;
-    }
-
+    const matchingAccount = accounts.find((a) => a.address.toLowerCase() === matchedOrigin.toLowerCase());
     const message = `I attest I want to get a refund for this address: ${who}`;
-    const privateKey = Buffer.from(storedSecret.slice(2), 'hex');
+    const privateKey = Buffer.from(matchingAccount.secret.slice(2), 'hex');
 
     const msgHash = EthJS.hashPersonalMessage(EthJS.toBuffer(message));
     const { v, r, s } = EthJS.ecsign(msgHash, privateKey);
@@ -207,17 +213,29 @@ export default class Refund extends Component {
 
     data.message = message;
     data.signature = signature;
+    data.matchingAccount = matchingAccount;
 
     return data;
   }
 
   handleAddressChange = async (_, { value }) => {
     this.setState({ address: value, loaded: false });
+  };
 
-    if (isValidAddress(value)) {
-      const nextState = await this.fetchData(value);
+  handleQuery = async () => {
+    const { address } = this.state;
 
-      this.setState(Object.assign({ loaded: true }, nextState));
+    if (isValidAddress(address)) {
+      this.setState({ loading: true });
+
+      try {
+        const nextState = await this.fetchData(address);
+
+        this.setState(Object.assign({ loaded: true, loading: false }, nextState));
+      } catch (error) {
+        console.error(error);
+        this.setState({ loading: false });
+      }
     }
   };
 
@@ -236,10 +254,10 @@ export default class Refund extends Component {
   };
 
   pollRefundStatus () {
-    const { address, storedAddress } = this.state;
+    const { address, matchingAccount } = this.state;
 
     this.intervalId = setInterval(async () => {
-      const { status, transaction } = await backend.getRefundStatus({ who: address, origin: storedAddress });
+      const { status, transaction } = await backend.getRefundStatus({ who: address, origin: matchingAccount.address });
 
       if (status !== 'sent') {
         return;

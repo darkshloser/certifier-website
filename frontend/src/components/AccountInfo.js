@@ -7,20 +7,21 @@ import blockStore from '../stores/block.store';
 import { fromWei, toChecksumAddress } from '../utils';
 
 import AccountIcon from './AccountIcon.js';
+import CopyButton from './ui/CopyButton';
 
 export default class AccountInfo extends Component {
   static propTypes = {
     address: PropTypes.string.isRequired,
-    fullAddress: PropTypes.bool,
+    onClick: PropTypes.func,
     showBalance: PropTypes.bool,
     showCertified: PropTypes.bool,
-    onClick: PropTypes.func
+    style: PropTypes.object
   };
 
   static defaultProps = {
-    fullAddress: false,
     showBalance: true,
-    showCertified: true
+    showCertified: true,
+    style: {}
   };
 
   state = {
@@ -39,46 +40,45 @@ export default class AccountInfo extends Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.address !== this.props.address) {
-      // Reset state
-      this.setState({ balance: null, certified: null });
-      // Fetch new info
       this.fetchInfo(nextProps);
     }
   }
 
   async fetchInfo (props = this.props) {
-    const { address, showBalance, showCertified } = props;
+    try {
+      const { address, showBalance, showCertified } = props;
 
-    const nextState = {};
+      const nextState = {};
 
-    if (showBalance) {
-      const { balance } = await backend.getAccountFeeInfo(address);
+      if (showBalance) {
+        const balance = await backend.balance(address);
 
-      nextState.balance = balance;
+        nextState.balance = balance;
+      }
+
+      if (showCertified) {
+        const { certified } = await backend.checkStatus(address);
+
+        nextState.certified = certified;
+      }
+
+      this.setState(nextState);
+    } catch (error) {
+      console.error(error);
     }
-
-    // If already certified, no need to update
-    // the value (won't change)
-    if (showCertified && !this.state.certified) {
-      const { certified } = await backend.checkStatus(address);
-
-      nextState.certified = certified;
-    }
-
-    this.setState(nextState);
   }
 
   render () {
-    const { address: _address, fullAddress, onClick, showBalance, showCertified } = this.props;
+    const { address: _address, onClick, showBalance, showCertified, style: propsStyle } = this.props;
     const { certified } = this.state;
 
     const address = toChecksumAddress(_address);
 
-    const style = {
+    const style = Object.assign({
       padding: '0.75em 1em 0.75em 0.5em',
       display: 'inline-block',
       maxWidth: '100%'
-    };
+    }, propsStyle);
 
     if (onClick) {
       style.cursor = 'pointer';
@@ -100,9 +100,17 @@ export default class AccountInfo extends Component {
             marginRight: '1em',
             flex: '0 0 auto'
           }}>
-            <AccountIcon
-              address={address}
-              style={{ height: 48 }}
+            <CopyButton
+              trigger={(
+                <AccountIcon
+                  address={address}
+                  style={{
+                    boxShadow: '0 0 1px 0px black inset, 0 0 1px 0px black',
+                    height: 48
+                  }}
+                />
+              )}
+              value={address}
             />
           </div>
 
@@ -117,9 +125,7 @@ export default class AccountInfo extends Component {
               fontFamily: 'monospace',
               fontSize: '1.0em',
               overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              lineHeight: fullAddress ? '1.5em' : '1em',
-              wordWrap: fullAddress ? 'break-word' : ''
+              textOverflow: 'ellipsis'
             }}>
               {address}
             </span>
@@ -129,7 +135,8 @@ export default class AccountInfo extends Component {
                   <div style={{
                     display: 'flex',
                     flexDirection: 'row',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
                   }}>
                     {this.renderBalance()}
                     {this.renderCertified()}
@@ -152,8 +159,11 @@ export default class AccountInfo extends Component {
     }
 
     return (
-      <span>
-        Current funds: {fromWei(balance).toFormat()} ETH
+      <span style={{
+        wordWrap: 'break-word',
+        overflow: 'hidden'
+      }}>
+        Current funds: <span title={`${fromWei(balance).toFormat()} ETH`}>{fromWei(balance).toFormat(5)} ETH</span>
       </span>
     );
   }
@@ -180,7 +190,8 @@ export default class AccountInfo extends Component {
       fontWeight: 'bold',
       padding: '0em 0.5em',
       marginLeft: '0.5em',
-      lineHeight: '1.75em'
+      lineHeight: '1.75em',
+      flex: '0 0 auto'
     };
 
     return (

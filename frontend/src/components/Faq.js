@@ -18,7 +18,6 @@ export default class Faq extends Component {
     return (
       <AppContainer
         hideStepper
-        noPadding
         showBack
         style={{ paddingTop: '1em' }}
       >

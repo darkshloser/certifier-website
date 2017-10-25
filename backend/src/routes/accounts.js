@@ -10,13 +10,27 @@ const Router = require('koa-router');
 const store = require('../store');
 const Identity = require('../identity');
 const { error: errorHandler, rateLimiter } = require('./utils');
-const { buf2add, hex2big, big2hex, isValidAddress } = require('../utils');
+const { buf2add, hex2big, big2hex, int2hex, isValidAddress } = require('../utils');
 
 const onfidoMaxChecks = config.get('onfido.maxChecks');
 
 function get ({ connector, certifier, certifierHandler, feeRegistrar }) {
   const router = new Router({
     prefix: '/api/accounts'
+  });
+
+  router.get('/:address/balance', async (ctx, next) => {
+    const { address } = ctx.params;
+
+    if (!isValidAddress(address)) {
+      return errorHandler(ctx, 400, 'Invalid address');
+    }
+
+    await rateLimiter(address, ctx.remoteAddress);
+
+    const balance = await connector.balance(address);
+
+    ctx.body = { balance: int2hex(balance) };
   });
 
   router.get('/:address/certification-locked', async (ctx, next) => {

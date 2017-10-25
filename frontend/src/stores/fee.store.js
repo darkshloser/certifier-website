@@ -49,15 +49,22 @@ class FeeStore {
       this.setPayer(address);
     });
 
-    this.init();
+    config.ready(this.init);
   }
 
-  init = () => {
+  init = async () => {
     this.step = STEPS['waiting-payment'];
     this.payer = '';
     this.incomingChoices = [];
     this.transaction = null;
     this.wallet = null;
+
+    // Retrieve the fee
+    const { fee, feeRegistrar } = await backend.fee();
+
+    this.fee = fee;
+    this.feeRegistrar = feeRegistrar;
+    this.totalFee = fee.plus(config.get('gasPrice').mul(FEE_REGISTRAR_GAS_LIMIT));
   };
 
   load = async () => {
@@ -76,13 +83,6 @@ class FeeStore {
         this.setPayer('');
         store.remove(PAYER_LS_KEY);
       }
-
-      // Retrieve the fee
-      const { fee, feeRegistrar } = await backend.fee();
-
-      this.fee = fee;
-      this.feeRegistrar = feeRegistrar;
-      this.totalFee = fee.plus(config.get('gasPrice').mul(FEE_REGISTRAR_GAS_LIMIT));
 
       // Get the throw-away wallet
       const wallet = await this.getWallet();
